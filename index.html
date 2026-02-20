@@ -13,8 +13,9 @@
     .layer-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1.5s ease; background-size: cover; background-position: center; z-index: 1; }
     .hidden { display: none !important; }
     .invisible { opacity: 0; pointer-events: none; }
+    
     #hearth-layer { background-image: url('image_5.png'); }
-    #garden-layer { background-image: url('https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=2070&auto=format&fit=crop'); }
+    #garden-layer { background-image: url('garden_bg.png'); }
     #scholar-video-bg { width: 100%; height: 100%; object-fit: cover; position: absolute; }
 
     /* --- NAVIGATION & TOGGLES --- */
@@ -44,7 +45,7 @@
     .panel-header h1 { font-family: 'Cinzel'; font-size: 1.1rem; color: var(--gold); text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 10px; margin-bottom: 25px; letter-spacing: 4px; text-transform: uppercase; }
     .section-box { margin-bottom: 25px; border: 1px solid rgba(212,175,55,0.2); padding: 20px; background: rgba(255,255,255,0.02); }
     
-    .vital-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-family: 'Cinzel'; font-size: 0.8rem; }
+    .vital-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-family: 'Cinzel'; font-size: 0.8rem; letter-spacing: 1px; }
     .vital-input { background: rgba(0,0,0,0.3); border: 1px solid var(--gold-glow); color: var(--gold); font-family: 'Cinzel'; width: 60px; text-align: center; padding: 5px; outline: none; }
     .scholar-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--gold-glow); color: var(--parchment); padding: 12px; font-family: 'Cormorant Garamond'; margin-bottom: 10px; outline: none; box-sizing: border-box; resize: vertical; }
 
@@ -57,10 +58,25 @@
     .day-num { padding: 8px 0; border: 1px solid rgba(212,175,55,0.1); transition: 0.3s; cursor: default; }
     .day-num.today { background: var(--gold); color: #000; font-weight: 900; }
 
-    /* Particles */
-    #particle-layer { pointer-events: none; position: absolute; top:0; left:0; width:100%; height:100%; z-index: 5; }
-    .particle { position: absolute; border-radius: 50%; opacity: 0; animation: rise linear infinite; }
-    @keyframes rise { 0% {opacity:0; transform:translateY(0);} 20% {opacity:0.6;} 100% {opacity:0; transform:translateY(-110vh) translateX(var(--drift));} }
+    /* --- ANIMATION ENGINE (PARTICLES) --- */
+    #particle-layer { pointer-events: none; position: absolute; top:0; left:0; width:100%; height:100%; z-index: 5; overflow: hidden; }
+    
+    /* Hearth Embers */
+    .ember { position: absolute; border-radius: 50%; background: var(--fire); box-shadow: 0 0 10px var(--fire); opacity: 0; animation: rise linear infinite; }
+    @keyframes rise { 0% {opacity:0; transform:translateY(110vh) translateX(0);} 20% {opacity:0.6;} 100% {opacity:0; transform:translateY(-10vh) translateX(var(--drift));} }
+    
+    /* Tower Dust */
+    .dust { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); box-shadow: 0 0 8px rgba(255,255,255,0.2); opacity: 0; animation: drift linear infinite; }
+    @keyframes drift { 0% {opacity:0; transform:translateY(100vh) translateX(0);} 50% {opacity:0.5;} 100% {opacity:0; transform:translateY(-10vh) translateX(var(--drift));} }
+
+    /* Garden Water Drips */
+    .drip { position: absolute; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.5)); width: 2px; border-radius: 2px; opacity: 0; animation: fallDrip linear infinite; }
+    @keyframes fallDrip { 0% { opacity: 0; transform: translateY(-10vh); } 10% { opacity: 0.5; } 100% { opacity: 0; transform: translateY(110vh); } }
+
+    /* Garden Petals */
+    .petal { position: absolute; background: #c84b31; width: 8px; height: 8px; border-radius: 50% 0 50% 50%; opacity: 0; animation: fallPetal linear infinite; box-shadow: 0 0 5px rgba(200,75,49,0.5); }
+    @keyframes fallPetal { 0% { opacity: 0; transform: translateY(-10vh) translateX(0) rotate(0deg); } 20% { opacity: 0.8; } 100% { opacity: 0; transform: translateY(110vh) translateX(var(--drift)) rotate(var(--spin)); } }
+
 </style>
 </head>
 <body onload="init()">
@@ -124,17 +140,20 @@
             <div class="section-box">
                 <div style="font-family:'Cinzel'; text-align:center; color:var(--gold); font-size:0.8rem; margin-bottom:10px;">Spirit Alignment</div>
                 <div class="mood-icons" id="mood-picker">
-                    <span onclick="updateMood('ethereal', this)">✨</span>
-                    <span onclick="updateMood('grounded', this)">🌿</span>
-                    <span onclick="updateMood('flickering', this)">🔥</span>
-                    <span onclick="setMood('stormy', this)">⛈️</span>
-                    <span onclick="setMood('waning', this)">🌑</span>
+                    <span onclick="updateMood('ethereal', this)" title="Ethereal">✨</span>
+                    <span onclick="updateMood('grounded', this)" title="Grounded">🌿</span>
+                    <span onclick="updateMood('flickering', this)" title="Flickering">🔥</span>
+                    <span onclick="updateMood('stormy', this)" title="Stormy">⛈️</span>
+                    <span onclick="updateMood('waning', this)" title="Waning">🌑</span>
                 </div>
             </div>
             <div class="section-box">
                 <div class="vital-row"><span>Dream Cycles (Sleep)</span> <input type="number" id="sleep-in" class="vital-input" onchange="saveVitals()"></div>
                 <div class="vital-row"><span>Restorative Elixir (Water)</span> <input type="number" id="water-in" class="vital-input" onchange="saveVitals()"></div>
                 <div class="vital-row"><span>Mana Intake (Meals)</span> <input type="number" id="meal-in" class="vital-input" onchange="saveVitals()"></div>
+            </div>
+            <div style="text-align: center; margin-top: 30px; font-style: italic; font-size: 0.9rem; color: var(--gold); opacity: 0.7;">
+                "Even the oldest trees must drink."
             </div>
         </div>
     </div>
@@ -145,16 +164,16 @@
         const audH = document.getElementById('audio-hearth');
         const audG = document.getElementById('audio-garden');
         const vidS = document.getElementById('scholar-video-bg');
+        const pLayer = document.getElementById('particle-layer');
 
         function init() {
             renderCalendar();
             loadVitals();
             loadReagents();
             loadJournal();
-            createParticles('#ff6a00', 25); // Hearth Embers
-            audH.volume = 0.4;
-            audG.volume = 0.4;
-            // Initially stay in Hearth
+            spawnHearthEmbers();
+            audH.volume = 0.4; audG.volume = 0.4;
+            audH.play().catch(()=>{}); // Handle browser autoplay rules
         }
 
         function toggleSidebar() {
@@ -165,26 +184,77 @@
             if(room === currentRoom) return;
             currentRoom = room;
 
-            // UI Styling
+            // Update Portal Buttons
             document.querySelectorAll('.portal-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-'+room).classList.add('active');
             
-            // Layer Visibility
+            // Crossfade Layers
             document.querySelectorAll('.layer-container').forEach(l => l.classList.add('invisible'));
             document.getElementById(room+'-layer').classList.remove('invisible');
 
-            // Sidebar Content
+            // Swap Sidebar Content
             document.querySelectorAll('.side-content').forEach(s => s.classList.add('hidden'));
             document.getElementById('side-'+room).classList.remove('hidden');
 
-            // Soundscape Management
-            audH.pause(); audG.pause(); vidS.pause();
-            if(room === 'hearth') { audH.play(); createParticles('#ff6a00', 25); }
-            if(room === 'garden') { audG.play(); createParticles('#a2d5ab', 15); }
+            // Audio & Particle Logic
+            audH.pause(); audG.pause(); vidS.pause(); pLayer.innerHTML = '';
+            
+            if(room === 'hearth') { 
+                audH.play(); 
+                spawnHearthEmbers(); 
+            }
+            if(room === 'garden') { 
+                audG.play(); 
+                spawnGardenFlora(); 
+            }
             if(room === 'scholar') { 
-                vidS.muted = false; 
-                vidS.play(); 
-                createParticles('rgba(255,255,255,0.2)', 40); 
+                vidS.muted = false; vidS.play(); 
+                spawnTowerDust(); 
+            }
+        }
+
+        // --- MAGICAL PARTICLE ENGINE ---
+        function spawnHearthEmbers() {
+            for(let i=0; i<30; i++) {
+                let p = document.createElement('div'); p.className = 'ember';
+                p.style.left = Math.random() * 100 + '%';
+                let s = Math.random() * 3 + 2 + 'px'; p.style.width = s; p.style.height = s;
+                p.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                p.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+                pLayer.appendChild(p);
+            }
+        }
+
+        function spawnTowerDust() {
+            for(let i=0; i<40; i++) {
+                let p = document.createElement('div'); p.className = 'dust';
+                p.style.left = Math.random() * 100 + '%';
+                let s = Math.random() * 3 + 1 + 'px'; p.style.width = s; p.style.height = s;
+                p.style.animationDuration = (Math.random() * 10 + 6) + 's';
+                p.style.setProperty('--drift', (Math.random() * 60 - 30) + 'px');
+                pLayer.appendChild(p);
+            }
+        }
+
+        function spawnGardenFlora() {
+            // Fast Rain Drips
+            for(let i=0; i<25; i++) {
+                let p = document.createElement('div'); p.className = 'drip';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.height = (Math.random() * 20 + 10) + 'px';
+                p.style.animationDuration = (Math.random() * 1.5 + 0.5) + 's';
+                p.style.animationDelay = (Math.random() * 2) + 's';
+                pLayer.appendChild(p);
+            }
+            // Drifting Petals
+            for(let i=0; i<15; i++) {
+                let p = document.createElement('div'); p.className = 'petal';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (Math.random() * 8 + 6) + 's';
+                p.style.animationDelay = (Math.random() * 5) + 's';
+                p.style.setProperty('--drift', (Math.random() * 200 - 100) + 'px');
+                p.style.setProperty('--spin', (Math.random() * 360) + 'deg');
+                pLayer.appendChild(p);
             }
         }
 
@@ -192,19 +262,15 @@
         function startFocusTimer(minutes) {
             let seconds = minutes * 60;
             clearInterval(timerInstance);
-            
-            // ZEN MODE TRIGGER
-            document.getElementById('main-sidebar').classList.remove('open');
+            document.getElementById('main-sidebar').classList.remove('open'); // Zen Trigger
 
             timerInstance = setInterval(() => {
                 seconds--;
-                let m = Math.floor(seconds/60);
-                let s = seconds%60;
+                let m = Math.floor(seconds/60); let s = seconds%60;
                 document.getElementById('timer-display').innerText = `${m}:${s.toString().padStart(2,'0')}`;
                 if(seconds <= 0) {
                     clearInterval(timerInstance);
                     document.getElementById('timer-display').innerText = "RESTORED";
-                    new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg').play(); // Soft notification
                     document.getElementById('main-sidebar').classList.add('open');
                 }
             }, 1000);
@@ -218,8 +284,7 @@
         // --- DATA PERSISTENCE ---
         function updateMood(mood, el) {
             document.querySelectorAll('.mood-icons span').forEach(s => s.classList.remove('selected'));
-            el.classList.add('selected');
-            localStorage.setItem('hub-mood', mood);
+            el.classList.add('selected'); localStorage.setItem('hub-mood', mood);
         }
 
         function saveVitals() {
@@ -243,10 +308,8 @@
             const val = document.getElementById('reagent-input').value;
             if(!val) return;
             const r = JSON.parse(localStorage.getItem('hub-reagents') || '[]');
-            r.push(val);
-            localStorage.setItem('hub-reagents', JSON.stringify(r));
-            document.getElementById('reagent-input').value = '';
-            renderReagents();
+            r.push(val); localStorage.setItem('hub-reagents', JSON.stringify(r));
+            document.getElementById('reagent-input').value = ''; renderReagents();
         }
 
         function renderReagents() {
@@ -258,9 +321,7 @@
 
         function removeReagent(i) {
             const r = JSON.parse(localStorage.getItem('hub-reagents') || '[]');
-            r.splice(i, 1);
-            localStorage.setItem('hub-reagents', JSON.stringify(r));
-            renderReagents();
+            r.splice(i, 1); localStorage.setItem('hub-reagents', JSON.stringify(r)); renderReagents();
         }
 
         function logJournal() {
@@ -269,42 +330,21 @@
             const j = JSON.parse(localStorage.getItem('hub-journal') || '[]');
             j.unshift({time: new Date().toLocaleString(), text: note});
             localStorage.setItem('hub-journal', JSON.stringify(j));
-            document.getElementById('work-note').value = '';
-            loadJournal();
+            document.getElementById('work-note').value = ''; loadJournal();
         }
 
         function loadJournal() {
             const j = JSON.parse(localStorage.getItem('hub-journal') || '[]');
             document.getElementById('journal-preview').innerHTML = j.slice(0, 5).map(entry => 
-                `<div style="border-bottom:1px solid rgba(212,175,55,0.1); padding:8px 0;"><small>${entry.time}</small><br>${entry.text}</div>`
+                `<div style="border-bottom:1px solid rgba(212,175,55,0.1); padding:8px 0; margin-bottom:5px;"><small style="color:var(--gold); font-size:0.7rem;">${entry.time}</small><br>${entry.text}</div>`
             ).join('');
-        }
-
-        // --- DECORATIVE ENGINE ---
-        function createParticles(color, count) {
-            const layer = document.getElementById('particle-layer');
-            layer.innerHTML = '';
-            for(let i=0; i<count; i++) {
-                let p = document.createElement('div');
-                p.className = 'particle';
-                p.style.left = Math.random() * 100 + '%';
-                let size = Math.random() * 3 + 1 + 'px';
-                p.style.width = size; p.style.height = size;
-                p.style.background = color;
-                p.style.boxShadow = `0 0 10px ${color}`;
-                p.style.animationDuration = (Math.random() * 8 + 4) + 's';
-                p.style.setProperty('--drift', (Math.random() * 120 - 60) + 'px');
-                layer.appendChild(p);
-            }
         }
 
         function renderCalendar() {
             const container = document.getElementById('calendar-body');
             const now = new Date();
             for(let i=1; i<=31; i++) {
-                let d = document.createElement('div');
-                d.className = 'day-num';
-                d.innerText = i;
+                let d = document.createElement('div'); d.className = 'day-num'; d.innerText = i;
                 if(i === now.getDate()) d.classList.add('today');
                 container.appendChild(d);
             }
@@ -318,10 +358,7 @@
             }
             const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'sovereign_hub_data.json';
-            a.click();
+            const a = document.createElement('a'); a.href = url; a.download = 'sovereign_hub_data.json'; a.click();
         }
     </script>
 </body>
