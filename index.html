@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moon's Hearth - Master Provisioner's Hub</title>
+<title>Moon's Hearth - Active Endeavors</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -39,38 +39,28 @@
     }
     .enter-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 50px var(--gold); }
 
-    /* --- Background & Flickering --- */
+    /* --- Atmosphere --- */
     .bg-layer {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: url('image_5.png') no-repeat center center;
         background-size: cover; z-index: 0;
         animation: flicker 12s infinite alternate ease-in-out;
     }
-    @keyframes flicker {
-        0% { filter: brightness(0.7) contrast(1.1); }
-        100% { filter: brightness(1) contrast(1.2); }
-    }
+    @keyframes flicker { 0% { filter: brightness(0.7) contrast(1.1); } 100% { filter: brightness(1) contrast(1.2); } }
     .vignette {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.95) 100%);
         z-index: 1; pointer-events: none;
     }
 
-    /* --- THE FLOATING EMBERS --- */
-    #particles { 
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-        z-index: 2; pointer-events: none; overflow: hidden;
-    }
+    /* --- Embers --- */
+    #particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; overflow: hidden; }
     .ember {
         position: absolute; bottom: -20px; background: var(--fire); border-radius: 50%;
         box-shadow: 0 0 10px var(--fire), 0 0 20px var(--fire-glow);
         opacity: 0; animation: rise linear infinite;
     }
-    @keyframes rise {
-        0% { opacity: 0; transform: translateY(0) scale(1); }
-        20% { opacity: 0.9; }
-        100% { opacity: 0; transform: translateY(-110vh) scale(0.2) translateX(var(--drift)); }
-    }
+    @keyframes rise { 0% { opacity: 0; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-110vh) translateX(var(--drift)); } }
 
     /* --- Dashboard UI --- */
     .ui-container {
@@ -79,36 +69,28 @@
     }
     .glass-panel {
         background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-        border: 1px solid var(--gold-glow); padding: 25px;
+        border: 1px solid var(--gold-glow); padding: 22px;
         box-shadow: 0 25px 70px #000;
     }
-    .panel-header { text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px; }
-    .panel-header h1 { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); margin: 0; letter-spacing: 2px; }
+    .panel-header { text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 8px; margin-bottom: 12px; }
+    .panel-header h1 { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--gold); margin: 0; letter-spacing: 2px; }
 
     /* --- Almanac --- */
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-family: 'Cinzel'; font-size: 0.7rem; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-family: 'Cinzel'; font-size: 0.7rem; }
     .day-num { padding: 6px; border: 1px solid rgba(212, 175, 55, 0.1); cursor: pointer; transition: 0.3s; }
     .day-num.today { background: var(--gold); color: #000; font-weight: bold; }
     .day-num.has-log { border-color: var(--gold); color: var(--gold); }
 
-    /* --- Reagent List (Grocery) --- */
-    .reagent-input-box { display: flex; gap: 10px; margin-bottom: 10px; }
-    input[type="text"] {
-        flex-grow: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--gold-glow);
-        color: var(--text); font-family: 'Cormorant Garamond'; padding: 8px; outline: none;
-    }
-    .reagent-list { max-height: 140px; overflow-y: auto; text-align: left; }
-    .reagent-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
-    .reagent-name { cursor: pointer; font-size: 1.1rem; }
-    .reagent-name.checked { text-decoration: line-through; opacity: 0.5; }
+    /* --- ACTIVE ENDEAVORS --- */
+    .manifest-body { font-size: 1.1rem; line-height: 1.4; color: var(--parchment); font-style: italic; max-height: 100px; overflow-y: auto; text-align: left; }
+    .empty-msg { opacity: 0.4; font-size: 0.9rem; text-align: center; }
 
-    /* --- Chronomancy (Export/Import) --- */
-    .data-tools { display: flex; justify-content: space-around; gap: 10px; }
-    .data-btn {
-        background: transparent; border: 1px solid var(--gold-glow); color: var(--gold);
-        font-family: 'Cinzel'; font-size: 0.6rem; padding: 6px 12px; cursor: pointer; transition: 0.3s;
-    }
-    .data-btn:hover { background: var(--gold); color: #000; }
+    /* --- Reagent List --- */
+    .reagent-input-box { display: flex; gap: 8px; margin-bottom: 10px; }
+    input[type="text"] { flex-grow: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--gold-glow); color: var(--text); padding: 6px; outline: none; }
+    .reagent-list { max-height: 120px; overflow-y: auto; text-align: left; }
+    .reagent-item { display: flex; justify-content: space-between; padding: 6px; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
+    .reagent-name.checked { text-decoration: line-through; opacity: 0.5; }
 
     /* --- Modal --- */
     #log-modal {
@@ -121,13 +103,14 @@
         padding: 40px; border: 2px solid #8b5a2b; border-radius: 5px 40px 5px 40px; position: relative;
     }
     textarea { width: 100%; height: 120px; background: transparent; border: none; border-bottom: 1px solid #8b5a2b; font-size: 1.2rem; margin-top: 15px; outline: none; resize: none; }
-
+    .data-btn { background: transparent; border: 1px solid var(--gold-glow); color: var(--gold); font-family: 'Cinzel'; font-size: 0.6rem; padding: 5px 12px; cursor: pointer; transition: 0.3s; }
+    .data-btn:hover { background: var(--gold); color: #000; }
 </style>
 </head>
 <body>
 
     <div id="enter-overlay">
-        <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:10px; margin-bottom:30px; text-shadow: 0 0 15px var(--gold-glow);">MOON'S HEARTH</h2>
+        <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:10px; margin-bottom:30px;">MOON'S HEARTH</h2>
         <button class="enter-btn" onclick="igniteHearth()">Enter the Hearth</button>
     </div>
 
@@ -137,6 +120,13 @@
     <audio id="hearth-audio" loop><source src="fire.mp3" type="audio/mpeg"></audio>
 
     <div class="ui-container">
+        <div class="glass-panel" id="today-panel">
+            <div class="panel-header"><h1>Active Endeavors</h1></div>
+            <div id="manifest-content" class="manifest-body">
+                <p class="empty-msg">No current missives from the guild. Consult the Almanac.</p>
+            </div>
+        </div>
+
         <div class="glass-panel">
             <div class="panel-header">
                 <h1 id="current-month">The Almanac</h1>
@@ -148,15 +138,14 @@
         <div class="glass-panel">
             <div class="panel-header"><h1>Master's Reagent List</h1></div>
             <div class="reagent-input-box">
-                <input type="text" id="reagent-input" placeholder="New reagent (e.g. Mixed Beans)...">
-                <button class="data-btn" onclick="addReagent()" style="font-size: 0.8rem;">Add</button>
+                <input type="text" id="reagent-input" placeholder="Acquire new reagents...">
+                <button class="data-btn" onclick="addReagent()">Acquire</button>
             </div>
             <div class="reagent-list" id="reagent-display"></div>
         </div>
 
         <div class="glass-panel">
-            <div class="panel-header"><h1>Chronomancy</h1></div>
-            <div class="data-tools">
+            <div class="data-tools" style="display:flex; justify-content:space-around;">
                 <button class="data-btn" onclick="exportData()">Export Scroll</button>
                 <button class="data-btn" onclick="document.getElementById('import-file').click()">Import Scroll</button>
                 <input type="file" id="import-file" style="display:none" onchange="importData(event)">
@@ -167,9 +156,9 @@
     <div id="log-modal" onclick="closeLog()">
         <div class="scroll-parchment" onclick="event.stopPropagation()">
             <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem;" onclick="closeLog()">×</span>
-            <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center; border-bottom: 1px solid #8b5a2b;"></h2>
-            <textarea id="log-entry" placeholder="Log your daily provisions or lessons..."></textarea>
-            <button class="data-btn" onclick="saveLog()" style="width:100%; margin-top:15px; padding:10px;">Record Entry</button>
+            <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center;"></h2>
+            <textarea id="log-entry" placeholder="Record provisions, study sessions, or travel routes..."></textarea>
+            <button class="data-btn" onclick="saveLog()" style="width:100%; margin-top:15px; padding:10px; font-size:1rem;">Finalize Record</button>
         </div>
     </div>
 
@@ -181,19 +170,27 @@
             document.getElementById('enter-overlay').style.opacity = '0';
             setTimeout(() => { document.getElementById('enter-overlay').style.display = 'none'; }, 1000);
             audio.volume = 0.5; audio.play();
-            renderCalendar(); renderReagents();
-            createEmbers(); // Kickstart the animations!
+            renderCalendar(); renderReagents(); updateTodayManifest(); createEmbers();
         }
 
-        /* --- Ember Engine --- */
+        function updateTodayManifest() {
+            const now = new Date();
+            const key = `log-${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+            const content = localStorage.getItem(key);
+            const display = document.getElementById('manifest-content');
+            if(content) {
+                display.innerHTML = `<p>✦ ${content.replace(/\n/g, '<br>✦ ')}</p>`;
+            } else {
+                display.innerHTML = `<p class="empty-msg">The Provisioner is currently at rest.</p>`;
+            }
+        }
+
         function createEmbers() {
             const pCont = document.getElementById('particles');
-            for(let i=0; i<60; i++) {
-                let e = document.createElement('div');
-                e.className = 'ember';
+            for(let i=0; i<50; i++) {
+                let e = document.createElement('div'); e.className = 'ember';
                 e.style.left = Math.random() * 100 + '%';
-                let s = (Math.random() * 4 + 2) + 'px';
-                e.style.width = s; e.style.height = s;
+                let s = (Math.random() * 3 + 2) + 'px'; e.style.width = s; e.style.height = s;
                 e.style.animationDuration = (Math.random() * 5 + 4) + 's';
                 e.style.animationDelay = (Math.random() * 5) + 's';
                 e.style.setProperty('--drift', (Math.random() - 0.5) * 150 + 'px');
@@ -201,7 +198,6 @@
             }
         }
 
-        /* --- Almanac Logic --- */
         function renderCalendar() {
             const now = new Date();
             const monthNames = ["Morning Star", "Sun's Dawn", "First Seed", "Rain's Hand", "Second Seed", "Midyear", "Sun's Height", "Last Seed", "Hearthfire", "Frostfall", "Sun's Dusk", "Evening Star"];
@@ -227,7 +223,7 @@
 
         function openLog(day, key) {
             selectedDate = key;
-            document.getElementById('log-date-title').innerText = `Day ${day} Entry`;
+            document.getElementById('log-date-title').innerText = `Record for Day ${day}`;
             document.getElementById('log-entry').value = localStorage.getItem(key) || '';
             const m = document.getElementById('log-modal');
             m.style.display = 'flex'; setTimeout(() => { m.style.opacity = '1'; }, 10);
@@ -237,7 +233,7 @@
             const val = document.getElementById('log-entry').value;
             if(!val.trim()) localStorage.removeItem(selectedDate);
             else localStorage.setItem(selectedDate, val);
-            closeLog(); renderCalendar();
+            closeLog(); renderCalendar(); updateTodayManifest();
         }
 
         function closeLog() {
@@ -245,7 +241,6 @@
             m.style.opacity = '0'; setTimeout(() => { m.style.display = 'none'; }, 500);
         }
 
-        /* --- Reagent Logic --- */
         function addReagent() {
             const input = document.getElementById('reagent-input');
             const val = input.value.trim();
@@ -261,11 +256,10 @@
             const items = JSON.parse(localStorage.getItem('reagents') || '[]');
             display.innerHTML = '';
             items.forEach((it, idx) => {
-                display.innerHTML += `
-                    <div class="reagent-item">
-                        <span class="reagent-name ${it.checked ? 'checked' : ''}" onclick="toggleReagent(${idx})">✦ ${it.name}</span>
-                        <span style="color:#8a3324; cursor:pointer; font-weight:bold;" onclick="removeReagent(${idx})">X</span>
-                    </div>`;
+                display.innerHTML += `<div class="reagent-item">
+                    <span class="reagent-name ${it.checked ? 'checked' : ''}" onclick="toggleReagent(${idx})">✦ ${it.name}</span>
+                    <span style="color:#8a3324; cursor:pointer;" onclick="removeReagent(${idx})">X</span>
+                </div>`;
             });
         }
 
@@ -283,7 +277,6 @@
             renderReagents();
         }
 
-        /* --- Chronomancy (Export/Import) --- */
         function exportData() {
             const data = {};
             for (let i = 0; i < localStorage.length; i++) {
@@ -302,8 +295,8 @@
             reader.onload = (ev) => {
                 const data = JSON.parse(ev.target.result);
                 for(const k in data) localStorage.setItem(k, data[k]);
-                renderCalendar(); renderReagents();
-                alert("The Scroll has been integrated.");
+                renderCalendar(); renderReagents(); updateTodayManifest();
+                alert("The Scroll has been integrated into the Hearth.");
             };
             reader.readAsText(file);
         }
