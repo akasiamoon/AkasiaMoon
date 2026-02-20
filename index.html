@@ -53,7 +53,7 @@
     .glass-panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--gold-glow); padding: 20px; box-shadow: 0 15px 35px #000; }
 
     /* --- SCHOLAR TOWER --- */
-    #scholar-video-bg { width: 100%; height: 100%; object-fit: cover; z-index: 20; position: absolute; transition: opacity 0.8s ease; }
+    #scholar-video-bg { width: 100%; height: 100%; object-fit: cover; z-index: 20; position: absolute; opacity: 1; }
     #dust-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 21; pointer-events: none; overflow: hidden; }
     .dust-mote { position: absolute; background: rgba(255, 230, 180, 0.4); border-radius: 50%; animation: floatDust linear infinite; }
     @keyframes floatDust { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.8; } 100% { opacity: 0; transform: translateY(-40vh) translateX(30px); } }
@@ -111,7 +111,6 @@
                 <div class="panel-header"><h1>Reagent List</h1></div>
                 <div style="display:flex; gap:8px;"><input type="text" id="reagent-input" class="scholar-input" placeholder="Add ingredient..."><button class="data-btn" onclick="addReagent()">Add</button></div>
                 <div id="reagent-display" style="margin-top:10px; max-height:100px; overflow-y:auto; margin-bottom:15px;"></div>
-                
                 <div style="border-top: 1px solid var(--gold-glow); padding-top:15px; display:flex; justify-content:space-around;">
                     <button class="data-btn" style="font-size:0.7rem;" onclick="exportData()">Export Scroll</button>
                     <button class="data-btn" style="font-size:0.7rem;" onclick="document.getElementById('import-file').click()">Import Scroll</button>
@@ -144,15 +143,6 @@
         </div>
     </div>
 
-    <div id="log-modal" onclick="closeLog()">
-        <div class="scroll-parchment" onclick="event.stopPropagation()">
-            <span style="position:absolute; top:10px; right:15px; cursor:pointer;" onclick="closeLog()">×</span>
-            <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center;"></h2>
-            <textarea id="log-entry" style="width:100%; height:150px; background:rgba(0,0,0,0.05); border:1px solid #8b5a2b; padding:10px; font-family:serif;"></textarea>
-            <button class="data-btn" onclick="saveLog()" style="width:100%; margin-top:15px; color:#000; background:var(--gold);">Save Record</button>
-        </div>
-    </div>
-
     <script>
         let currentRoom = 'hearth'; let timerInterval; let secondsRemaining = 0; let selectedDate = '';
         const ah = document.getElementById('audio-hearth');
@@ -174,26 +164,17 @@
             document.getElementById('hearth-layer').classList.toggle('hidden', room !== 'hearth');
             document.getElementById('scholar-layer').classList.toggle('hidden', room !== 'scholar');
             if(room === 'scholar') { 
-                ah.pause(); sv.muted = false; sv.currentTime = 0; sv.play(); 
+                ah.pause(); sv.muted = false; sv.volume = 0.4; sv.play(); 
             } else { 
                 sv.pause(); ah.play(); 
             }
         }
 
-        // --- SEAMLESS VIDEO PULSE LOGIC ---
-        sv.ontimeupdate = function() {
-            let timeLeft = sv.duration - sv.currentTime;
-            let fadeTime = 0.8; // Duration of the crossfade in seconds
-            if (timeLeft > 0 && timeLeft < fadeTime) {
-                sv.style.opacity = timeLeft / fadeTime;
-                if (sv.volume > 0.05) sv.volume -= 0.05;
-            } else if (sv.currentTime < fadeTime) {
-                sv.style.opacity = sv.currentTime / fadeTime;
-                if (sv.volume < 0.4) sv.volume += 0.05;
-            } else {
-                sv.style.opacity = 1; sv.volume = 0.4;
-            }
-        };
+        // --- STABLE LOOP LOGIC (No Fading) ---
+        sv.addEventListener('ended', function() {
+            this.currentTime = 0;
+            this.play();
+        }, false);
 
         async function fetchWeather() {
             try {
