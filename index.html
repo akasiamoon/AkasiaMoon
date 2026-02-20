@@ -22,7 +22,7 @@
         overflow: hidden; cursor: crosshair;
     }
 
-    /* --- Cinematic Entrance --- */
+    /* --- Cinematic Entrance (The Audio Key) --- */
     #enter-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(circle, #1a120e 0%, #000 100%);
@@ -66,14 +66,14 @@
         100% { opacity: 0; transform: translateY(-100vh) scale(0.3) translateX(var(--drift)); }
     }
 
-    /* --- Epic UI: Side Grimoire --- */
+    /* --- The Sidebar Grimoire --- */
     .grimoire-panel {
         position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
         width: 420px; max-height: 80vh; z-index: 10;
         background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         border: 1px solid var(--gold-glow); border-radius: 4px;
         padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.9);
-        display: flex; flex-direction: column; transition: 0.5s ease;
+        display: flex; flex-direction: column;
     }
     .grimoire-header {
         text-align: center; border-bottom: 1px solid var(--gold);
@@ -97,23 +97,8 @@
         background: rgba(212, 175, 55, 0.12); border-left: 2px solid var(--gold);
         transform: translateX(10px);
     }
-    .recipe-card h4 {
-        font-family: 'Cinzel', serif; font-size: 1.4rem; margin: 0;
-        color: var(--text); letter-spacing: 1px;
-    }
-    .recipe-card p {
-        font-size: 1.1rem; font-style: italic; color: var(--parchment);
-        margin: 10px 0 0 0; opacity: 0.8; line-height: 1.4;
-    }
-
-    /* --- Audio Controls (Visual) --- */
-    .audio-toggle {
-        position: absolute; bottom: 40px; left: 40px; z-index: 20;
-        background: var(--glass); border: 1px solid var(--gold-glow);
-        color: var(--gold); padding: 10px 20px; font-family: 'Cinzel', serif;
-        cursor: pointer; letter-spacing: 2px; transition: 0.3s;
-    }
-    .audio-toggle:hover { border-color: var(--gold); box-shadow: 0 0 15px var(--gold-glow); }
+    .recipe-card h4 { font-family: 'Cinzel', serif; font-size: 1.4rem; margin: 0; color: var(--text); }
+    .recipe-card p { font-size: 1.1rem; font-style: italic; color: var(--parchment); margin: 10px 0 0 0; opacity: 0.8; }
 
 </style>
 </head>
@@ -129,37 +114,33 @@
     <div id="particles"></div>
 
     <audio id="hearth-audio" loop>
-        <source src="http://googleusercontent.com/file_content/6" type="audio/mpeg">
+        <source src="fire.mp3" type="audio/mpeg">
     </audio>
 
     <div class="grimoire-panel">
         <div class="grimoire-header">
             <h1>The Grimoire</h1>
-            <p style="font-family:'Cinzel'; font-size:0.8rem; letter-spacing:4px; color:var(--gold); margin-top:5px;">Provisioner Master Class</p>
+            <p style="font-family:'Cinzel'; font-size:0.8rem; letter-spacing:4px; color:var(--gold); margin-top:5px;">Provisions & Magic</p>
         </div>
         <div class="recipe-list">
             <div class="recipe-card">
-                <h4>Winter-Breaker Soup</h4>
-                <p>A thick, restorative root broth designed to sustain the soul through the deepest Adamsville ice storms.</p>
+                <h4>WINTER-BREAKER SOUP</h4>
+                <p>A thick, restorative root broth designed for the deepest Adamsville ice storms.</p>
             </div>
             <div class="recipe-card">
-                <h4>Scholar's Lemon Loaf</h4>
-                <p>Infused with citrus for mental focus; the ultimate reagent for long homeschooling sessions.</p>
+                <h4>SCHOLAR'S LEMON LOAF</h4>
+                <p>Mental focus for homeschooling sessions with Tripp and Phoebe.</p>
             </div>
             <div class="recipe-card">
-                <h4>Dasher's Hand-Pies</h4>
-                <p>Crispy skillet pastries for the traveling guildsman between delivery quests.</p>
+                <h4>DASHER'S HAND-PIES</h4>
+                <p>Quick skillet pastries for a provision break between delivery quests.</p>
             </div>
         </div>
     </div>
 
-    <button class="audio-toggle" id="toggle-btn" onclick="toggleAudio()">Extinguish Fire</button>
-
     <script>
         const audio = document.getElementById('hearth-audio');
         const overlay = document.getElementById('enter-overlay');
-        const toggleBtn = document.getElementById('toggle-btn');
-        let isPlaying = false;
 
         function igniteHearth() {
             // Smoothly remove overlay
@@ -168,20 +149,9 @@
             
             // Activate Audio (Browser allows this because of the click)
             audio.volume = 0.6;
-            audio.play().then(() => {
-                isPlaying = true;
-            }).catch(err => console.log("Audio failed to ignite: ", err));
-        }
-
-        function toggleAudio() {
-            if (isPlaying) {
-                audio.pause();
-                toggleBtn.innerText = "Ignite Fire";
-            } else {
-                audio.play();
-                toggleBtn.innerText = "Extinguish Fire";
-            }
-            isPlaying = !isPlaying;
+            audio.play().catch(err => {
+                console.log("Audio failed to ignite. Check your fire.mp3 file.");
+            });
         }
 
         // --- Ember Particle Engine ---
