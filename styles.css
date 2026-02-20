@@ -6,13 +6,13 @@
 }
 
 body {
-    background-color: #05020a; /* Darker, richer void */
+    background-color: #05020a;
     background-image: radial-gradient(circle at center, #1f0b3b, #05020a 100%);
     color: #e0d8ea;
     font-family: 'Georgia', serif; 
     min-height: 100vh;
     overflow-x: hidden;
-    perspective: 1000px; /* Enables 3D space */
+    perspective: 1000px;
 }
 
 /* Canvas Overlay */
@@ -49,7 +49,6 @@ body {
     letter-spacing: 5px;
     text-shadow: 0 0 10px #ffaa00, 0 0 20px #ff00aa, 0 0 40px #8b00ff;
     margin-bottom: 1rem;
-    position: relative;
 }
 
 .subtitle {
@@ -99,8 +98,14 @@ body {
     border-color: #00ffff;
 }
 
-/* 3D Glassmorphism Grimoire Card */
-.tilt-card {
+.epic-btn.active-tab {
+    background: rgba(255, 0, 170, 0.2);
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+/* 3D Glassmorphism Cards (Sections) */
+.card {
     background: rgba(30, 15, 50, 0.4);
     border: 2px solid rgba(0, 255, 255, 0.3);
     border-radius: 15px;
@@ -109,23 +114,68 @@ body {
     box-shadow: 0 25px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(255, 0, 170, 0.2);
     transform-style: preserve-3d;
     transition: transform 0.1s ease-out;
-    display: none;
+    display: none; /* Hidden by default */
 }
 
 .card.active {
-    display: block;
-    animation: floatIn 1s ease-out;
+    display: block; /* Shows only the active tab */
+    animation: floatIn 0.8s ease-out;
 }
 
 .card-content {
-    transform: translateZ(50px); /* Pushes text out in 3D */
+    transform: translateZ(50px);
 }
 
 .pulse-text {
     color: #00ffff;
     font-size: 2.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
     text-shadow: 0 0 15px #00ffff;
+}
+
+/* Recipe Grid Layout */
+.recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Individual Recipe Cards */
+.recipe-card {
+    background: rgba(10, 5, 20, 0.6);
+    border: 1px solid #8b00ff;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.recipe-card:hover {
+    transform: translateY(-10px) translateZ(20px);
+    border-color: #ffd700;
+    box-shadow: 0 15px 30px rgba(255, 215, 0, 0.2), inset 0 0 15px rgba(255, 215, 0, 0.1);
+}
+
+.recipe-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+.recipe-card h3 {
+    color: #ffaa00;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+}
+
+.recipe-card p {
+    color: #c0b8d0;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
 /* Animations */
@@ -135,8 +185,8 @@ body {
 }
 
 @keyframes floatIn {
-    0% { opacity: 0; transform: translateY(30px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes pulse {
