@@ -58,6 +58,16 @@
     .dust-mote { position: absolute; background: rgba(255, 230, 180, 0.4); border-radius: 50%; animation: floatDust linear infinite; }
     @keyframes floatDust { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.8; } 100% { opacity: 0; transform: translateY(-40vh) translateX(30px); } }
 
+    /* Subject Hotspots */
+    .scholar-click-layer { z-index: 25; }
+    .click-zone { position: absolute; cursor: pointer; transition: 0.3s; border-radius: 5px; }
+    .click-zone:hover { box-shadow: inset 0 0 30px var(--gold-glow), 0 0 15px var(--gold-glow); background: rgba(212,175,55,0.1); }
+    #zone-lore { top: 58%; left: 5%; width: 18%; height: 25%; } 
+    #zone-bard { top: 63%; right: 5%; width: 15%; height: 20%; } 
+    #zone-art { top: 20%; left: 2%; width: 12%; height: 15%; } 
+    #zone-survival { top: 55%; left: 53%; width: 10%; height: 20%; } 
+    #zone-merchant { top: 75%; left: 68%; width: 25%; height: 15%; } 
+
     /* --- DESK UI --- */
     .desk-ui-container { position: absolute; right: -450px; top: 50%; transform: translateY(-50%); width: 380px; z-index: 26; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
     .desk-ui-container.open { right: 40px; } 
@@ -66,16 +76,17 @@
     #timer-display { font-family: 'Cinzel'; font-size: 2.2rem; color: var(--gold); text-align: center; margin: 10px 0; }
     .blog-container { max-height: 250px; overflow-y: auto; margin-top: 10px; }
 
-    /* Typography */
+    /* Typography & Calendar */
     .panel-header h1 { font-family: 'Cinzel'; font-size: 1.1rem; color: var(--gold); text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 5px; margin-bottom: 15px; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.7rem; font-family: 'Cinzel'; }
     .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; }
     .day-num.today { background: var(--gold); color: #000; }
     .day-num.has-log { border-color: var(--gold); color: var(--gold); }
 
-    /* Modal */
-    #log-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
-    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 85%; max-width: 450px; padding: 40px; border-radius: 5px 30px; position: relative; }
+    /* Modals & Grimoire Pages */
+    #log-modal, #grimoire-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
+    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 85%; max-width: 500px; padding: 50px; border-radius: 5px 40px; position: relative; box-shadow: 0 0 50px #000; border: 2px solid #8b5a2b; }
+    .grimoire-content { font-family: 'Cormorant Garamond'; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -125,6 +136,15 @@
             <source src="scholar_bg.mp4" type="video/mp4">
         </video>
         <div id="dust-container"></div>
+        
+        <div class="scholar-click-layer layer-container">
+            <div id="zone-lore" class="click-zone" onclick="openGrimoire('Global Mythos')" title="Global Mythos"></div>
+            <div id="zone-bard" class="click-zone" onclick="openGrimoire('Bardic Arts')" title="Bardic Arts"></div>
+            <div id="zone-art" class="click-zone" onclick="openGrimoire('Visual Design')" title="Visual Design"></div>
+            <div id="zone-survival" class="click-zone" onclick="openGrimoire('Hearth Resilience')" title="Hearth Resilience"></div>
+            <div id="zone-merchant" class="click-zone" onclick="openGrimoire('Guild Logic')" title="Guild Logic"></div>
+        </div>
+
         <button id="desk-toggle-btn" class="portal-btn ui-toggle-btn" onclick="toggleDeskUI()">Open Desk</button>
         <div id="desk-ui" class="desk-ui-container">
             <div class="desk-panel">
@@ -139,6 +159,25 @@
             <div class="desk-panel" style="margin-top:10px;">
                 <h3 style="font-family:'Cinzel'; color:var(--gold); font-size:0.9rem; text-align:center;">Master's Journal</h3>
                 <div id="blog-container" class="blog-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="log-modal" onclick="closeLog()">
+        <div class="scroll-parchment" onclick="event.stopPropagation()">
+            <span style="position:absolute; top:15px; right:20px; cursor:pointer;" onclick="closeLog()">×</span>
+            <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center; margin-bottom:20px;"></h2>
+            <textarea id="log-entry" style="width:100%; height:200px; background:rgba(0,0,0,0.05); border:1px solid #8b5a2b; padding:15px; font-family:serif; font-size:1.1rem; outline:none;"></textarea>
+            <button class="data-btn" onclick="saveLog()" style="width:100%; margin-top:20px; color:#000; background:var(--gold); padding:10px;">Finalize Record</button>
+        </div>
+    </div>
+
+    <div id="grimoire-modal" onclick="closeGrimoire()">
+        <div class="scroll-parchment" onclick="event.stopPropagation()">
+            <span style="position:absolute; top:15px; right:20px; cursor:pointer;" onclick="closeGrimoire()">×</span>
+            <h2 id="grimoire-title" style="font-family:'Cinzel'; text-align:center; margin-bottom:20px; border-bottom: 1px solid #8b5a2b; padding-bottom:10px;"></h2>
+            <div id="grimoire-content" class="grimoire-content">
+                <p>Knowledge is currently being scribed by the master...</p>
             </div>
         </div>
     </div>
@@ -163,18 +202,8 @@
             document.getElementById('btn-scholar').classList.toggle('active', room === 'scholar');
             document.getElementById('hearth-layer').classList.toggle('hidden', room !== 'hearth');
             document.getElementById('scholar-layer').classList.toggle('hidden', room !== 'scholar');
-            if(room === 'scholar') { 
-                ah.pause(); sv.muted = false; sv.volume = 0.4; sv.play(); 
-            } else { 
-                sv.pause(); ah.play(); 
-            }
+            if(room === 'scholar') { ah.pause(); sv.muted = false; sv.volume = 0.4; sv.play(); } else { sv.pause(); ah.play(); }
         }
-
-        // --- STABLE LOOP LOGIC (No Fading) ---
-        sv.addEventListener('ended', function() {
-            this.currentTime = 0;
-            this.play();
-        }, false);
 
         async function fetchWeather() {
             try {
@@ -189,6 +218,17 @@
         }
 
         function toggleDeskUI() { document.getElementById('desk-ui').classList.toggle('open'); }
+        
+        function openGrimoire(subject) {
+            document.getElementById('grimoire-title').innerText = subject;
+            document.getElementById('grimoire-modal').style.display = 'flex';
+            setTimeout(() => document.getElementById('grimoire-modal').style.opacity = '1', 10);
+        }
+        function closeGrimoire() { 
+            document.getElementById('grimoire-modal').style.opacity = '0';
+            setTimeout(() => document.getElementById('grimoire-modal').style.display = 'none', 500);
+        }
+
         function createEmbers() { const p = document.getElementById('embers-container'); p.innerHTML = ''; for(let i=0; i<25; i++) { let e = document.createElement('div'); e.className = 'ember'; e.style.left = Math.random()*100+'%'; e.style.animationDuration = (Math.random()*5+4)+'s'; e.style.setProperty('--drift', (Math.random()*100 - 50)+'px'); p.appendChild(e); } }
         function createDust() { const p = document.getElementById('dust-container'); p.innerHTML = ''; for(let i=0; i<80; i++) { let d = document.createElement('div'); d.className = 'dust-mote'; let s = Math.random()*3+1+'px'; d.style.width = s; d.style.height = s; d.style.left = Math.random()*100+'%'; d.style.top = Math.random()*100+'%'; d.style.animationDuration = (Math.random()*10+8)+'s'; p.appendChild(d); } }
         function renderCalendar() { const cb = document.getElementById('calendar-body'); cb.innerHTML = ''; const n = new Date(); for(let i=1; i<=31; i++) { let d = document.createElement('div'); d.className = 'day-num'; d.innerText = i; let k = `log-${n.getFullYear()}-${n.getMonth()}-${i}`; if(localStorage.getItem(k)) d.classList.add('has-log'); if(i === n.getDate()) d.classList.add('today'); d.onclick = () => openLog(i, k); cb.appendChild(d); } }
