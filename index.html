@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moon's Hearth - Master's Almanac & Manifest</title>
+<title>Moon's Hearth - Master Provisioner's Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
     :root {
         --gold: #d4af37;
         --gold-glow: rgba(212, 175, 55, 0.4);
         --fire: #ff6a00;
+        --fire-glow: rgba(255, 106, 0, 0.6);
         --glass: rgba(10, 8, 6, 0.85);
         --text: #fdf5e6;
         --parchment: #e3d5b8;
@@ -28,26 +29,26 @@
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(circle, #1a120e 0%, #000 100%);
         z-index: 1000; display: flex; flex-direction: column;
-        justify-content: center; align-items: center; transition: opacity 1s ease;
+        justify-content: center; align-items: center; transition: opacity 1.2s ease;
     }
     .enter-btn {
         font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--gold);
         background: rgba(0,0,0,0.5); border: 1px solid var(--gold); padding: 15px 45px;
         cursor: pointer; letter-spacing: 5px; transition: 0.4s;
-        box-shadow: 0 0 30px var(--gold-glow);
+        box-shadow: 0 0 30px var(--gold-glow); text-transform: uppercase;
     }
     .enter-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 50px var(--gold); }
 
-    /* --- Background & Flickering Animation --- */
+    /* --- Background & Flickering --- */
     .bg-layer {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: url('image_5.png') no-repeat center center;
         background-size: cover; z-index: 0;
-        animation: flicker 10s infinite alternate ease-in-out;
+        animation: flicker 12s infinite alternate ease-in-out;
     }
     @keyframes flicker {
         0% { filter: brightness(0.7) contrast(1.1); }
-        100% { filter: brightness(0.95) contrast(1.15); }
+        100% { filter: brightness(1) contrast(1.2); }
     }
     .vignette {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -55,16 +56,20 @@
         z-index: 1; pointer-events: none;
     }
 
-    /* --- Floating Ember Particles --- */
-    #particles { position: absolute; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+    /* --- THE FLOATING EMBERS --- */
+    #particles { 
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+        z-index: 2; pointer-events: none; overflow: hidden;
+    }
     .ember {
         position: absolute; bottom: -20px; background: var(--fire); border-radius: 50%;
-        box-shadow: 0 0 10px var(--fire); opacity: 0; animation: rise linear infinite;
+        box-shadow: 0 0 10px var(--fire), 0 0 20px var(--fire-glow);
+        opacity: 0; animation: rise linear infinite;
     }
     @keyframes rise {
         0% { opacity: 0; transform: translateY(0) scale(1); }
-        20% { opacity: 0.8; }
-        100% { opacity: 0; transform: translateY(-100vh) scale(0.3) translateX(var(--drift)); }
+        20% { opacity: 0.9; }
+        100% { opacity: 0; transform: translateY(-110vh) scale(0.2) translateX(var(--drift)); }
     }
 
     /* --- Dashboard UI --- */
@@ -73,43 +78,39 @@
         z-index: 10; display: flex; flex-direction: column; gap: 15px; width: 440px;
     }
     .glass-panel {
-        background: var(--glass); backdrop-filter: blur(25px);
+        background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
         border: 1px solid var(--gold-glow); padding: 25px;
         box-shadow: 0 25px 70px #000;
     }
     .panel-header { text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px; }
     .panel-header h1 { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); margin: 0; letter-spacing: 2px; }
 
-    /* --- Almanac Calendar --- */
+    /* --- Almanac --- */
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-family: 'Cinzel'; font-size: 0.7rem; }
     .day-num { padding: 6px; border: 1px solid rgba(212, 175, 55, 0.1); cursor: pointer; transition: 0.3s; }
-    .day-num:hover { background: rgba(212, 175, 55, 0.2); }
     .day-num.today { background: var(--gold); color: #000; font-weight: bold; }
     .day-num.has-log { border-color: var(--gold); color: var(--gold); }
 
-    /* --- Master's Reagent List (Grocery List) --- */
+    /* --- Reagent List (Grocery) --- */
     .reagent-input-box { display: flex; gap: 10px; margin-bottom: 10px; }
     input[type="text"] {
-        flex-grow: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--gold-glow);
+        flex-grow: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--gold-glow);
         color: var(--text); font-family: 'Cormorant Garamond'; padding: 8px; outline: none;
     }
-    .add-btn { background: var(--gold); color: #000; border: none; padding: 0 15px; font-family: 'Cinzel'; cursor: pointer; }
-    
-    .reagent-list { max-height: 150px; overflow-y: auto; text-align: left; }
+    .reagent-list { max-height: 140px; overflow-y: auto; text-align: left; }
     .reagent-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
     .reagent-name { cursor: pointer; font-size: 1.1rem; }
     .reagent-name.checked { text-decoration: line-through; opacity: 0.5; }
-    .remove-btn { color: #8a3324; cursor: pointer; font-weight: bold; }
 
     /* --- Chronomancy (Export/Import) --- */
     .data-tools { display: flex; justify-content: space-around; gap: 10px; }
     .data-btn {
         background: transparent; border: 1px solid var(--gold-glow); color: var(--gold);
-        font-family: 'Cinzel'; font-size: 0.6rem; padding: 5px 12px; cursor: pointer; transition: 0.3s;
+        font-family: 'Cinzel'; font-size: 0.6rem; padding: 6px 12px; cursor: pointer; transition: 0.3s;
     }
     .data-btn:hover { background: var(--gold); color: #000; }
 
-    /* --- Modal Scroll --- */
+    /* --- Modal --- */
     #log-modal {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.85); z-index: 2000; display: none;
@@ -126,7 +127,7 @@
 <body>
 
     <div id="enter-overlay">
-        <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:10px; margin-bottom:30px;">MOON'S HEARTH</h2>
+        <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:10px; margin-bottom:30px; text-shadow: 0 0 15px var(--gold-glow);">MOON'S HEARTH</h2>
         <button class="enter-btn" onclick="igniteHearth()">Enter the Hearth</button>
     </div>
 
@@ -147,8 +148,8 @@
         <div class="glass-panel">
             <div class="panel-header"><h1>Master's Reagent List</h1></div>
             <div class="reagent-input-box">
-                <input type="text" id="reagent-input" placeholder="New reagent...">
-                <button class="add-btn" onclick="addReagent()">Add</button>
+                <input type="text" id="reagent-input" placeholder="New reagent (e.g. Mixed Beans)...">
+                <button class="data-btn" onclick="addReagent()" style="font-size: 0.8rem;">Add</button>
             </div>
             <div class="reagent-list" id="reagent-display"></div>
         </div>
@@ -167,8 +168,8 @@
         <div class="scroll-parchment" onclick="event.stopPropagation()">
             <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem;" onclick="closeLog()">×</span>
             <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center; border-bottom: 1px solid #8b5a2b;"></h2>
-            <textarea id="log-entry" placeholder="Log provisions or lessons..."></textarea>
-            <button class="add-btn" onclick="saveLog()" style="width:100%; margin-top:15px; padding:10px;">Record Entry</button>
+            <textarea id="log-entry" placeholder="Log your daily provisions or lessons..."></textarea>
+            <button class="data-btn" onclick="saveLog()" style="width:100%; margin-top:15px; padding:10px;">Record Entry</button>
         </div>
     </div>
 
@@ -181,9 +182,26 @@
             setTimeout(() => { document.getElementById('enter-overlay').style.display = 'none'; }, 1000);
             audio.volume = 0.5; audio.play();
             renderCalendar(); renderReagents();
+            createEmbers(); // Kickstart the animations!
         }
 
-        /* --- Almanac --- */
+        /* --- Ember Engine --- */
+        function createEmbers() {
+            const pCont = document.getElementById('particles');
+            for(let i=0; i<60; i++) {
+                let e = document.createElement('div');
+                e.className = 'ember';
+                e.style.left = Math.random() * 100 + '%';
+                let s = (Math.random() * 4 + 2) + 'px';
+                e.style.width = s; e.style.height = s;
+                e.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                e.style.animationDelay = (Math.random() * 5) + 's';
+                e.style.setProperty('--drift', (Math.random() - 0.5) * 150 + 'px');
+                pCont.appendChild(e);
+            }
+        }
+
+        /* --- Almanac Logic --- */
         function renderCalendar() {
             const now = new Date();
             const monthNames = ["Morning Star", "Sun's Dawn", "First Seed", "Rain's Hand", "Second Seed", "Midyear", "Sun's Height", "Last Seed", "Hearthfire", "Frostfall", "Sun's Dusk", "Evening Star"];
@@ -227,7 +245,7 @@
             m.style.opacity = '0'; setTimeout(() => { m.style.display = 'none'; }, 500);
         }
 
-        /* --- Reagent List --- */
+        /* --- Reagent Logic --- */
         function addReagent() {
             const input = document.getElementById('reagent-input');
             const val = input.value.trim();
@@ -246,7 +264,7 @@
                 display.innerHTML += `
                     <div class="reagent-item">
                         <span class="reagent-name ${it.checked ? 'checked' : ''}" onclick="toggleReagent(${idx})">✦ ${it.name}</span>
-                        <span class="remove-btn" onclick="removeReagent(${idx})">X</span>
+                        <span style="color:#8a3324; cursor:pointer; font-weight:bold;" onclick="removeReagent(${idx})">X</span>
                     </div>`;
             });
         }
@@ -288,18 +306,6 @@
                 alert("The Scroll has been integrated.");
             };
             reader.readAsText(file);
-        }
-
-        /* --- Animations --- */
-        const pCont = document.getElementById('particles');
-        for(let i=0; i<45; i++) {
-            let e = document.createElement('div'); e.className = 'ember';
-            e.style.left = Math.random() * 100 + '%';
-            let s = (Math.random() * 4 + 2) + 'px'; e.style.width = s; e.style.height = s;
-            e.style.animationDuration = (Math.random() * 6 + 4) + 's';
-            e.style.animationDelay = (Math.random() * 5) + 's';
-            e.style.setProperty('--drift', (Math.random() - 0.5) * 120 + 'px');
-            pCont.appendChild(e);
         }
     </script>
 </body>
