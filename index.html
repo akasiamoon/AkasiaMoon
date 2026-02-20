@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moon's Kitchen - The Hearth</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
 <style>
     body, html {
         margin: 0;
@@ -12,6 +13,7 @@
         height: 100%;
         overflow: hidden;
         background-color: #000;
+        cursor: crosshair; /* Keeps the RPG vibe */
     }
 
     /* The Living Background */
@@ -21,20 +23,20 @@
         background: url('image_5.png') no-repeat center center;
         background-size: cover;
         z-index: 0;
-        animation: flicker 6s infinite alternate ease-in-out;
+        animation: flicker 8s infinite alternate ease-in-out;
     }
 
     /* Subtle flickering light effect */
     @keyframes flicker {
-        0%, 100% { filter: brightness(1) contrast(1); }
-        50% { filter: brightness(1.1) contrast(1.05); }
+        0%, 100% { filter: brightness(1) contrast(1); transform: scale(1); }
+        50% { filter: brightness(1.1) contrast(1.05); transform: scale(1.01); }
     }
 
     /* Vignette for focus */
     .vignette {
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.7) 90%);
+        background: radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.85) 100%);
         z-index: 1;
         pointer-events: none;
     }
@@ -52,12 +54,19 @@
     .ember {
         position: absolute;
         bottom: -20px;
-        width: 4px; height: 4px;
         background: #ff6a00;
         border-radius: 50%;
         box-shadow: 0 0 10px #ff6a00, 0 0 20px #ffcc00;
         opacity: 0;
-        animation: rise 5s linear infinite;
+        animation: rise linear infinite;
+    }
+
+    /* Ember Animation */
+    @keyframes rise {
+        0% { opacity: 0; transform: translateY(0) scale(1) translateX(0); }
+        20% { opacity: 0.8; }
+        80% { opacity: 0.5; }
+        100% { opacity: 0; transform: translateY(-100vh) scale(0.5) translateX(var(--drift)); }
     }
 
     /* Potion Glow Effect */
@@ -68,34 +77,62 @@
         filter: blur(15px);
         opacity: 0.6;
         animation: pulse 4s infinite alternate;
+        z-index: 1;
     }
     .potion-1 { top: 40%; right: 12%; background: #00f7ff; } /* Blue */
     .potion-2 { top: 40%; right: 6%; background: #ff00e6; } /* Purple */
     .potion-3 { top: 58%; right: 6%; background: #ffaa00; } /* Orange */
 
     @keyframes pulse {
-        0% { opacity: 0.4; transform: scale(1); }
-        100% { opacity: 0.8; transform: scale(1.2); }
+        0% { opacity: 0.3; transform: scale(1); }
+        100% { opacity: 0.8; transform: scale(1.3); }
     }
 
-    /* Ember Animation */
-    @keyframes rise {
-        0% { opacity: 0; transform: translateY(0) scale(1); }
-        20% { opacity: 0.8; }
-        80% { opacity: 0.5; }
-        100% { opacity: 0; transform: translateY(-80vh) scale(0.5); }
-    }
-
-    /* Hidden Audio Player */
-    #audio-controls {
+    /* --- The Epic Ignite Button --- */
+    .ignite-btn {
         position: absolute;
-        bottom: 20px;
-        left: 20px;
-        z-index: 10;
-        opacity: 0.3;
-        transition: opacity 0.3s;
+        bottom: 40px;
+        left: 40px;
+        z-index: 50;
+        background: rgba(20, 15, 10, 0.4);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(212, 175, 55, 0.4);
+        color: #d4af37;
+        padding: 12px 28px;
+        font-family: 'Cinzel', serif;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.4s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 10px rgba(212, 175, 55, 0.1);
+        text-transform: uppercase;
     }
-    #audio-controls:hover { opacity: 1; }
+
+    .ignite-btn:hover {
+        background: rgba(212, 175, 55, 0.15);
+        border-color: #d4af37;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.4);
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    /* State when the fire is playing */
+    .ignite-btn.active {
+        border-color: #ff6a00;
+        color: #ffaa00;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 25px rgba(255, 106, 0, 0.5), inset 0 0 15px rgba(255, 106, 0, 0.2);
+    }
+
+    .icon-fire {
+        font-size: 1.4rem;
+        filter: drop-shadow(0 0 5px currentColor);
+    }
+
 </style>
 </head>
 <body>
@@ -108,46 +145,63 @@
     <div class="potion-glow potion-2"></div>
     <div class="potion-glow potion-3"></div>
 
-    <audio id="hearth-audio" autoplay loop>
+    <audio id="hearth-audio" loop>
         <source src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Fire_crackling.ogg" type="audio/ogg">
-        Your browser does not support the audio element.
     </audio>
     
-    <div id="audio-controls">
-        <button onclick="document.getElementById('hearth-audio').play()">Is the fire silent? Click here to ignite.</button>
+    <div id="magic-btn" class="ignite-btn">
+        <span class="icon-fire">🔥</span>
+        <span id="btn-text">Ignite Hearth</span>
     </div>
 
     <script>
         // --- Dynamic Embers Generator ---
         const particleContainer = document.getElementById('particle-container');
-        const emberCount = 30;
+        const emberCount = 40;
 
         for(let i=0; i<emberCount; i++) {
             let ember = document.createElement('div');
             ember.className = 'ember';
-            // Randomize start position, size, and speed
+            
+            // Randomize start position
             ember.style.left = Math.random() * 100 + '%';
-            let size = (Math.random() * 3 + 2) + 'px';
+            
+            // Randomize size
+            let size = (Math.random() * 4 + 2) + 'px';
             ember.style.width = size;
             ember.style.height = size;
-            ember.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            
+            // Randomize speed and delay
+            ember.style.animationDuration = (Math.random() * 5 + 4) + 's';
             ember.style.animationDelay = (Math.random() * 5) + 's';
             
             // Add a slight random horizontal drift
-            let drift = (Math.random() - 0.5) * 50 + 'px';
+            let drift = (Math.random() - 0.5) * 80 + 'px';
             ember.style.setProperty('--drift', drift);
             
             particleContainer.appendChild(ember);
         }
         
-        // Try to play audio on load (might be blocked by browser policy)
-        window.addEventListener('load', function() {
-            const audio = document.getElementById('hearth-audio');
-            audio.volume = 0.7; // Set volume
-            audio.play().catch(error => {
-                // Auto-play was prevented, the user button is there as a backup.
-                console.log("Autoplay prevented. User interaction required.");
-            });
+        // --- Audio Control Logic ---
+        const magicBtn = document.getElementById('magic-btn');
+        const btnText = document.getElementById('btn-text');
+        const audio = document.getElementById('hearth-audio');
+        
+        // Lower volume so it's a cozy ambient hum, not a roaring bonfire
+        audio.volume = 0.5; 
+        let isPlaying = false;
+
+        magicBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                audio.play();
+                btnText.innerText = 'Extinguish Hearth';
+                magicBtn.classList.add('active');
+            } else {
+                audio.pause();
+                btnText.innerText = 'Ignite Hearth';
+                magicBtn.classList.remove('active');
+            }
+            isPlaying = !isPlaying;
         });
     </script>
 
