@@ -39,6 +39,7 @@
     .enter-btn:hover, .portal-btn:hover, .data-btn:hover, .portal-btn.active { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
 
     .room-portal { position: absolute; left: 30px; top: 30px; z-index: 2000; display: flex; gap: 10px; }
+    .ui-toggle-btn { position: absolute; right: 30px; top: 30px; z-index: 2000; padding: 10px 20px; font-size: 0.9rem; letter-spacing: 2px; }
     .portal-btn { padding: 8px 15px; font-size: 0.8rem; letter-spacing: 1px; }
 
     /* ================= LAYERING SYSTEM ================= */
@@ -56,47 +57,72 @@
     .glass-panel { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--gold-glow); padding: 20px; box-shadow: 0 20px 50px #000; }
 
     /* --- SCHOLAR LAYER (Z: 20-29) --- */
-    #sky-base { background: linear-gradient(to bottom, #1a2a3a, #2a1a1a); z-index: 20; transition: background 2s ease; }
+    #sky-base { z-index: 20; transition: background 2s ease; overflow: hidden; }
     #cloud-layer { background: url('https://www.transparenttextures.com/patterns/clouds.png'); opacity: 0.3; animation: panClouds 60s linear infinite; z-index: 21; }
     @keyframes panClouds { from { background-position: 0 0; } to { background-position: 100% 0; } }
     #weather-canvas { position: absolute; top:0; left:0; width:100%; height:100%; z-index: 22; pointer-events:none; }
     
-    /* PLACEHOLDER: MAKE SURE THIS IMAGE HAS A TRANSPARENT WINDOW! */
+    .star { position: absolute; background: white; border-radius: 50%; box-shadow: 0 0 5px #fff; }
+    @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 1; } }
+    .shooting-star { position: absolute; width: 100px; height: 2px; background: linear-gradient(90deg, #fff, transparent); animation: shoot 5s infinite; opacity: 0; transform: rotate(-45deg); }
+    @keyframes shoot { 0% { transform: translate(0, 0) rotate(-45deg); opacity: 1; } 10% { transform: translate(-300px, 300px) rotate(-45deg); opacity: 0; } 100% { opacity: 0; } }
+
+    /* FOREGROUND ROOM FRAME (Z: 23) */
     #room-frame {
         background: url('scholar_room_transparent.png') no-repeat center center;
         background-size: cover; z-index: 23; pointer-events: none;
     }
-    
-    /* --- Scholar Click Zones (Hotspots) --- */
-    .scholar-click-layer { z-index: 24; }
-    .click-zone { position: absolute; cursor: pointer; transition: 0.3s; border-radius: 5px; }
-    .click-zone:hover { box-shadow: inset 0 0 20px var(--gold-glow), 0 0 10px var(--gold-glow); }
-    
-    /* Positioning the hotspots over the image elements */
-    #zone-lore { top: 58%; left: 5%; width: 18%; height: 25%; } /* Stack on left with ribbons */
-    #zone-bard { top: 63%; right: 5%; width: 15%; height: 20%; } /* Stack on far right */
-    #zone-art { top: 20%; left: 2%; width: 12%; height: 15%; } /* Shelf stack top left */
-    #zone-survival { top: 55%; left: 53%; width: 10%; height: 20%; } /* Basket of scrolls */
-    #zone-merchant { top: 75%; left: 68%; width: 25%; height: 15%; } /* Foreground scroll case */
 
-    /* Desk UI Container */
-    .desk-ui-container { position: absolute; bottom: 5%; left: 25%; width: 400px; z-index: 25; pointer-events: auto; }
-    .desk-panel { background: var(--scholar-bg); border: 2px solid var(--gold); padding: 15px; color: var(--parchment); box-shadow: inset 0 0 30px #000; margin-bottom: 10px; }
+    /* THE LIVING ROOM (Candle & Dust) (Z: 24) */
+    .candle-glow {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 24; pointer-events: none;
+        background: radial-gradient(circle at 75% 80%, rgba(255, 140, 50, 0.15), transparent 50%);
+        animation: candleFlicker 0.3s infinite alternate; mix-blend-mode: overlay;
+    }
+    @keyframes candleFlicker { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
     
-    .timer-box { text-align: center; font-family: 'Cinzel'; padding-bottom: 10px; border-bottom: 1px solid var(--gold-glow); margin-bottom: 10px;}
-    #timer-display { font-size: 2rem; color: var(--gold); text-shadow: 0 0 10px var(--gold-glow); }
-    .scholar-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-glow); color: var(--parchment); padding: 8px; font-family: 'Cormorant Garamond'; margin-bottom: 10px; outline: none; box-sizing:border-box;}
-    textarea.scholar-input { height: 60px; resize: none; }
-    .blog-container { max-height: 150px; overflow-y: auto; margin-top: 10px; }
-    .blog-post { margin-bottom: 10px; border-left: 2px solid var(--gold); padding-left: 10px; }
-    .blog-ts { font-family: 'Cinzel'; font-size: 0.6rem; color: var(--gold); opacity: 0.8; }
+    #dust-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 24; pointer-events: none; overflow: hidden; }
+    .dust-mote { position: absolute; background: rgba(255, 230, 180, 0.5); border-radius: 50%; box-shadow: 0 0 4px rgba(255, 230, 180, 0.5); animation: floatDust linear infinite; }
+    @keyframes floatDust { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 50% { opacity: 1; } 100% { opacity: 0; transform: translateY(-50vh) translateX(50px) scale(1.5); } }
+    
+    /* --- Scholar Click Zones (Hotspots) (Z: 25) --- */
+    .scholar-click-layer { z-index: 25; }
+    .click-zone { position: absolute; cursor: pointer; transition: 0.3s; border-radius: 5px; }
+    .click-zone:hover { box-shadow: inset 0 0 30px var(--gold-glow), 0 0 15px var(--gold-glow); background: rgba(212,175,55,0.1); }
+    
+    #zone-lore { top: 58%; left: 5%; width: 18%; height: 25%; } 
+    #zone-bard { top: 63%; right: 5%; width: 15%; height: 20%; } 
+    #zone-art { top: 20%; left: 2%; width: 12%; height: 15%; } 
+    #zone-survival { top: 55%; left: 53%; width: 10%; height: 20%; } 
+    #zone-merchant { top: 75%; left: 68%; width: 25%; height: 15%; } 
+
+    /* --- REPOSITIONED & COLLAPSIBLE DESK UI (Z: 26) --- */
+    .desk-ui-container { 
+        position: absolute; right: -450px; /* Hidden by default */
+        top: 50%; transform: translateY(-50%); 
+        width: 380px; z-index: 26; pointer-events: auto; 
+        display: flex; flex-direction: column; gap: 15px;
+        transition: right 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .desk-ui-container.open { right: 40px; } /* Slides in when active */
+    
+    .desk-panel { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--gold-glow); padding: 20px; color: var(--parchment); box-shadow: 0 20px 50px #000; }
+    
+    .timer-box { text-align: center; font-family: 'Cinzel'; padding-bottom: 10px; border-bottom: 1px solid var(--gold-glow); margin-bottom: 15px;}
+    #timer-display { font-size: 2.2rem; color: var(--gold); text-shadow: 0 0 15px var(--gold-glow); margin-bottom: 10px;}
+    .scholar-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-glow); color: var(--parchment); padding: 10px; font-family: 'Cormorant Garamond'; margin-bottom: 10px; outline: none; box-sizing:border-box;}
+    textarea.scholar-input { height: 80px; resize: none; }
+    
+    .blog-container { max-height: 250px; overflow-y: auto; margin-top: 10px; padding-right: 5px; }
+    .blog-post { margin-bottom: 15px; border-left: 2px solid var(--gold); padding-left: 10px; }
+    .blog-ts { font-family: 'Cinzel'; font-size: 0.7rem; color: var(--gold); opacity: 0.8; }
 
     /* --- Shared Styles --- */
     .panel-header { text-align: center; border-bottom: 1px solid var(--gold); margin-bottom: 10px; } .panel-header h1 { font-family: 'Cinzel'; font-size: 1.1rem; color: var(--gold); margin: 0; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-family: 'Cinzel'; font-size: 0.7rem; }
-    .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; } .day-num.today { background: var(--gold); color: #000; } .day-num.has-log { border-color: var(--gold); }
+    .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; transition: 0.2s;} .day-num:hover{background:rgba(212,175,55,0.2);} .day-num.today { background: var(--gold); color: #000; } .day-num.has-log { border-color: var(--gold); color: var(--gold); }
     .reagent-item { display: flex; justify-content: space-between; padding: 6px; border-bottom: 1px solid rgba(212,175,55,0.1); }
-    .data-btn { padding: 5px 10px; font-size: 0.7rem; }
+    .data-btn { padding: 8px 15px; font-size: 0.8rem; }
 
     /* --- Modal --- */
     #log-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
@@ -147,33 +173,44 @@
 
 
     <div id="scholar-layer" class="layer-container hidden">
+        
+        <button id="desk-toggle-btn" class="portal-btn ui-toggle-btn" onclick="toggleDeskUI()">📖 Open Master's Desk</button>
+
         <div id="sky-base" class="layer-container"></div>
         <div id="cloud-layer" class="layer-container"></div>
         <canvas id="weather-canvas" class="layer-container"></canvas>
         
         <div id="room-frame" class="layer-container"></div>
-        <div class="vignette" style="z-index:25; background: radial-gradient(circle at center bottom, transparent 30%, rgba(0,0,0,0.8) 90%);"></div>
+        <div class="vignette" style="z-index:23; background: radial-gradient(circle at center bottom, transparent 30%, rgba(0,0,0,0.8) 100%); pointer-events:none;"></div>
+
+        <div class="candle-glow"></div>
+        <div id="dust-container"></div>
 
         <div class="scholar-click-layer layer-container">
-            <div id="zone-lore" class="click-zone" onclick="openSubject('Comparative Lore')"></div>
-            <div id="zone-bard" class="click-zone" onclick="openSubject('Bardic Path')"></div>
-            <div id="zone-art" class="click-zone" onclick="openSubject('Artisan Eye')"></div>
-            <div id="zone-survival" class="click-zone" onclick="openSubject('Hearth Resilience')"></div>
-            <div id="zone-merchant" class="click-zone" onclick="openSubject('Merchant Code')"></div>
+            <div id="zone-lore" class="click-zone" onclick="openSubject('Global Mythos')" title="Global Mythos"></div>
+            <div id="zone-bard" class="click-zone" onclick="openSubject('Bardic Arts')" title="Bardic Arts"></div>
+            <div id="zone-art" class="click-zone" onclick="openSubject('Visual Design')" title="Visual Design"></div>
+            <div id="zone-survival" class="click-zone" onclick="openSubject('Hearth Resilience')" title="Hearth Resilience"></div>
+            <div id="zone-merchant" class="click-zone" onclick="openSubject('Guild Logic')" title="Guild Logic"></div>
         </div>
 
-        <div class="desk-ui-container">
+        <div id="desk-ui" class="desk-ui-container">
             <div class="desk-panel">
-                <div class="timer-box"><span>Focus Timer</span><div id="timer-display">00:00</div>
-                <div><button class="data-btn" onclick="startTimer(25)">25m</button> <button class="data-btn" onclick="stopTimer()">Stop</button></div></div>
-            </div>
-            <div class="desk-panel">
-                <input type="text" id="work-upload-name" class="scholar-input" placeholder="Project Name (e.g., 'Bardic_Track_V1.wav')">
+                <div class="timer-box">
+                    <span style="font-size: 0.9rem; letter-spacing: 2px;">Focus Timer</span>
+                    <div id="timer-display">00:00</div>
+                    <div>
+                        <button class="data-btn" onclick="startTimer(25)">25m</button> 
+                        <button class="data-btn" onclick="stopTimer()">Stop</button>
+                    </div>
+                </div>
+                <input type="text" id="work-upload-name" class="scholar-input" placeholder="Project Name (e.g., 'Python_Logic.txt')">
                 <textarea id="work-note" class="scholar-input" placeholder="Notes on progress..."></textarea>
                 <button class="data-btn" style="width:100%;" onclick="logWork()">Log to Journal</button>
             </div>
-            <div class="desk-panel" style="max-height: 200px; display:flex; flex-direction:column;">
-                <h3 style="font-family:'Cinzel'; color:var(--gold); margin:0 0 5px 0; text-align:center; font-size:0.9rem;">Master's Journal</h3>
+            
+            <div class="desk-panel" style="flex-grow:1; display:flex; flex-direction:column;">
+                <h3 style="font-family:'Cinzel'; color:var(--gold); margin:0 0 10px 0; text-align:center; font-size:1rem; border-bottom: 1px solid var(--gold); padding-bottom: 10px;">Master's Journal</h3>
                 <div id="blog-container" class="blog-container"></div>
             </div>
         </div>
@@ -189,20 +226,17 @@
     </div>
 
     <script>
-        // --- GLOBAL STATE ---
         let currentRoom = 'hearth'; let selectedDate = ''; let timerInterval; let secondsRemaining = 0;
         const ah = document.getElementById('audio-hearth'); const as = document.getElementById('audio-scholar');
 
-        // --- INITIALIZATION ---
         function igniteRealm() {
             document.getElementById('enter-overlay').style.opacity = '0';
             setTimeout(() => { document.getElementById('enter-overlay').style.display = 'none'; }, 1200);
-            ah.volume = 0.5; ah.play(); createEmbers();
-            renderCalendar(); updateManifest(); renderReagents();
-            renderBlog(); fetchWeather();
+            ah.volume = 0.5; ah.play(); 
+            createEmbers(); createDust();
+            renderCalendar(); updateManifest(); renderReagents(); renderBlog(); fetchWeather();
         }
 
-        // --- ROOM SWITCHING ---
         function switchRoom(room) {
             if(room === currentRoom) return; currentRoom = room;
             document.getElementById('btn-hearth').classList.toggle('active', room === 'hearth');
@@ -212,50 +246,111 @@
             if(room === 'scholar') { fadeAudio(ah, 0); as.volume = 0; as.play(); fadeAudio(as, 0.4); fetchWeather(); } 
             else { fadeAudio(as, 0); ah.volume = 0; ah.play(); fadeAudio(ah, 0.5); }
         }
+
         function fadeAudio(track, targetVol) {
             let vol = track.volume; const step = targetVol > vol ? 0.05 : -0.05;
             const fade = setInterval(() => { vol += step; if((step > 0 && vol >= targetVol) || (step < 0 && vol <= targetVol)) { track.volume = targetVol; clearInterval(fade); if(targetVol===0) track.pause(); } else { track.volume = vol; } }, 100);
         }
 
-        // --- SCHOLAR FUNCTIONS ---
-        function openSubject(subject) {
-            // Placeholder for now - we can make this open a specific modal later
-            alert("Opening Grimoire: " + subject + "\n(Future update: This will open a dedicated study panel.)");
+        // --- SCHOLAR UI TOGGLE ---
+        function toggleDeskUI() {
+            const ui = document.getElementById('desk-ui');
+            const btn = document.getElementById('desk-toggle-btn');
+            if (ui.classList.contains('open')) {
+                ui.classList.remove('open');
+                btn.innerText = "📖 Open Master's Desk";
+                btn.classList.remove('active');
+            } else {
+                ui.classList.add('open');
+                btn.innerText = "Close Desk";
+                btn.classList.add('active');
+            }
         }
 
+        function openSubject(subject) { alert(`Opening Grimoire: ${subject}\n(This will open the specific study panel in a future update.)`); }
+
+        // --- THE EPIC WEATHER ENGINE ---
         async function fetchWeather() {
-            try { const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.94&longitude=-88.52&current=weather_code,is_day'); const data = await res.json(); applyWeather(data.current.weather_code, data.current.is_day); } catch(e) { applyWeather(0, 1); }
+            try { 
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.94&longitude=-88.52&current=weather_code,is_day'); 
+                const data = await res.json(); 
+                applyWeather(data.current.weather_code, data.current.is_day); 
+            } catch(e) { applyWeather(0, 0); } 
         }
+
         function applyWeather(code, isDay) {
-            const sky = document.getElementById('sky-base'); const clouds = document.getElementById('cloud-layer'); stopPrecipitation();
-            sky.style.background = isDay ? 'linear-gradient(to bottom, #4a7a9a, #8a6a5a)' : 'linear-gradient(to bottom, #0a1a2a, #1a0a1a)';
-            if(code >= 51 && code <= 67) startPrecipitation('rain'); else if(code >= 71 && code <= 77) startPrecipitation('snow');
-            clouds.style.opacity = (code > 2) ? 0.8 : 0.2;
+            const sky = document.getElementById('sky-base'); 
+            const clouds = document.getElementById('cloud-layer'); 
+            stopPrecipitation(); sky.innerHTML = ''; 
+            
+            if(isDay) {
+                sky.style.background = 'linear-gradient(to bottom, #4a8aab, #c89a7a)';
+            } else {
+                sky.style.background = 'linear-gradient(to bottom, #050914, #101728)';
+                if(code <= 3) generateStars();
+            }
+            
+            if(code >= 51 && code <= 67) startPrecipitation('rain'); 
+            else if(code >= 71 && code <= 77) startPrecipitation('snow');
+            
+            clouds.style.opacity = (code > 2) ? 0.7 : 0.1;
         }
+
+        function generateStars() {
+            const sky = document.getElementById('sky-base');
+            for(let i=0; i<150; i++) {
+                let star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random()*2.5 + 'px'; star.style.height = star.style.width;
+                star.style.left = Math.random()*100 + '%'; star.style.top = Math.random()*100 + '%';
+                star.style.animation = `twinkle ${Math.random()*4+2}s infinite alternate`;
+                sky.appendChild(star);
+            }
+            let shooter = document.createElement('div');
+            shooter.className = 'shooting-star';
+            shooter.style.left = '80%'; shooter.style.top = '20%';
+            sky.appendChild(shooter);
+        }
+
         let pAnim;
         function startPrecipitation(type) {
             const canvas = document.getElementById('weather-canvas'); const ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            let particles = []; const count = type === 'rain' ? 500 : 200; for(let i=0; i<count; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, speed: Math.random()*5+2, len: Math.random()*20+10 });
-            function draw() { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.strokeStyle = type === 'rain' ? 'rgba(200,200,255,0.6)' : 'rgba(255,255,255,0.8)'; ctx.lineWidth = type === 'rain' ? 1 : 3; ctx.lineCap = 'round';
-                particles.forEach(p => { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + (type==='rain'?2:Math.sin(p.y*0.01)), p.y + (type==='rain'?p.len:3)); ctx.stroke(); p.y += p.speed; if(p.y > canvas.height) { p.y = -p.len; p.x = Math.random() * canvas.width; } }); pAnim = requestAnimationFrame(draw); } draw();
+            let particles = []; const count = type === 'rain' ? 800 : 300; 
+            for(let i=0; i<count; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, speed: Math.random()*5+(type==='rain'?8:2), len: Math.random()*(type==='rain'?30:5)+5 });
+            function draw() { 
+                ctx.clearRect(0,0,canvas.width,canvas.height); 
+                ctx.strokeStyle = type === 'rain' ? 'rgba(180,200,255,0.5)' : 'rgba(255,255,255,0.8)'; 
+                ctx.lineWidth = type === 'rain' ? 1.5 : 3; ctx.lineCap = 'round';
+                particles.forEach(p => { 
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); 
+                    ctx.lineTo(p.x + (type==='rain'?3:Math.sin(p.y*0.01)*2), p.y + (type==='rain'?p.len:3)); 
+                    ctx.stroke(); p.y += p.speed; p.x += (type==='rain'?1:Math.sin(p.y*0.01)); 
+                    if(p.y > canvas.height) { p.y = -p.len; p.x = Math.random() * canvas.width; } 
+                }); 
+                pAnim = requestAnimationFrame(draw); 
+            } draw();
         }
         function stopPrecipitation() { if(pAnim) cancelAnimationFrame(pAnim); const ctx = document.getElementById('weather-canvas').getContext('2d'); ctx.clearRect(0,0,window.innerWidth,window.innerHeight); }
 
+        // --- DESK UI LOGIC ---
         function startTimer(m) { clearInterval(timerInterval); secondsRemaining = m*60; updateTimer(); timerInterval = setInterval(()=>{secondsRemaining--; updateTimer(); if(secondsRemaining<=0) clearInterval(timerInterval);}, 1000); }
         function stopTimer() { clearInterval(timerInterval); }
         function updateTimer() { const min=Math.floor(secondsRemaining/60).toString().padStart(2,'0'); const sec=(secondsRemaining%60).toString().padStart(2,'0'); document.getElementById('timer-display').innerText = `${min}:${sec}`; }
         function logWork() { const f=document.getElementById('work-upload-name').value; const n=document.getElementById('work-note').value; if(!n.trim()) return; const b=JSON.parse(localStorage.getItem('scholarBlog')||'[]'); b.unshift({ts:new Date().toLocaleString(),file:f,note:n}); localStorage.setItem('scholarBlog',JSON.stringify(b)); document.getElementById('work-upload-name').value=''; document.getElementById('work-note').value=''; renderBlog(); }
-        function renderBlog() { const c=document.getElementById('blog-container'); const b=JSON.parse(localStorage.getItem('scholarBlog')||'[]'); c.innerHTML=''; if(b.length===0){c.innerHTML='<p style="opacity:0.5;text-align:center;font-size:0.8rem;">No records.</p>';return;} b.forEach(p=>{c.innerHTML+=`<div class="blog-post"><div class="blog-ts">✦ ${p.ts}</div><div style="font-size:0.9rem; font-style:italic;">${p.note}</div>${p.file?`<div style="font-size:0.7rem;opacity:0.7;">[File: ${p.file}]</div>`:''}</div>`;}); }
+        function renderBlog() { const c=document.getElementById('blog-container'); const b=JSON.parse(localStorage.getItem('scholarBlog')||'[]'); c.innerHTML=''; if(b.length===0){c.innerHTML='<p style="opacity:0.5;text-align:center;font-size:0.9rem;">No records.</p>';return;} b.forEach(p=>{c.innerHTML+=`<div class="blog-post"><div class="blog-ts">✦ ${p.ts}</div><div style="font-size:1rem; font-style:italic;">${p.note}</div>${p.file?`<div style="font-size:0.8rem;opacity:0.7; color:var(--gold);">[Attached: ${p.file}]</div>`:''}</div>`;}); }
 
-        // --- HEARTH FUNCTIONS ---
+        // --- DUST & EMBERS ---
         function createEmbers() { const p=document.getElementById('embers-container'); p.innerHTML=''; for(let i=0;i<60;i++){let e=document.createElement('div');e.className='ember';e.style.left=Math.random()*100+'%';e.style.animationDuration=(Math.random()*5+4)+'s';e.style.animationDelay=Math.random()*5+'s';p.appendChild(e);}}
+        function createDust() { const p=document.getElementById('dust-container'); p.innerHTML=''; for(let i=0;i<40;i++){let d=document.createElement('div');d.className='dust-mote'; let s=Math.random()*3+1+'px'; d.style.width=s; d.style.height=s; d.style.left=Math.random()*100+'%'; d.style.top=Math.random()*100+'%'; d.style.animationDuration=(Math.random()*10+10)+'s'; d.style.animationDelay=Math.random()*10+'s'; p.appendChild(d);}}
+
+        // --- HEARTH LOGIC ---
         function updateManifest() { const n=new Date(); const k=`log-${n.getFullYear()}-${n.getMonth()}-${n.getDate()}`; const c=localStorage.getItem(k); document.getElementById('manifest-content').innerHTML = c ? `✦ ${c.replace(/\n/g,'<br>✦ ')}` : "No active endeavors today."; }
         function renderCalendar() { const n=new Date(); document.getElementById('almanac-date').innerText = n.toDateString(); const cb=document.getElementById('calendar-body'); cb.innerHTML=''; for(let i=1;i<=30;i++){let d=document.createElement('div');d.className='day-num';d.innerText=i; let k=`log-${n.getFullYear()}-${n.getMonth()}-${i}`; if(localStorage.getItem(k)) d.classList.add('has-log'); if(i===n.getDate()) d.classList.add('today'); d.onclick=()=>openLog(i,k); cb.appendChild(d);}}
         function openLog(d,k){ selectedDate=k; document.getElementById('log-date-title').innerText=`Record Day ${d}`; document.getElementById('log-entry').value=localStorage.getItem(k)||''; document.getElementById('log-modal').style.display='flex'; setTimeout(()=>{document.getElementById('log-modal').style.opacity='1';},10); }
         function saveLog(){ const v=document.getElementById('log-entry').value; if(!v.trim())localStorage.removeItem(selectedDate); else localStorage.setItem(selectedDate,v); closeLog(); renderCalendar(); updateManifest(); }
         function closeLog(){ document.getElementById('log-modal').style.opacity='0'; setTimeout(()=>{document.getElementById('log-modal').style.display='none';},500); }
         function addReagent(){ const i=document.getElementById('reagent-input'); const v=i.value.trim(); if(!v)return; const r=JSON.parse(localStorage.getItem('reagents')||'[]'); r.push({name:v,checked:false}); localStorage.setItem('reagents',JSON.stringify(r)); i.value=''; renderReagents(); }
-        function renderReagents(){ const d=document.getElementById('reagent-display'); const r=JSON.parse(localStorage.getItem('reagents')||'[]'); d.innerHTML=''; r.forEach((it,ix)=>{d.innerHTML+=`<div class="reagent-item"><span style="cursor:pointer;${it.checked?'text-decoration:line-through;opacity:0.5':''}" onclick="toggleR(${ix})">✦ ${it.name}</span><span style="color:#8a3324;cursor:pointer;" onclick="removeR(${idx})">X</span></div>`});}
+        function renderReagents(){ const d=document.getElementById('reagent-display'); const r=JSON.parse(localStorage.getItem('reagents')||'[]'); d.innerHTML=''; r.forEach((it,ix)=>{d.innerHTML+=`<div class="reagent-item"><span style="cursor:pointer;${it.checked?'text-decoration:line-through;opacity:0.5':''}" onclick="toggleR(${ix})">✦ ${it.name}</span><span style="color:#8a3324;cursor:pointer;" onclick="removeR(${ix})">X</span></div>`});}
         function toggleR(i){const r=JSON.parse(localStorage.getItem('reagents')||'[]'); r[i].checked=!r[i].checked; localStorage.setItem('reagents',JSON.stringify(r)); renderReagents();}
         function removeR(i){const r=JSON.parse(localStorage.getItem('reagents')||'[]'); r.splice(i,1); localStorage.setItem('reagents',JSON.stringify(r)); renderReagents();}
         function exportData(){const d={}; for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);d[k]=localStorage.getItem(k);} const b=new Blob([JSON.stringify(d)],{type:'application/json'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='moons-hearth-scroll.json'; a.click();}
