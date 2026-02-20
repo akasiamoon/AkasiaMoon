@@ -22,7 +22,7 @@
         overflow: hidden; cursor: crosshair;
     }
 
-    /* --- Cinematic Entrance --- */
+    /* --- Entrance Overlay --- */
     #enter-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(circle, #1a120e 0%, #000 100%);
@@ -37,7 +37,7 @@
     }
     .enter-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 50px var(--gold); }
 
-    /* --- Background & Atmosphere --- */
+    /* --- Background Atmosphere --- */
     .bg-layer {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: url('image_5.png') no-repeat center center;
@@ -45,37 +45,37 @@
         animation: flicker 10s infinite alternate ease-in-out;
     }
     @keyframes flicker {
-        0% { filter: brightness(0.7) sepia(10%); }
-        100% { filter: brightness(0.95) sepia(0%); }
+        0% { filter: brightness(0.7) contrast(1.1); }
+        100% { filter: brightness(0.95) contrast(1.15); }
     }
     .vignette {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.95) 100%);
+        background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.9) 100%);
         z-index: 1; pointer-events: none;
     }
 
-    /* --- ESO Style Navigation --- */
-    .provision-nav {
-        position: absolute; left: 50px; top: 50%; transform: translateY(-50%);
-        z-index: 100; display: flex; flex-direction: column; gap: 15px;
+    /* --- UI Container (Aligned Right) --- */
+    .ui-container {
+        position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+        z-index: 10; display: flex; flex-direction: column; align-items: flex-end; gap: 20px;
     }
+
+    /* --- ESO Style Navigation --- */
+    .provision-nav { display: flex; flex-direction: row; gap: 10px; margin-bottom: 10px; }
     .nav-btn {
         background: var(--glass); backdrop-filter: blur(10px);
-        border: 1px solid var(--gold-glow); padding: 12px 25px;
-        color: var(--gold); font-family: 'Cinzel';
-        letter-spacing: 2px; font-size: 0.85rem; transition: 0.3s;
-        text-align: left; border-radius: 2px; cursor: pointer;
-        width: 220px;
+        border: 1px solid var(--gold-glow); padding: 10px 15px;
+        color: var(--gold); font-family: 'Cinzel'; font-size: 0.7rem;
+        letter-spacing: 1px; transition: 0.3s; border-radius: 2px; cursor: pointer;
     }
-    .nav-btn:hover { background: var(--gold); color: #000; padding-left: 35px; }
+    .nav-btn:hover, .nav-btn.active { background: var(--gold); color: #000; }
 
     /* --- The Recipe Journal --- */
     .journal-panel {
-        position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
-        width: 440px; max-height: 85vh; z-index: 10;
+        width: 420px; max-height: 75vh;
         background: var(--glass); backdrop-filter: blur(25px);
         border: 1px solid var(--gold-glow); border-radius: 2px;
-        padding: 45px; box-shadow: 0 25px 70px rgba(0,0,0,1);
+        padding: 40px; box-shadow: 0 25px 70px rgba(0,0,0,1);
         display: flex; flex-direction: column;
     }
     .journal-header h1 {
@@ -86,11 +86,12 @@
     .recipe-container { overflow-y: auto; padding-right: 10px; margin-top: 25px; }
     .recipe-card {
         margin-bottom: 20px; padding: 18px; cursor: pointer;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.2); transition: 0.3s;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.15); transition: 0.3s;
+        text-align: left;
     }
-    .recipe-card:hover { background: rgba(212, 175, 55, 0.08); border-bottom-color: var(--gold); }
-    .recipe-card h4 { font-family: 'Cinzel', serif; font-size: 1.2rem; margin: 0; color: var(--gold); }
-    .recipe-card p { font-size: 1rem; font-style: italic; color: var(--parchment); margin: 8px 0 0 0; opacity: 0.7; }
+    .recipe-card:hover { background: rgba(212, 175, 55, 0.08); border-bottom-color: var(--gold); transform: translateX(-5px); }
+    .recipe-card h4 { font-family: 'Cinzel', serif; font-size: 1.1rem; margin: 0; color: var(--gold); }
+    .recipe-card p { font-size: 0.95rem; font-style: italic; color: var(--parchment); margin: 8px 0 0 0; opacity: 0.7; }
 
     /* --- Particles --- */
     #particles { position: absolute; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
@@ -114,20 +115,22 @@
     <div id="particles"></div>
     <audio id="hearth-audio" loop><source src="fire.mp3" type="audio/mpeg"></audio>
 
-    <div class="provision-nav">
-        <div class="nav-btn" onclick="loadRecipes('meat')">✦ Grilled & Meaty</div>
-        <div class="nav-btn" onclick="loadRecipes('fruit')">✦ Orchard Sweets</div>
-        <div class="nav-btn" onclick="loadRecipes('veg')">✦ Garden Greens</div>
-        <div class="nav-btn" onclick="loadRecipes('brew')">✦ Hearth Brews</div>
-    </div>
-
-    <div class="journal-panel">
-        <div class="journal-header">
-            <h1 id="cat-title">Provisioning</h1>
-            <p id="cat-desc" style="font-family:'Cinzel'; font-size:0.65rem; text-align:center; color:var(--gold); margin-top:5px;">Recipes for the Wanderer</p>
+    <div class="ui-container">
+        <div class="provision-nav">
+            <div class="nav-btn" onclick="loadRecipes('meat')">Meats</div>
+            <div class="nav-btn" onclick="loadRecipes('fruit')">Fruits</div>
+            <div class="nav-btn" onclick="loadRecipes('veg')">Vegetables</div>
+            <div class="nav-btn" onclick="loadRecipes('brew')">Brews</div>
         </div>
-        <div class="recipe-container" id="recipe-list">
+
+        <div class="journal-panel">
+            <div class="journal-header">
+                <h1 id="cat-title">Provisioning</h1>
+                <p id="cat-desc" style="font-family:'Cinzel'; font-size:0.6rem; text-align:center; color:var(--gold); margin-top:5px; letter-spacing: 2px;">Adamsville Master Class</p>
             </div>
+            <div class="recipe-container" id="recipe-list">
+                </div>
+        </div>
     </div>
 
     <script>
@@ -145,29 +148,29 @@
             'meat': {
                 title: 'Grilled & Meaty',
                 recipes: [
-                    { name: 'Adamsville Stew', desc: 'Hearty root soup for surviving ice storms.' },
-                    { name: 'Guild-Leader Skillet', desc: 'Searing meat with aromatic forest herbs.' }
+                    { name: 'Adamsville Winter Stew', desc: 'A restorative root soup crafted for deep ice storms and power outages.' },
+                    { name: 'Hunter’s Skillet Medley', desc: 'Seared meats seasoned with wild-harvested herbs.' }
                 ]
             },
             'fruit': {
                 title: 'Orchard Sweets',
                 recipes: [
-                    { name: 'Scholar’s Lemon Loaf', desc: 'Bright citrus bread for the homeschooling student.' },
-                    { name: 'Hearth-Fried Pies', desc: 'Spiced fruit sealed in golden, crispy dough.' }
+                    { name: 'Scholar’s Lemon Loaf', desc: 'Zesty blueberry bread to grant focus during long study sessions.' },
+                    { name: 'Hearth-Fried Pies', desc: 'Spiced fruit provisions sealed in golden, crispy dough.' }
                 ]
             },
             'veg': {
                 title: 'Garden Greens',
                 recipes: [
-                    { name: 'Pinto Bean Porridge', desc: 'Traditional hearth-fire beans for the weary Dasher.' },
-                    { name: 'Potato & Thyme Roast', desc: 'Simply roasted russets for the common folk.' }
+                    { name: 'Traveling Dasher’s Beans', desc: 'Pinto beans slow-simmered for the road-weary guildsman.' },
+                    { name: 'Roasted Russet Coins', desc: 'Thinly sliced potatoes crisped over a stone-fire hearth.' }
                 ]
             },
             'brew': {
                 title: 'Hearth Brews',
                 recipes: [
-                    { name: 'Stitch’s Blue Tonic', desc: 'A bright, tropical brew inspired by island magic.' },
-                    { name: 'Tamrielic Spice Tea', desc: 'A warming beverage for long night shifts.' }
+                    { name: 'Blue Stitch Tonic', desc: 'A bright, tropical tonic inspired by island magic and energetic companions.' },
+                    { name: 'Night-Shift Spice Tea', desc: 'A warming beverage to maintain focus through the midnight hours.' }
                 ]
             }
         };
@@ -180,7 +183,7 @@
             section.recipes.forEach(r => {
                 list.innerHTML += `
                     <div class="recipe-card">
-                        <h4>${r.name}</h4>
+                        <h4>✦ ${r.name}</h4>
                         <p>${r.desc}</p>
                     </div>
                 `;
@@ -189,7 +192,7 @@
 
         // Particle generator
         const pCont = document.getElementById('particles');
-        for(let i=0; i<35; i++) {
+        for(let i=0; i<30; i++) {
             let e = document.createElement('div');
             e.className = 'ember'; e.style.left = Math.random() * 100 + '%';
             let s = (Math.random() * 3 + 1) + 'px'; e.style.width = s; e.style.height = s;
