@@ -21,8 +21,9 @@
     .portal-btn.active, .portal-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
     .ui-toggle-btn { position: absolute; right: 30px; top: 30px; z-index: 2000; padding: 10px 20px; font-size: 0.9rem; letter-spacing: 2px; }
 
+    /* Moved Weather Scryer away from the right-side UIs */
     .weather-widget { 
-        position: absolute; top: 20px; right: 40px; z-index: 2500; 
+        position: absolute; top: 30px; right: 500px; z-index: 2500; 
         background: radial-gradient(circle, rgba(40, 30, 20, 0.9) 0%, rgba(10, 8, 5, 0.95) 100%);
         border: 2px solid var(--gold); width: 110px; height: 110px; border-radius: 50%;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -72,7 +73,8 @@
     /* --- ROOM 3: GARDEN --- */
     #garden-layer { background-image: url('garden_bg.png'); background-color: #111; }
     #garden-particles { position: absolute; width: 100%; height: 100%; z-index: 11; pointer-events: none; overflow: hidden; }
-    .garden-ui { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 15; width: 450px; }
+    /* Moved Garden UI to the right side */
+    .garden-ui { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); z-index: 15; width: 420px; display: flex; flex-direction: column; gap: 15px; }
     
     .vital-stat { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(212,175,55,0.1); font-family: 'Cinzel'; font-size: 0.9rem; }
     .vital-input { background: rgba(0,0,0,0.4); border: 1px solid var(--gold-glow); color: var(--gold); font-family: 'Cinzel'; width: 60px; text-align: center; padding: 5px; outline: none; }
@@ -183,19 +185,21 @@
 
     <div id="garden-layer" class="layer-container hidden">
         <div id="garden-particles"></div>
-        <div class="garden-ui glass-panel">
-            <div class="panel-header"><h1>Vital Alchemy</h1></div>
-            <div style="font-family:'Cinzel'; text-align:center; color:var(--gold); margin-bottom:10px; font-size:0.9rem;">Spirit Alignment</div>
-            <div class="mood-icons" id="mood-picker">
-                <span onclick="setMood('ethereal', this)" title="Ethereal">✨</span>
-                <span onclick="setMood('grounded', this)" title="Grounded">🌿</span>
-                <span onclick="setMood('flickering', this)" title="Flickering">🔥</span>
-                <span onclick="setMood('stormy', this)" title="Stormy">⛈️</span>
-                <span onclick="setMood('waning', this)" title="Waning">🌑</span>
+        <div class="garden-ui">
+            <div class="glass-panel">
+                <div class="panel-header"><h1>Vital Alchemy</h1></div>
+                <div style="font-family:'Cinzel'; text-align:center; color:var(--gold); margin-bottom:10px; font-size:0.9rem;">Spirit Alignment</div>
+                <div class="mood-icons" id="mood-picker">
+                    <span onclick="setMood('ethereal', this)" title="Ethereal">✨</span>
+                    <span onclick="setMood('grounded', this)" title="Grounded">🌿</span>
+                    <span onclick="setMood('flickering', this)" title="Flickering">🔥</span>
+                    <span onclick="setMood('stormy', this)" title="Stormy">⛈️</span>
+                    <span onclick="setMood('waning', this)" title="Waning">🌑</span>
+                </div>
+                <div class="vital-stat"><span>Dream Cycle (Sleep)</span> <input type="number" id="sleep-input" class="vital-input" onchange="saveVitals()"></div>
+                <div class="vital-stat"><span>Restorative Elixir (Water)</span> <input type="number" id="water-input" class="vital-input" onchange="saveVitals()"></div>
+                <div class="vital-stat"><span>Mana Sustenance (Meals)</span> <input type="number" id="meal-input" class="vital-input" onchange="saveVitals()"></div>
             </div>
-            <div class="vital-stat"><span>Dream Cycle (Sleep)</span> <input type="number" id="sleep-input" class="vital-input" onchange="saveVitals()"></div>
-            <div class="vital-stat"><span>Restorative Elixir (Water)</span> <input type="number" id="water-input" class="vital-input" onchange="saveVitals()"></div>
-            <div class="vital-stat"><span>Mana Sustenance (Meals)</span> <input type="number" id="meal-input" class="vital-input" onchange="saveVitals()"></div>
         </div>
     </div>
 
@@ -260,35 +264,22 @@
         // 1. Core Ignition Sequence
         function igniteRealm() {
             try {
-                // Disable button immediately to prevent double clicks and errors
                 document.getElementById('enter-overlay').style.pointerEvents = 'none';
                 document.getElementById('enter-overlay').style.opacity = '0';
-                
-                setTimeout(() => { 
-                    document.getElementById('enter-overlay').style.display = 'none'; 
-                }, 1200);
+                setTimeout(() => { document.getElementById('enter-overlay').style.display = 'none'; }, 1200);
 
-                // Audio Initiation
-                ah.volume = 0.5; 
-                ag.volume = 0.5;
+                ah.volume = 0.5; ag.volume = 0.5;
                 let playPromise = ah.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => console.log("Audio autoplay blocked by browser."));
+                    playPromise.catch(error => console.log("Audio autoplay blocked."));
                 }
 
-                // Subsystems
-                createEmbers(); 
-                createDust(); 
-                createGardenParticles();
-                renderCalendar(); 
-                renderReagents(); 
-                renderBlog(); 
-                loadVitals(); 
-                fetchWeather();
+                createEmbers(); createDust(); createGardenParticles();
+                renderCalendar(); renderReagents(); renderBlog(); loadVitals(); fetchWeather();
 
                 document.getElementById('weather-widget').classList.add('visible');
             } catch (error) {
-                console.error("Ignition sequence failed:", error);
+                console.error("Ignition failed:", error);
             }
         }
 
@@ -297,18 +288,13 @@
             if(room === currentRoom) return;
             currentRoom = room;
 
-            // Update UI Portals
             document.querySelectorAll('.portal-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-'+room).classList.add('active');
             
-            // Switch Layers
             document.querySelectorAll('.layer-container').forEach(l => l.classList.add('hidden'));
             document.getElementById(room+'-layer').classList.remove('hidden');
 
-            // Handle Media Streams
-            ah.pause(); 
-            ag.pause(); 
-            sv.pause();
+            ah.pause(); ag.pause(); sv.pause();
 
             if(room === 'hearth') { ah.play(); }
             if(room === 'garden') { ag.play(); }
@@ -321,11 +307,9 @@
 
         // 3. Particle Engines
         function createEmbers() {
-            const container = document.getElementById('embers-container'); 
-            container.innerHTML = '';
+            const container = document.getElementById('embers-container'); container.innerHTML = '';
             for(let i=0; i<30; i++) {
-                let ember = document.createElement('div'); 
-                ember.className = 'ember';
+                let ember = document.createElement('div'); ember.className = 'ember';
                 ember.style.left = Math.random() * 100 + '%';
                 ember.style.animationDuration = (Math.random() * 5 + 4) + 's';
                 ember.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
@@ -334,43 +318,29 @@
         }
 
         function createDust() {
-            const container = document.getElementById('dust-container'); 
-            container.innerHTML = '';
+            const container = document.getElementById('dust-container'); container.innerHTML = '';
             for(let i=0; i<60; i++) {
-                let dust = document.createElement('div'); 
-                dust.className = 'dust-mote';
-                let size = Math.random() * 3 + 1 + 'px'; 
-                dust.style.width = size; 
-                dust.style.height = size;
-                dust.style.left = Math.random() * 100 + '%'; 
-                dust.style.top = Math.random() * 100 + '%';
+                let dust = document.createElement('div'); dust.className = 'dust-mote';
+                let size = Math.random() * 3 + 1 + 'px'; dust.style.width = size; dust.style.height = size;
+                dust.style.left = Math.random() * 100 + '%'; dust.style.top = Math.random() * 100 + '%';
                 dust.style.animationDuration = (Math.random() * 10 + 8) + 's';
                 container.appendChild(dust);
             }
         }
 
         function createGardenParticles() {
-            const container = document.getElementById('garden-particles'); 
-            container.innerHTML = '';
-            // Drips
+            const container = document.getElementById('garden-particles'); container.innerHTML = '';
             for(let i=0; i<25; i++) {
-                let drip = document.createElement('div'); 
-                drip.className = 'drip';
-                drip.style.left = Math.random() * 100 + '%'; 
-                drip.style.height = (Math.random() * 20 + 10) + 'px';
-                drip.style.animationDuration = (Math.random() * 1.5 + 0.5) + 's'; 
-                drip.style.animationDelay = (Math.random() * 2) + 's';
+                let drip = document.createElement('div'); drip.className = 'drip';
+                drip.style.left = Math.random() * 100 + '%'; drip.style.height = (Math.random() * 20 + 10) + 'px';
+                drip.style.animationDuration = (Math.random() * 1.5 + 0.5) + 's'; drip.style.animationDelay = (Math.random() * 2) + 's';
                 container.appendChild(drip);
             }
-            // Petals
             for(let i=0; i<15; i++) {
-                let petal = document.createElement('div'); 
-                petal.className = 'petal';
+                let petal = document.createElement('div'); petal.className = 'petal';
                 petal.style.left = Math.random() * 100 + '%';
-                petal.style.animationDuration = (Math.random() * 8 + 6) + 's'; 
-                petal.style.animationDelay = (Math.random() * 5) + 's';
-                petal.style.setProperty('--drift', (Math.random() * 200 - 100) + 'px'); 
-                petal.style.setProperty('--spin', (Math.random() * 360) + 'deg');
+                petal.style.animationDuration = (Math.random() * 8 + 6) + 's'; petal.style.animationDelay = (Math.random() * 5) + 's';
+                petal.style.setProperty('--drift', (Math.random() * 200 - 100) + 'px'); petal.style.setProperty('--spin', (Math.random() * 360) + 'deg');
                 container.appendChild(petal);
             }
         }
@@ -384,41 +354,24 @@
                 document.getElementById('weather-temp').innerText = Math.round(data.current.temperature_2m) + "°F";
                 document.getElementById('weather-desc').innerText = "Farmington, MS";
                 
-                let icon = "✨"; 
-                const code = data.current.weather_code;
-                if (code === 0) icon = "🌙"; 
-                else if (code <= 3) icon = "☁️"; 
-                else if (code >= 51) icon = "🌧️";
-                
+                let icon = "✨"; const code = data.current.weather_code;
+                if (code === 0) icon = "🌙"; else if (code <= 3) icon = "☁️"; else if (code >= 51) icon = "🌧️";
                 document.getElementById('weather-icon').innerText = icon;
-            } catch(error) {
-                console.log("Weather API failed to load.");
-            }
+            } catch(error) { console.log("Weather API failed to load."); }
         }
 
         // 5. Hearth Almanac & Reagents
         function renderCalendar() {
-            const container = document.getElementById('calendar-body'); 
-            container.innerHTML = ''; 
-            const date = new Date();
-            
+            const container = document.getElementById('calendar-body'); container.innerHTML = ''; const date = new Date();
             for(let i=1; i<=31; i++) {
-                let dayDiv = document.createElement('div'); 
-                dayDiv.className = 'day-num'; 
-                dayDiv.innerText = i;
-                
+                let dayDiv = document.createElement('div'); dayDiv.className = 'day-num'; dayDiv.innerText = i;
                 let key = `log-${date.getFullYear()}-${date.getMonth()}-${i}`;
                 
-                if(localStorage.getItem(key)) {
-                    dayDiv.classList.add('has-log');
-                }
-                if(i === date.getDate()) {
-                    dayDiv.classList.add('today');
-                }
+                if(localStorage.getItem(key)) dayDiv.classList.add('has-log');
+                if(i === date.getDate()) dayDiv.classList.add('today');
                 
                 dayDiv.onclick = () => { 
-                    selectedDate = key; 
-                    document.getElementById('log-date-title').innerText = `Record Day ${i}`; 
+                    selectedDate = key; document.getElementById('log-date-title').innerText = `Record Day ${i}`; 
                     document.getElementById('log-entry').value = localStorage.getItem(key) || ''; 
                     document.getElementById('log-modal').style.display = 'flex'; 
                     setTimeout(() => document.getElementById('log-modal').style.opacity = '1', 10); 
@@ -429,33 +382,21 @@
 
         function saveLog() { 
             const entryValue = document.getElementById('log-entry').value; 
-            if(!entryValue.trim()) {
-                localStorage.removeItem(selectedDate); 
-            } else {
-                localStorage.setItem(selectedDate, entryValue); 
-            }
-            closeLog(); 
-            renderCalendar(); 
+            if(!entryValue.trim()) localStorage.removeItem(selectedDate); 
+            else localStorage.setItem(selectedDate, entryValue); 
+            closeLog(); renderCalendar(); 
         }
 
-        function closeLog() { 
-            document.getElementById('log-modal').style.opacity = '0'; 
-            setTimeout(() => document.getElementById('log-modal').style.display = 'none', 500); 
-        }
+        function closeLog() { document.getElementById('log-modal').style.opacity = '0'; setTimeout(() => document.getElementById('log-modal').style.display = 'none', 500); }
 
         function addReagent() { 
-            const input = document.getElementById('reagent-input'); 
-            if(!input.value) return; 
-            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); 
-            reagents.push(input.value); 
-            localStorage.setItem('reagents', JSON.stringify(reagents)); 
-            input.value = ''; 
-            renderReagents(); 
+            const input = document.getElementById('reagent-input'); if(!input.value) return; 
+            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); reagents.push(input.value); 
+            localStorage.setItem('reagents', JSON.stringify(reagents)); input.value = ''; renderReagents(); 
         }
 
         function renderReagents() { 
-            const display = document.getElementById('reagent-display'); 
-            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); 
+            const display = document.getElementById('reagent-display'); const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); 
             display.innerHTML = reagents.map((item, idx) => `
                 <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
                     <span>✦ ${item}</span>
@@ -465,16 +406,13 @@
         }
 
         function removeReagent(idx) { 
-            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); 
-            reagents.splice(idx, 1); 
-            localStorage.setItem('reagents', JSON.stringify(reagents)); 
-            renderReagents(); 
+            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); reagents.splice(idx, 1); 
+            localStorage.setItem('reagents', JSON.stringify(reagents)); renderReagents(); 
         }
 
         // 6. Tower Focus Systems
         function startTimer(minutes) { 
-            clearInterval(timerInterval); 
-            secondsRemaining = minutes * 60; 
+            clearInterval(timerInterval); secondsRemaining = minutes * 60; 
             timerInterval = setInterval(() => { 
                 secondsRemaining--; 
                 let min = Math.floor(secondsRemaining / 60).toString().padStart(2, '0'); 
@@ -484,24 +422,18 @@
             }, 1000); 
         }
 
-        function stopTimer() { 
-            clearInterval(timerInterval); 
-            document.getElementById('timer-display').innerText = "25:00"; 
-        }
+        function stopTimer() { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "25:00"; }
 
         function logWork() { 
-            const noteInput = document.getElementById('work-note').value; 
-            if(!noteInput.trim()) return; 
+            const noteInput = document.getElementById('work-note').value; if(!noteInput.trim()) return; 
             const journal = JSON.parse(localStorage.getItem('journal') || '[]'); 
             journal.unshift({ts: new Date().toLocaleString(), note: noteInput}); 
             localStorage.setItem('journal', JSON.stringify(journal)); 
-            document.getElementById('work-note').value = ''; 
-            renderBlog(); 
+            document.getElementById('work-note').value = ''; renderBlog(); 
         }
 
         function renderBlog() { 
-            const container = document.getElementById('blog-container'); 
-            const journal = JSON.parse(localStorage.getItem('journal') || '[]'); 
+            const container = document.getElementById('blog-container'); const journal = JSON.parse(localStorage.getItem('journal') || '[]'); 
             container.innerHTML = journal.map(post => `
                 <div style="margin-bottom:10px; border-left:1px solid var(--gold); padding-left:10px;">
                     <div style="color:var(--gold); font-size:0.7rem;">${post.ts}</div>
@@ -513,8 +445,7 @@
         // 7. Garden Vitals
         function setMood(mood, element) { 
             document.querySelectorAll('.mood-icons span').forEach(s => s.classList.remove('selected')); 
-            element.classList.add('selected'); 
-            localStorage.setItem('vital-mood', mood); 
+            element.classList.add('selected'); localStorage.setItem('vital-mood', mood); 
         }
 
         function saveVitals() { 
@@ -536,9 +467,7 @@
                         document.querySelectorAll('.mood-icons span')[moodMap[savedMood]].classList.add('selected'); 
                     }
                 } 
-            } catch (error) {
-                console.log("Error loading vitals");
-            }
+            } catch (error) { console.log("Error loading vitals"); }
         }
 
         // 8. Grimoire Modal Framework
@@ -546,21 +475,12 @@
             activeGrimoire = `grim-${subject.replace(/\s+/g, '-').toLowerCase()}`; 
             document.getElementById('grimoire-title').innerText = subject; 
             document.getElementById('grimoire-text').value = localStorage.getItem(activeGrimoire) || ''; 
-            toggleView('grim'); 
-            document.getElementById('grimoire-modal').style.display = 'flex'; 
-            setTimeout(() => document.getElementById('grimoire-modal').style.opacity = '1', 10); 
-            updateTOC(); 
+            toggleView('grim'); document.getElementById('grimoire-modal').style.display = 'flex'; 
+            setTimeout(() => document.getElementById('grimoire-modal').style.opacity = '1', 10); updateTOC(); 
         }
 
-        function saveGrimoire() { 
-            localStorage.setItem(activeGrimoire, document.getElementById('grimoire-text').value); 
-            closeGrimoire(); 
-        }
-
-        function closeGrimoire() { 
-            document.getElementById('grimoire-modal').style.opacity = '0'; 
-            setTimeout(() => document.getElementById('grimoire-modal').style.display = 'none', 500); 
-        }
+        function saveGrimoire() { localStorage.setItem(activeGrimoire, document.getElementById('grimoire-text').value); closeGrimoire(); }
+        function closeGrimoire() { document.getElementById('grimoire-modal').style.opacity = '0'; setTimeout(() => document.getElementById('grimoire-modal').style.display = 'none', 500); }
 
         function toggleView(view) { 
             document.getElementById('grimoire-view').style.display = view === 'grim' ? 'flex' : 'none'; 
@@ -568,42 +488,27 @@
             document.getElementById('legend-view').style.display = view === 'leg' ? 'flex' : 'none'; 
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
             document.getElementById('tab-'+view).classList.add('active'); 
-            if(view === 'lex') renderLexicon(); 
-            if(view === 'leg') renderLegend(); 
+            if(view === 'lex') renderLexicon(); if(view === 'leg') renderLegend(); 
         }
         
         function updateTOC() { 
-            const text = document.getElementById('grimoire-text').value; 
-            const toc = document.getElementById('grimoire-toc'); 
-            toc.innerHTML = ''; 
+            const text = document.getElementById('grimoire-text').value; const toc = document.getElementById('grimoire-toc'); toc.innerHTML = ''; 
             text.split('\n').forEach(line => { 
                 if(line.startsWith('#')) { 
-                    const title = line.replace('#', '').trim(); 
-                    const span = document.createElement('span'); 
-                    span.className = 'toc-link'; 
-                    span.innerText = title; 
-                    span.onclick = () => { 
-                        const area = document.getElementById('grimoire-text'); 
-                        area.focus(); 
-                        const index = text.indexOf(line); 
-                        area.setSelectionRange(index, index); 
-                    }; 
+                    const title = line.replace('#', '').trim(); const span = document.createElement('span'); 
+                    span.className = 'toc-link'; span.innerText = title; 
+                    span.onclick = () => { const area = document.getElementById('grimoire-text'); area.focus(); const index = text.indexOf(line); area.setSelectionRange(index, index); }; 
                     toc.appendChild(span); 
                 }
             }); 
         }
 
         function addLexicon() { 
-            const termInput = document.getElementById('lex-term'); 
-            const defInput = document.getElementById('lex-def'); 
+            const termInput = document.getElementById('lex-term'); const defInput = document.getElementById('lex-def'); 
             if(!termInput.value || !defInput.value) return; 
-            const lexicon = JSON.parse(localStorage.getItem('lexicon') || '[]'); 
-            lexicon.push({t: termInput.value, d: defInput.value}); 
-            lexicon.sort((a,b) => a.t.localeCompare(b.t)); 
-            localStorage.setItem('lexicon', JSON.stringify(lexicon)); 
-            termInput.value = ''; 
-            defInput.value = ''; 
-            renderLexicon(); 
+            const lexicon = JSON.parse(localStorage.getItem('lexicon') || '[]'); lexicon.push({t: termInput.value, d: defInput.value}); 
+            lexicon.sort((a,b) => a.t.localeCompare(b.t)); localStorage.setItem('lexicon', JSON.stringify(lexicon)); 
+            termInput.value = ''; defInput.value = ''; renderLexicon(); 
         }
 
         function renderLexicon() { 
@@ -618,21 +523,16 @@
         }
 
         function removeLex(idx) { 
-            const lexicon = JSON.parse(localStorage.getItem('lexicon') || '[]'); 
-            lexicon.splice(idx, 1); 
-            localStorage.setItem('lexicon', JSON.stringify(lexicon)); 
-            renderLexicon(); 
+            const lexicon = JSON.parse(localStorage.getItem('lexicon') || '[]'); lexicon.splice(idx, 1); 
+            localStorage.setItem('lexicon', JSON.stringify(lexicon)); renderLexicon(); 
         }
         
         function addLegend() { 
-            const input = document.getElementById('leg-input'); 
-            if(!input.value) return; 
+            const input = document.getElementById('leg-input'); if(!input.value) return; 
             const defaultMilestones = [{t:"The Primal Spark: Scribe your creation myth.", c:false}];
             const legend = JSON.parse(localStorage.getItem('legend') || JSON.stringify(defaultMilestones)); 
-            legend.push({t: input.value, c: false}); 
-            localStorage.setItem('legend', JSON.stringify(legend)); 
-            input.value = ''; 
-            renderLegend(); 
+            legend.push({t: input.value, c: false}); localStorage.setItem('legend', JSON.stringify(legend)); 
+            input.value = ''; renderLegend(); 
         }
 
         function renderLegend() { 
@@ -653,17 +553,13 @@
         }
 
         function toggleLeg(idx) { 
-            const legend = JSON.parse(localStorage.getItem('legend') || '[]'); 
-            legend[idx].c = !legend[idx].c; 
-            localStorage.setItem('legend', JSON.stringify(legend)); 
-            renderLegend(); 
+            const legend = JSON.parse(localStorage.getItem('legend') || '[]'); legend[idx].c = !legend[idx].c; 
+            localStorage.setItem('legend', JSON.stringify(legend)); renderLegend(); 
         }
 
         function removeLeg(idx) { 
-            const legend = JSON.parse(localStorage.getItem('legend') || '[]'); 
-            legend.splice(idx, 1); 
-            localStorage.setItem('legend', JSON.stringify(legend)); 
-            renderLegend(); 
+            const legend = JSON.parse(localStorage.getItem('legend') || '[]'); legend.splice(idx, 1); 
+            localStorage.setItem('legend', JSON.stringify(legend)); renderLegend(); 
         }
 
         function exportData() { 
@@ -675,9 +571,7 @@
             const blob = new Blob([JSON.stringify(dataObj)], {type: 'application/json'}); 
             const url = URL.createObjectURL(blob); 
             const a = document.createElement('a'); 
-            a.href = url; 
-            a.download = 'moons-hearth-scroll.json'; 
-            a.click(); 
+            a.href = url; a.download = 'moons-hearth-scroll.json'; a.click(); 
         }
     </script>
 </body>
