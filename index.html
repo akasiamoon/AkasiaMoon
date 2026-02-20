@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moon's Hearth - A Provisioner's Guide</title>
+<title>Moon's Hearth - The Provisioner's Almanac</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
     :root {
         --gold: #d4af37;
         --gold-glow: rgba(212, 175, 55, 0.4);
         --fire: #ff6a00;
-        --glass: rgba(10, 8, 6, 0.75);
+        --glass: rgba(10, 8, 6, 0.8);
         --text: #fdf5e6;
         --parchment: #e3d5b8;
     }
@@ -54,46 +54,39 @@
         z-index: 1; pointer-events: none;
     }
 
-    /* --- UI Container (Aligned Right) --- */
+    /* --- Right UI Panel --- */
     .ui-container {
-        position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
-        z-index: 10; display: flex; flex-direction: column; align-items: flex-end; gap: 20px;
+        position: absolute; right: 40px; top: 50%; transform: translateY(-50%);
+        z-index: 10; display: flex; flex-direction: column; gap: 20px; width: 440px;
     }
 
-    /* --- ESO Style Navigation --- */
-    .provision-nav { display: flex; flex-direction: row; gap: 10px; margin-bottom: 10px; }
-    .nav-btn {
-        background: var(--glass); backdrop-filter: blur(10px);
-        border: 1px solid var(--gold-glow); padding: 10px 15px;
-        color: var(--gold); font-family: 'Cinzel'; font-size: 0.7rem;
-        letter-spacing: 1px; transition: 0.3s; border-radius: 2px; cursor: pointer;
-    }
-    .nav-btn:hover, .nav-btn.active { background: var(--gold); color: #000; }
-
-    /* --- The Recipe Journal --- */
-    .journal-panel {
-        width: 420px; max-height: 75vh;
+    .glass-panel {
         background: var(--glass); backdrop-filter: blur(25px);
         border: 1px solid var(--gold-glow); border-radius: 2px;
-        padding: 40px; box-shadow: 0 25px 70px rgba(0,0,0,1);
-        display: flex; flex-direction: column;
-    }
-    .journal-header h1 {
-        font-family: 'Cinzel', serif; font-size: 1.8rem; margin: 0; text-align: center;
-        letter-spacing: 4px; color: var(--gold); text-shadow: 0 0 10px var(--gold-glow);
+        padding: 30px; box-shadow: 0 25px 70px rgba(0,0,0,1);
     }
 
-    .recipe-container { overflow-y: auto; padding-right: 10px; margin-top: 25px; }
-    .recipe-card {
-        margin-bottom: 20px; padding: 18px; cursor: pointer;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.15); transition: 0.3s;
-        text-align: left;
+    /* --- Almanac Styles --- */
+    .almanac-header { text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 10px; margin-bottom: 20px; }
+    .almanac-header h1 { font-family: 'Cinzel', serif; font-size: 1.6rem; color: var(--gold); margin: 0; letter-spacing: 3px; }
+    
+    .calendar-grid {
+        display: grid; grid-template-columns: repeat(7, 1fr);
+        gap: 5px; text-align: center; font-family: 'Cinzel', serif; font-size: 0.7rem;
     }
-    .recipe-card:hover { background: rgba(212, 175, 55, 0.08); border-bottom-color: var(--gold); transform: translateX(-5px); }
-    .recipe-card h4 { font-family: 'Cinzel', serif; font-size: 1.1rem; margin: 0; color: var(--gold); }
-    .recipe-card p { font-size: 0.95rem; font-style: italic; color: var(--parchment); margin: 8px 0 0 0; opacity: 0.7; }
+    .day-name { color: var(--gold); font-weight: bold; padding-bottom: 10px; }
+    .day-num { padding: 8px; border: 1px solid rgba(212, 175, 55, 0.1); opacity: 0.7; }
+    .day-num.today { background: var(--gold); color: #000; font-weight: bold; opacity: 1; box-shadow: 0 0 10px var(--gold); }
 
-    /* --- Particles --- */
+    /* --- Provisioning Section --- */
+    .recipe-list { max-height: 250px; overflow-y: auto; margin-top: 15px; }
+    .recipe-item {
+        padding: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        cursor: pointer; transition: 0.3s; text-align: left;
+    }
+    .recipe-item:hover { background: rgba(212, 175, 55, 0.05); color: var(--gold); }
+    .recipe-item h4 { margin: 0; font-family: 'Cinzel'; font-size: 0.9rem; }
+
     #particles { position: absolute; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
     .ember { position: absolute; bottom: -20px; background: var(--fire); border-radius: 50%; opacity: 0; animation: rise linear infinite; }
     @keyframes rise {
@@ -106,7 +99,7 @@
 <body>
 
     <div id="enter-overlay">
-        <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:10px; margin-bottom:30px; text-shadow: 0 0 20px var(--gold-glow);">MOON'S HEARTH</h2>
+        <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:10px; margin-bottom:30px;">MOON'S HEARTH</h2>
         <button class="enter-btn" onclick="igniteHearth()">Enter the Hearth</button>
     </div>
 
@@ -116,20 +109,25 @@
     <audio id="hearth-audio" loop><source src="fire.mp3" type="audio/mpeg"></audio>
 
     <div class="ui-container">
-        <div class="provision-nav">
-            <div class="nav-btn" onclick="loadRecipes('meat')">Meats</div>
-            <div class="nav-btn" onclick="loadRecipes('fruit')">Fruits</div>
-            <div class="nav-btn" onclick="loadRecipes('veg')">Vegetables</div>
-            <div class="nav-btn" onclick="loadRecipes('brew')">Brews</div>
+        <div class="glass-panel">
+            <div class="almanac-header">
+                <h1 id="current-month">The Almanac</h1>
+                <p id="current-year" style="font-family:'Cinzel'; font-size:0.6rem; color:var(--gold); margin:5px 0 0 0; letter-spacing: 2px;"></p>
+            </div>
+            <div class="calendar-grid" id="calendar-body">
+                </div>
         </div>
 
-        <div class="journal-panel">
-            <div class="journal-header">
-                <h1 id="cat-title">Provisioning</h1>
-                <p id="cat-desc" style="font-family:'Cinzel'; font-size:0.6rem; text-align:center; color:var(--gold); margin-top:5px; letter-spacing: 2px;">Adamsville Master Journal</p>
+        <div class="glass-panel">
+            <div style="text-align:center; border-bottom: 1px solid var(--gold-glow); padding-bottom: 10px;">
+                <h3 style="font-family:'Cinzel'; margin:0; font-size: 1rem; color: var(--gold);">Provisioning Log</h3>
             </div>
-            <div class="recipe-container" id="recipe-list">
-                </div>
+            <div class="recipe-list">
+                <div class="recipe-item"><h4>✦ Winter-Breaker Stew</h4></div>
+                <div class="recipe-item"><h4>✦ Scholar’s Lemon Loaf</h4></div>
+                <div class="recipe-item"><h4>✦ Hearth-Fried Pies</h4></div>
+                <div class="recipe-item"><h4>✦ Dasher’s Provisions</h4></div>
+            </div>
         </div>
     </div>
 
@@ -141,53 +139,41 @@
             overlay.style.opacity = '0';
             setTimeout(() => { overlay.style.display = 'none'; }, 1200);
             audio.volume = 0.5; audio.play();
-            loadRecipes('meat');
+            renderCalendar();
         }
 
-        const data = {
-            'meat': {
-                title: 'Grilled & Meaty',
-                recipes: [
-                    { name: 'Adamsville Winter Stew', desc: 'A restorative root soup crafted for the deep ice storms of Tennessee.' },
-                    { name: 'Hunter’s Skillet Medley', desc: 'Searing meat seasoned with wild-harvested forest herbs.' }
-                ]
-            },
-            'fruit': {
-                title: 'Orchard Sweets',
-                recipes: [
-                    { name: 'Scholar’s Lemon Loaf', desc: 'Zesty bread to grant focus during homeschool study sessions.' },
-                    { name: 'Hearth-Fried Pies', desc: 'Spiced fruit provisions sealed in golden, crispy dough.' }
-                ]
-            },
-            'veg': {
-                title: 'Garden Greens',
-                recipes: [
-                    { name: 'Traveling Dasher’s Beans', desc: 'Slow-simmered pinto beans for the weary traveler on delivery quests.' },
-                    { name: 'Roasted Russet Coins', desc: 'Slices of potato crisped over a stone-fire hearth.' }
-                ]
-            },
-            'brew': {
-                title: 'Hearth Brews',
-                recipes: [
-                    { name: 'Blue Stitch Tonic', desc: 'A bright, tropical tonic inspired by island magic and spirited companions.' },
-                    { name: 'Night-Shift Spice Tea', desc: 'A warming beverage for long night shifts at the forge.' }
-                ]
-            }
-        };
+        function renderCalendar() {
+            const now = new Date();
+            const monthNames = ["Morning Star", "Sun's Dawn", "First Seed", "Rain's Hand", "Second Seed", "Midyear", "Sun's Height", "Last Seed", "Hearthfire", "Frostfall", "Sun's Dusk", "Evening Star"];
+            
+            document.getElementById('current-month').innerText = monthNames[now.getMonth()];
+            document.getElementById('current-year').innerText = "Year " + now.getFullYear();
 
-        function loadRecipes(cat) {
-            const section = data[cat];
-            document.getElementById('cat-title').innerText = section.title;
-            const list = document.getElementById('recipe-list');
-            list.innerHTML = '';
-            section.recipes.forEach(r => {
-                list.innerHTML += `
-                    <div class="recipe-card">
-                        <h4>✦ ${r.name}</h4>
-                        <p>${r.desc}</p>
-                    </div>
-                `;
+            const calBody = document.getElementById('calendar-body');
+            const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+            
+            days.forEach(d => {
+                let dayEl = document.createElement('div');
+                dayEl.className = 'day-name';
+                dayEl.innerText = d;
+                calBody.appendChild(dayEl);
             });
+
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+            const totalDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+            for(let i=0; i<firstDay; i++) {
+                let blank = document.createElement('div');
+                calBody.appendChild(blank);
+            }
+
+            for(let d=1; d<=totalDays; d++) {
+                let dateEl = document.createElement('div');
+                dateEl.className = 'day-num';
+                if(d === now.getDate()) dateEl.classList.add('today');
+                dateEl.innerText = d;
+                calBody.appendChild(dateEl);
+            }
         }
 
         const pCont = document.getElementById('particles');
