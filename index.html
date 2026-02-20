@@ -22,7 +22,6 @@
     .enter-btn { font-size: 1.5rem; padding: 15px 45px; letter-spacing: 5px; text-transform: uppercase; box-shadow: 0 0 30px var(--gold-glow); }
     .enter-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
 
-    /* --- GLOBAL UI ELEMENTS --- */
     .golden-text {
         background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
         -webkit-background-clip: text;
@@ -31,16 +30,14 @@
         text-shadow: 0px 2px 10px rgba(212, 175, 55, 0.2);
     }
 
+    /* --- PORTALS & WEATHER --- */
     .room-portal { position: absolute; left: 30px; top: 30px; z-index: 2000; display: flex; gap: 10px; }
     .portal-btn { padding: 10px 20px; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; }
     .portal-btn.active, .portal-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
     .ui-toggle-btn { position: absolute; right: 30px; top: 30px; z-index: 2000; padding: 10px 20px; font-size: 0.9rem; letter-spacing: 2px; }
 
-    #master-audio-btn { position: absolute; left: 30px; top: 80px; z-index: 2000; padding: 5px 15px; font-size: 0.8rem; }
-
-    /* --- WEATHER WIDGET (Fixed position) --- */
     .weather-widget { 
-        position: absolute; bottom: 30px; left: 30px; z-index: 2500; 
+        position: absolute; top: 20px; right: 500px; z-index: 2500; 
         background: radial-gradient(circle, rgba(40, 30, 20, 0.9) 0%, rgba(10, 8, 5, 0.95) 100%);
         border: 2px solid var(--gold); width: 110px; height: 110px; border-radius: 50%;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -52,35 +49,13 @@
     #weather-temp { font-family: 'Cinzel'; color: var(--gold); font-size: 1.2rem; font-weight: 900; z-index: 2; text-shadow: 0 2px 4px #000; }
     #weather-desc { font-family: 'Cormorant Garamond'; color: var(--parchment); font-size: 0.6rem; font-style: italic; z-index: 2; letter-spacing: 1px; text-transform: uppercase; }
 
-    /* --- COLLAPSIBLE MOOD SIDEBAR --- */
-    .mood-sidebar {
-        position: fixed; right: 0; top: 15vh; height: 70vh; width: 250px;
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-        transform: translateX(100%); z-index: 3000;
-        display: flex; flex-direction: column;
-    }
-    .mood-sidebar.open { transform: translateX(0); }
-    .mood-toggle {
-        position: absolute; left: -85px; top: 20px; width: 80px; 
-        border-radius: 8px 0 0 8px; border-right: none;
-        background: var(--glass); color: var(--gold); border: 1px solid var(--gold);
-        font-family: 'Cinzel'; padding: 10px; cursor: pointer; backdrop-filter: blur(10px);
-    }
-    .mood-options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-    .mood-btn {
-        background: rgba(0,0,0,0.5); border: 1px solid var(--gold-glow); 
-        color: var(--parchment); font-family: 'Cinzel'; padding: 10px; 
-        cursor: pointer; transition: 0.3s;
-    }
-    .mood-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 10px var(--gold-glow); }
-
     /* --- ROOM LAYERS --- */
     .layer-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1s ease; background-size: cover; background-position: center; }
     .hidden { opacity: 0; pointer-events: none; }
 
     /* UI PANELS */
     .glass-panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--gold-glow); padding: 20px; box-shadow: 0 15px 35px #000; }
-    .panel-header h1 { font-family: 'Cinzel'; font-size: 1.2rem; text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 5px; margin-bottom: 15px; }
+    .panel-header h1 { font-family: 'Cinzel'; font-size: 1.1rem; text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 5px; margin-bottom: 15px; }
     .scholar-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-glow); color: var(--parchment); padding: 10px; font-family: 'Cormorant Garamond'; margin-bottom: 10px; outline: none; box-sizing: border-box; }
     .data-btn { padding: 8px 15px; font-size: 0.8rem; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.7rem; font-family: 'Cinzel'; }
@@ -118,10 +93,13 @@
     .desk-ui-container { position: absolute; right: -450px; top: 50%; transform: translateY(-50%); width: 380px; z-index: 26; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
     .desk-ui-container.open { right: 40px; } 
 
-    /* --- ROOM 3: GARDEN --- */
-    #garden-layer { background-image: url('garden_bg.png'); background-color: #111; }
-    #garden-particles { position: absolute; width: 100%; height: 100%; z-index: 11; pointer-events: none; overflow: hidden; }
-    .garden-ui { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); z-index: 15; width: 420px; display: flex; flex-direction: column; gap: 15px; }
+    /* --- ROOM 3: READING NOOK --- */
+    #nook-layer { background-image: url('garden_bg.png'); background-color: #111; }
+    #nook-particles { position: absolute; width: 100%; height: 100%; z-index: 11; pointer-events: none; overflow: hidden; }
+    
+    /* Collapsible Nook UI */
+    .nook-ui-container { position: absolute; right: -450px; top: 50%; transform: translateY(-50%); width: 420px; z-index: 26; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .nook-ui-container.open { right: 40px; }
     
     .vital-stat { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(212,175,55,0.1); font-family: 'Cinzel'; font-size: 0.9rem; }
     .vital-input { background: rgba(0,0,0,0.4); border: 1px solid var(--gold-glow); color: var(--gold); font-family: 'Cinzel'; width: 60px; text-align: center; padding: 5px; outline: none; }
@@ -147,13 +125,9 @@
     /* Particle Animations */
     .ember { position: absolute; bottom:-20px; background:var(--fire); width: 5px; height: 5px; border-radius:50%; box-shadow:0 0 10px var(--fire); opacity:0; animation:rise linear infinite; }
     .dust-mote { position: absolute; background: rgba(255, 230, 180, 0.4); border-radius: 50%; box-shadow: 0 0 5px rgba(255,255,255,0.2); opacity: 0; animation: floatDust linear infinite; }
-    .drip { position: absolute; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.4)); width: 2px; border-radius: 2px; opacity: 0; animation: fallDrip linear infinite; }
-    .petal { position: absolute; background: #c84b31; width: 8px; height: 8px; border-radius: 50% 0 50% 50%; opacity: 0; animation: fallPetal linear infinite; box-shadow: 0 0 5px rgba(200,75,49,0.3); }
     
     @keyframes rise { 0% {opacity:0; transform:translateY(0);} 20% {opacity:0.8;} 100% {opacity:0; transform:translateY(-110vh) translateX(var(--drift));} }
     @keyframes floatDust { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-40vh) translateX(30px); } }
-    @keyframes fallDrip { 0% { opacity: 0; transform: translateY(-10vh); } 10% { opacity: 0.5; } 100% { opacity: 0; transform: translateY(110vh); } }
-    @keyframes fallPetal { 0% { opacity: 0; transform: translateY(-10vh) translateX(0) rotate(0deg); } 20% { opacity: 0.8; } 100% { opacity: 0; transform: translateY(110vh) translateX(var(--drift)) rotate(var(--spin)); } }
 </style>
 </head>
 <body>
@@ -166,10 +140,8 @@
     <div class="room-portal">
         <button id="btn-hearth" class="portal-btn active" onclick="switchRoom('hearth')">The Hearth</button>
         <button id="btn-scholar" class="portal-btn" onclick="switchRoom('scholar')">Scholar's Tower</button>
-        <button id="btn-garden" class="portal-btn" onclick="switchRoom('garden')">Sunken Garden</button>
+        <button id="btn-nook" class="portal-btn" onclick="switchRoom('nook')">Reading Nook</button>
     </div>
-
-    <button id="master-audio-btn" class="portal-btn" onclick="toggleMasterAudio()">🔊 Pause Music</button>
 
     <div id="weather-widget" class="weather-widget">
         <div id="weather-icon">✨</div>
@@ -177,20 +149,8 @@
         <div id="weather-desc">Scrying...</div>
     </div>
 
-    <aside id="mood-sidebar" class="mood-sidebar glass-panel">
-        <button id="mood-toggle" class="mood-toggle">◄ Mood</button>
-        <div class="panel-header"><h1 class="golden-text">Current State</h1></div>
-        <div class="mood-options">
-            <button class="mood-btn" onclick="logGlobalMood('Triumphant')">Triumphant</button>
-            <button class="mood-btn" onclick="logGlobalMood('Focused')">Focused</button>
-            <button class="mood-btn" onclick="logGlobalMood('Exhausted')">Exhausted</button>
-            <button class="mood-btn" onclick="logGlobalMood('Reflective')">Reflective</button>
-        </div>
-        <div id="active-mood-display" style="text-align:center; margin-top:20px; font-family:'Cinzel'; color:var(--gold); font-size:1.1rem;"></div>
-    </aside>
-
     <audio id="audio-hearth" loop src="fire.mp3"></audio>
-    <audio id="audio-garden" loop src="nature.mp3"></audio>
+    <audio id="audio-nook" loop src="nature.mp3"></audio>
 
     <div id="hearth-layer" class="layer-container">
         <div id="embers-container"></div>
@@ -253,21 +213,26 @@
         </div>
     </div>
 
-    <div id="garden-layer" class="layer-container hidden">
-        <div id="garden-particles"></div>
-        <div class="garden-ui glass-panel">
-            <div class="panel-header"><h1 class="golden-text">Vital Alchemy</h1></div>
-            <div style="font-family:'Cinzel'; text-align:center; color:var(--gold); margin-bottom:10px; font-size:0.9rem;">Spirit Alignment</div>
-            <div class="mood-icons" id="mood-picker">
-                <span onclick="setMood('ethereal', this)" title="Ethereal">✨</span>
-                <span onclick="setMood('grounded', this)" title="Grounded">🌿</span>
-                <span onclick="setMood('flickering', this)" title="Flickering">🔥</span>
-                <span onclick="setMood('stormy', this)" title="Stormy">⛈️</span>
-                <span onclick="setMood('waning', this)" title="Waning">🌑</span>
+    <div id="nook-layer" class="layer-container hidden">
+        <div id="nook-particles"></div>
+        
+        <button id="nook-toggle-btn" class="portal-btn ui-toggle-btn" onclick="toggleNookUI()">Open Nook UI</button>
+        
+        <div id="nook-ui" class="nook-ui-container">
+            <div class="glass-panel">
+                <div class="panel-header"><h1 class="golden-text">Vital Alchemy</h1></div>
+                <div style="font-family:'Cinzel'; text-align:center; color:var(--gold); margin-bottom:10px; font-size:0.9rem;">Spirit Alignment</div>
+                <div class="mood-icons" id="mood-picker">
+                    <span onclick="setMood('ethereal', this)" title="Ethereal">✨</span>
+                    <span onclick="setMood('grounded', this)" title="Grounded">🌿</span>
+                    <span onclick="setMood('flickering', this)" title="Flickering">🔥</span>
+                    <span onclick="setMood('stormy', this)" title="Stormy">⛈️</span>
+                    <span onclick="setMood('waning', this)" title="Waning">🌑</span>
+                </div>
+                <div class="vital-stat"><span>Dream Cycle (Sleep)</span> <input type="number" id="sleep-input" class="vital-input" onchange="saveVitals()"></div>
+                <div class="vital-stat"><span>Restorative Elixir (Water)</span> <input type="number" id="water-input" class="vital-input" onchange="saveVitals()"></div>
+                <div class="vital-stat"><span>Mana Sustenance (Meals)</span> <input type="number" id="meal-input" class="vital-input" onchange="saveVitals()"></div>
             </div>
-            <div class="vital-stat"><span>Dream Cycle (Sleep)</span> <input type="number" id="sleep-input" class="vital-input" onchange="saveVitals()"></div>
-            <div class="vital-stat"><span>Restorative Elixir (Water)</span> <input type="number" id="water-input" class="vital-input" onchange="saveVitals()"></div>
-            <div class="vital-stat"><span>Mana Sustenance (Meals)</span> <input type="number" id="meal-input" class="vital-input" onchange="saveVitals()"></div>
         </div>
     </div>
 
@@ -279,7 +244,7 @@
                 <button id="tab-lex" class="tab-btn" onclick="toggleView('lex')">Lexicon</button>
                 <button id="tab-leg" class="tab-btn" onclick="toggleView('leg')">Legend</button>
             </div>
-            <h2 id="grimoire-title" style="font-family:'Cinzel'; text-align:center; margin-bottom:10px;"></h2>
+            <h2 id="grimoire-title" class="golden-text" style="font-family:'Cinzel'; text-align:center; margin-bottom:10px;"></h2>
             
             <div id="grimoire-view" style="display:flex; flex-direction:column; flex-grow:1;">
                 <div id="grimoire-toc"></div>
@@ -310,7 +275,7 @@
     <div id="log-modal" onclick="closeLog()">
         <div class="scroll-parchment" onclick="event.stopPropagation()" style="height:auto;">
             <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem;" onclick="closeLog()">×</span>
-            <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center; margin-bottom:20px;"></h2>
+            <h2 id="log-date-title" class="golden-text" style="font-family:'Cinzel'; text-align:center; margin-bottom:20px;"></h2>
             <textarea id="log-entry" style="width:100%; height:200px; background:rgba(0,0,0,0.05); border:1px solid #8b5a2b; padding:15px; font-family:serif; font-size:1.1rem; outline:none;"></textarea>
             <button class="data-btn" onclick="saveLog()" style="width:100%; margin-top:20px; color:#000; background:var(--gold); padding:10px;">Finalize Record</button>
         </div>
@@ -323,30 +288,11 @@
         let secondsRemaining = 0;
         let selectedDate = ''; 
         let activeGrimoire = '';
-        let isAudioMuted = false;
 
         // Media Elements
         const ah = document.getElementById('audio-hearth');
-        const ag = document.getElementById('audio-garden');
+        const an = document.getElementById('audio-nook');
         const sv = document.getElementById('scholar-video-bg');
-
-        // Mood Sidebar Logic
-        const sidebar = document.getElementById('mood-sidebar');
-        const moodToggleBtn = document.getElementById('mood-toggle');
-        
-        moodToggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-            if (sidebar.classList.contains('open')) {
-                moodToggleBtn.innerHTML = 'Mood ►';
-            } else {
-                moodToggleBtn.innerHTML = '◄ Mood';
-            }
-        });
-
-        function logGlobalMood(mood) {
-            document.getElementById('active-mood-display').innerText = `State: ${mood}`;
-            localStorage.setItem('global-mood-state', mood);
-        }
 
         // 1. Core Ignition Sequence
         function igniteRealm() {
@@ -355,36 +301,18 @@
                 document.getElementById('enter-overlay').style.opacity = '0';
                 setTimeout(() => { document.getElementById('enter-overlay').style.display = 'none'; }, 1200);
 
-                ah.volume = 0.5; ag.volume = 0.5;
+                ah.volume = 0.5; an.volume = 0.5;
                 let playPromise = ah.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => console.log("Audio files not found or autoplay blocked. Ensure fire.mp3 is in the folder."));
+                    playPromise.catch(error => console.log("Audio files not found or autoplay blocked."));
                 }
 
-                createEmbers(); createDust(); createGardenParticles();
+                createEmbers(); createDust(); createNookDust();
                 renderCalendar(); renderReagents(); renderBlog(); loadVitals(); fetchWeather();
-
-                const savedGlobalMood = localStorage.getItem('global-mood-state');
-                if(savedGlobalMood) document.getElementById('active-mood-display').innerText = `State: ${savedGlobalMood}`;
 
                 document.getElementById('weather-widget').classList.add('visible');
             } catch (error) {
                 console.error("Ignition failed:", error);
-            }
-        }
-
-        // Master Audio Toggle
-        function toggleMasterAudio() {
-            const btn = document.getElementById('master-audio-btn');
-            isAudioMuted = !isAudioMuted;
-            
-            if(isAudioMuted) {
-                ah.pause(); ag.pause();
-                btn.innerText = "🔇 Play Music";
-            } else {
-                if(currentRoom === 'hearth') ah.play();
-                if(currentRoom === 'garden') ag.play();
-                btn.innerText = "🔊 Pause Music";
             }
         }
 
@@ -399,17 +327,19 @@
             document.querySelectorAll('.layer-container').forEach(l => l.classList.add('hidden'));
             document.getElementById(room+'-layer').classList.remove('hidden');
 
-            ah.pause(); ag.pause(); sv.pause();
+            ah.pause(); an.pause(); sv.pause();
 
-            if(!isAudioMuted) {
-                if(room === 'hearth') { ah.play(); }
-                if(room === 'garden') { ag.play(); }
-            }
+            if(room === 'hearth') { ah.play(); }
+            if(room === 'nook') { an.play(); }
             if(room === 'scholar') { sv.muted = false; sv.play(); }
         }
 
         function toggleDeskUI() { 
             document.getElementById('desk-ui').classList.toggle('open'); 
+        }
+
+        function toggleNookUI() {
+            document.getElementById('nook-ui').classList.toggle('open');
         }
 
         // 3. Particle Engines
@@ -435,20 +365,15 @@
             }
         }
 
-        function createGardenParticles() {
-            const container = document.getElementById('garden-particles'); container.innerHTML = '';
+        function createNookDust() {
+            const container = document.getElementById('nook-particles'); container.innerHTML = '';
+            // Spawning fewer motes so it feels light and reading-appropriate
             for(let i=0; i<25; i++) {
-                let drip = document.createElement('div'); drip.className = 'drip';
-                drip.style.left = Math.random() * 100 + '%'; drip.style.height = (Math.random() * 20 + 10) + 'px';
-                drip.style.animationDuration = (Math.random() * 1.5 + 0.5) + 's'; drip.style.animationDelay = (Math.random() * 2) + 's';
-                container.appendChild(drip);
-            }
-            for(let i=0; i<15; i++) {
-                let petal = document.createElement('div'); petal.className = 'petal';
-                petal.style.left = Math.random() * 100 + '%';
-                petal.style.animationDuration = (Math.random() * 8 + 6) + 's'; petal.style.animationDelay = (Math.random() * 5) + 's';
-                petal.style.setProperty('--drift', (Math.random() * 200 - 100) + 'px'); petal.style.setProperty('--spin', (Math.random() * 360) + 'deg');
-                container.appendChild(petal);
+                let dust = document.createElement('div'); dust.className = 'dust-mote';
+                let size = Math.random() * 3 + 1 + 'px'; dust.style.width = size; dust.style.height = size;
+                dust.style.left = Math.random() * 100 + '%'; dust.style.top = Math.random() * 100 + '%';
+                dust.style.animationDuration = (Math.random() * 12 + 10) + 's'; // slightly slower
+                container.appendChild(dust);
             }
         }
 
@@ -549,7 +474,7 @@
             `).join(''); 
         }
 
-        // 7. Garden Vitals
+        // 7. Reading Nook Vitals
         function setMood(mood, element) { 
             document.querySelectorAll('.mood-icons span').forEach(s => s.classList.remove('selected')); 
             element.classList.add('selected'); localStorage.setItem('vital-mood', mood); 
