@@ -18,10 +18,27 @@
     .room-portal { position: absolute; left: 30px; top: 30px; z-index: 2000; display: flex; gap: 10px; }
     .ui-toggle-btn { position: absolute; right: 30px; top: 30px; z-index: 2000; padding: 10px 20px; font-size: 0.9rem; letter-spacing: 2px; }
 
-    /* --- WEATHER WIDGET (Top Center-Right) --- */
-    .weather-widget { position: absolute; top: 30px; right: 260px; z-index: 2500; background: rgba(10, 8, 6, 0.8); border: 1px solid var(--gold-glow); padding: 8px 15px; border-radius: 8px; display: flex; align-items: center; gap: 12px; transition: 0.5s; opacity: 0; pointer-events: none;}
+    /* --- CELESTIAL SCRYING LENS --- */
+    .weather-widget { 
+        position: absolute; top: 20px; right: 260px; z-index: 2500; 
+        background: radial-gradient(circle, rgba(40, 30, 20, 0.9) 0%, rgba(10, 8, 5, 0.95) 100%);
+        border: 2px solid var(--gold); width: 110px; height: 110px; border-radius: 50%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 15px var(--gold-glow);
+        transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; overflow: hidden;
+    }
     .weather-widget.visible { opacity: 1; pointer-events: auto; }
-    #weather-icon { font-size: 1.8rem; }
+    .weather-widget::after {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%);
+        animation: lensPulse 4s infinite alternate ease-in-out; pointer-events: none;
+    }
+    @keyframes lensPulse { 0% { opacity: 0.2; transform: scale(0.9); } 100% { opacity: 0.5; transform: scale(1.1); } }
+    #weather-icon { font-size: 2rem; z-index: 2; margin-bottom: 2px; filter: drop-shadow(0 0 8px var(--gold)); }
+    #weather-temp { font-family: 'Cinzel'; color: var(--gold); font-size: 1.2rem; font-weight: 900; z-index: 2; text-shadow: 0 2px 4px #000; }
+    #weather-desc { font-family: 'Cormorant Garamond'; color: var(--parchment); font-size: 0.6rem; font-style: italic; z-index: 2; letter-spacing: 1px; text-transform: uppercase; }
+    .lens-shimmer { position: absolute; top: -100%; left: -100%; width: 300%; height: 300%; background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.1) 50%, transparent 55%); animation: shimmerRotate 10s infinite linear; z-index: 3; pointer-events: none; }
+    @keyframes shimmerRotate { 0% { transform: translate(-10%, -10%) rotate(0deg); } 100% { transform: translate(10%, 10%) rotate(360deg); } }
 
     /* ================= LAYERING SYSTEM ================= */
     .layer-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1s ease; }
@@ -41,11 +58,10 @@
     .dust-mote { position: absolute; background: rgba(255, 230, 180, 0.4); border-radius: 50%; animation: floatDust linear infinite; }
     @keyframes floatDust { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.8; } 100% { opacity: 0; transform: translateY(-40vh) translateX(30px); } }
 
-    /* Subject Hotspots */
+    /* Hotspots */
     .scholar-click-layer { z-index: 25; }
     .click-zone { position: absolute; cursor: pointer; transition: 0.3s; border-radius: 5px; }
     .click-zone:hover { box-shadow: inset 0 0 30px var(--gold-glow), 0 0 15px var(--gold-glow); background: rgba(212,175,55,0.1); }
-    
     #zone-lore { top: 58%; left: 5%; width: 18%; height: 25%; } 
     #zone-bard { top: 63%; right: 5%; width: 15%; height: 20%; } 
     #zone-art { top: 20%; left: 2%; width: 12%; height: 15%; } 
@@ -60,7 +76,7 @@
     #timer-display { font-family: 'Cinzel'; font-size: 2.2rem; color: var(--gold); text-align: center; margin: 10px 0; }
     .blog-container { max-height: 250px; overflow-y: auto; margin-top: 10px; }
 
-    /* Typography & Calendar */
+    /* Typography */
     .panel-header h1 { font-family: 'Cinzel'; font-size: 1.1rem; color: var(--gold); text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 5px; margin-bottom: 15px; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.7rem; font-family: 'Cinzel'; }
     .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; }
@@ -69,7 +85,7 @@
 
     /* Modal */
     #log-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
-    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 85%; max-width: 450px; padding: 40px; border-radius: 5px 30px; position: relative;}
+    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 85%; max-width: 450px; padding: 40px; border-radius: 5px 30px; position: relative; }
 </style>
 </head>
 <body>
@@ -85,11 +101,10 @@
     </div>
 
     <div id="weather-widget" class="weather-widget">
+        <div class="lens-shimmer"></div>
         <div id="weather-icon">✨</div>
-        <div class="weather-text">
-            <div id="weather-temp" style="font-family:'Cinzel'; color:var(--gold);">--°F</div>
-            <div id="weather-desc" style="font-size:0.8rem; opacity:0.8;">Scrying...</div>
-        </div>
+        <div id="weather-temp">--°F</div>
+        <div id="weather-desc">Scrying...</div>
     </div>
 
     <audio id="audio-hearth" loop src="fire.mp3"></audio>
@@ -106,7 +121,6 @@
                 <div class="panel-header"><h1>Reagent List</h1></div>
                 <div style="display:flex; gap:8px;"><input type="text" id="reagent-input" class="scholar-input" placeholder="Add ingredient..."><button class="data-btn" onclick="addReagent()">Add</button></div>
                 <div id="reagent-display" style="margin-top:10px; max-height:100px; overflow-y:auto; margin-bottom:15px;"></div>
-                
                 <div style="border-top: 1px solid var(--gold-glow); padding-top:15px; display:flex; justify-content:space-around;">
                     <button class="data-btn" style="font-size:0.7rem;" onclick="exportData()">Export Scroll</button>
                     <button class="data-btn" style="font-size:0.7rem;" onclick="document.getElementById('import-file').click()">Import Scroll</button>
@@ -192,37 +206,9 @@
 
         function toggleDeskUI() { document.getElementById('desk-ui').classList.toggle('open'); }
         function openSubject(subject) { alert(`Opening Grimoire: ${subject}`); }
-
-        function createEmbers() {
-            const p = document.getElementById('embers-container'); p.innerHTML = '';
-            for(let i=0; i<25; i++) {
-                let e = document.createElement('div'); e.className = 'ember';
-                e.style.left = Math.random()*100+'%'; e.style.animationDuration = (Math.random()*5+4)+'s';
-                e.style.setProperty('--drift', (Math.random()*100 - 50)+'px'); p.appendChild(e);
-            }
-        }
-
-        function createDust() {
-            const p = document.getElementById('dust-container'); p.innerHTML = '';
-            for(let i=0; i<80; i++) {
-                let d = document.createElement('div'); d.className = 'dust-mote';
-                let s = Math.random()*3+1+'px'; d.style.width = s; d.style.height = s;
-                d.style.left = Math.random()*100+'%'; d.style.top = Math.random()*100+'%';
-                d.style.animationDuration = (Math.random()*10+8)+'s'; p.appendChild(d);
-            }
-        }
-
-        function renderCalendar() {
-            const cb = document.getElementById('calendar-body'); cb.innerHTML = ''; const n = new Date();
-            for(let i=1; i<=31; i++) {
-                let d = document.createElement('div'); d.className = 'day-num'; d.innerText = i;
-                let k = `log-${n.getFullYear()}-${n.getMonth()}-${i}`;
-                if(localStorage.getItem(k)) d.classList.add('has-log');
-                if(i === n.getDate()) d.classList.add('today');
-                d.onclick = () => openLog(i, k); cb.appendChild(d);
-            }
-        }
-
+        function createEmbers() { const p = document.getElementById('embers-container'); p.innerHTML = ''; for(let i=0; i<25; i++) { let e = document.createElement('div'); e.className = 'ember'; e.style.left = Math.random()*100+'%'; e.style.animationDuration = (Math.random()*5+4)+'s'; e.style.setProperty('--drift', (Math.random()*100 - 50)+'px'); p.appendChild(e); } }
+        function createDust() { const p = document.getElementById('dust-container'); p.innerHTML = ''; for(let i=0; i<80; i++) { let d = document.createElement('div'); d.className = 'dust-mote'; let s = Math.random()*3+1+'px'; d.style.width = s; d.style.height = s; d.style.left = Math.random()*100+'%'; d.style.top = Math.random()*100+'%'; d.style.animationDuration = (Math.random()*10+8)+'s'; p.appendChild(d); } }
+        function renderCalendar() { const cb = document.getElementById('calendar-body'); cb.innerHTML = ''; const n = new Date(); for(let i=1; i<=31; i++) { let d = document.createElement('div'); d.className = 'day-num'; d.innerText = i; let k = `log-${n.getFullYear()}-${n.getMonth()}-${i}`; if(localStorage.getItem(k)) d.classList.add('has-log'); if(i === n.getDate()) d.classList.add('today'); d.onclick = () => openLog(i, k); cb.appendChild(d); } }
         function openLog(d, k) { selectedDate = k; document.getElementById('log-date-title').innerText = `Record Day ${d}`; document.getElementById('log-entry').value = localStorage.getItem(k) || ''; document.getElementById('log-modal').style.display = 'flex'; setTimeout(() => document.getElementById('log-modal').style.opacity = '1', 10); }
         function saveLog() { const v = document.getElementById('log-entry').value; if(!v.trim()) localStorage.removeItem(selectedDate); else localStorage.setItem(selectedDate, v); closeLog(); renderCalendar(); }
         function closeLog() { document.getElementById('log-modal').style.opacity = '0'; setTimeout(() => document.getElementById('log-modal').style.display = 'none', 500); }
