@@ -30,16 +30,26 @@
     .hearth-ui { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); z-index: 15; width: 420px; display: flex; flex-direction: column; gap: 15px; }
     .glass-panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--gold-glow); padding: 20px; box-shadow: 0 15px 35px #000; }
 
-    /* --- SCHOLAR TOWER (VIDEO BG) --- */
+    /* --- SCHOLAR TOWER --- */
     #scholar-video-bg { width: 100%; height: 100%; object-fit: cover; z-index: 20; position: absolute; }
     #dust-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 21; pointer-events: none; overflow: hidden; }
     .dust-mote { position: absolute; background: rgba(255, 230, 180, 0.4); border-radius: 50%; animation: floatDust linear infinite; }
     @keyframes floatDust { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.8; } 100% { opacity: 0; transform: translateY(-40vh) translateX(30px); } }
 
+    /* Subject Hotspots */
+    .scholar-click-layer { z-index: 25; }
+    .click-zone { position: absolute; cursor: pointer; transition: 0.3s; border-radius: 5px; }
+    .click-zone:hover { box-shadow: inset 0 0 30px var(--gold-glow), 0 0 15px var(--gold-glow); background: rgba(212,175,55,0.1); }
+    
+    #zone-lore { top: 58%; left: 5%; width: 18%; height: 25%; } 
+    #zone-bard { top: 63%; right: 5%; width: 15%; height: 20%; } 
+    #zone-art { top: 20%; left: 2%; width: 12%; height: 15%; } 
+    #zone-survival { top: 55%; left: 53%; width: 10%; height: 20%; } 
+    #zone-merchant { top: 75%; left: 68%; width: 25%; height: 15%; } 
+
     /* --- WEATHER WIDGET --- */
     .weather-widget { position: absolute; top: 30px; right: 260px; z-index: 2000; background: rgba(10, 8, 6, 0.8); border: 1px solid var(--gold-glow); padding: 8px 15px; border-radius: 8px; display: flex; align-items: center; gap: 12px; transition: 0.5s; }
     #weather-icon { font-size: 1.8rem; }
-    #weather-temp { font-family: 'Cinzel'; color: var(--gold); font-size: 1.1rem; }
 
     /* --- DESK UI --- */
     .desk-ui-container { position: absolute; right: -450px; top: 50%; transform: translateY(-50%); width: 380px; z-index: 26; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -49,15 +59,16 @@
     #timer-display { font-family: 'Cinzel'; font-size: 2.2rem; color: var(--gold); text-align: center; margin: 10px 0; }
     .blog-container { max-height: 250px; overflow-y: auto; margin-top: 10px; }
 
-    /* Shared Typography */
+    /* Typography & Calendar */
     .panel-header h1 { font-family: 'Cinzel'; font-size: 1.1rem; color: var(--gold); text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 5px; margin-bottom: 15px; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.7rem; font-family: 'Cinzel'; }
     .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; }
     .day-num.today { background: var(--gold); color: #000; }
+    .day-num.has-log { border-color: var(--gold); color: var(--gold); }
 
     /* Modal */
     #log-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
-    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 85%; max-width: 450px; padding: 40px; border-radius: 5px 30px; }
+    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 85%; max-width: 450px; padding: 40px; border-radius: 5px 30px; position: relative;}
 </style>
 </head>
 <body>
@@ -75,7 +86,7 @@
     <div id="weather-widget" class="weather-widget hidden">
         <div id="weather-icon">✨</div>
         <div class="weather-text">
-            <div id="weather-temp">--°F</div>
+            <div id="weather-temp" style="font-family:'Cinzel'; color:var(--gold);">--°F</div>
             <div id="weather-desc" style="font-size:0.8rem; opacity:0.8;">Scrying...</div>
         </div>
     </div>
@@ -91,9 +102,17 @@
                 <div class="calendar-grid" id="calendar-body"></div>
             </div>
             <div class="glass-panel">
+                <div class="panel-header"><h1>Chrono Management</h1></div>
+                <div style="display:flex; justify-content:space-around; padding:10px;">
+                    <button class="data-btn" onclick="exportData()">Export Scroll</button>
+                    <button class="data-btn" onclick="document.getElementById('import-file').click()">Import Scroll</button>
+                    <input type="file" id="import-file" style="display:none" onchange="importData(event)">
+                </div>
+            </div>
+            <div class="glass-panel">
                 <div class="panel-header"><h1>Reagent List</h1></div>
                 <div style="display:flex; gap:8px;"><input type="text" id="reagent-input" class="scholar-input" placeholder="Add ingredient..."><button class="data-btn" onclick="addReagent()">Add</button></div>
-                <div id="reagent-display" style="margin-top:10px;"></div>
+                <div id="reagent-display" style="margin-top:10px; max-height:100px; overflow-y:auto;"></div>
             </div>
         </div>
     </div>
@@ -103,6 +122,15 @@
             <source src="scholar_bg.mp4" type="video/mp4">
         </video>
         <div id="dust-container"></div>
+        
+        <div class="scholar-click-layer layer-container">
+            <div id="zone-lore" class="click-zone" onclick="openSubject('Global Mythos')" title="Global Mythos"></div>
+            <div id="zone-bard" class="click-zone" onclick="openSubject('Bardic Arts')" title="Bardic Arts"></div>
+            <div id="zone-art" class="click-zone" onclick="openSubject('Visual Design')" title="Visual Design"></div>
+            <div id="zone-survival" class="click-zone" onclick="openSubject('Hearth Resilience')" title="Hearth Resilience"></div>
+            <div id="zone-merchant" class="click-zone" onclick="openSubject('Guild Logic')" title="Guild Logic"></div>
+        </div>
+
         <button id="desk-toggle-btn" class="portal-btn ui-toggle-btn" onclick="toggleDeskUI()">Open Desk</button>
 
         <div id="desk-ui" class="desk-ui-container">
@@ -124,14 +152,15 @@
 
     <div id="log-modal" onclick="closeLog()">
         <div class="scroll-parchment" onclick="event.stopPropagation()">
+            <span style="position:absolute; top:10px; right:15px; cursor:pointer;" onclick="closeLog()">×</span>
             <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center;"></h2>
-            <textarea id="log-entry" style="width:100%; height:150px; background:none; border:1px solid #8b5a2b; padding:10px; font-family:serif;"></textarea>
-            <button class="data-btn" onclick="saveLog()" style="width:100%; margin-top:15px;">Save Record</button>
+            <textarea id="log-entry" style="width:100%; height:150px; background:rgba(0,0,0,0.05); border:1px solid #8b5a2b; padding:10px; font-family:serif;"></textarea>
+            <button class="data-btn" onclick="saveLog()" style="width:100%; margin-top:15px; color:#000; background:var(--gold);">Save Record</button>
         </div>
     </div>
 
     <script>
-        let currentRoom = 'hearth'; let timerInterval; let secondsRemaining = 0;
+        let currentRoom = 'hearth'; let timerInterval; let secondsRemaining = 0; let selectedDate = '';
         const ah = document.getElementById('audio-hearth');
         const sv = document.getElementById('scholar-video-bg');
 
@@ -139,8 +168,7 @@
             document.getElementById('enter-overlay').style.opacity = '0';
             setTimeout(() => { document.getElementById('enter-overlay').style.display = 'none'; }, 1200);
             ah.volume = 0.5; ah.play();
-            createEmbers(); createDust();
-            renderCalendar(); renderReagents(); renderBlog(); fetchWeather();
+            createEmbers(); createDust(); renderCalendar(); renderReagents(); renderBlog(); fetchWeather();
         }
 
         function switchRoom(room) {
@@ -150,17 +178,11 @@
             document.getElementById('btn-scholar').classList.toggle('active', room === 'scholar');
             document.getElementById('hearth-layer').classList.toggle('hidden', room !== 'hearth');
             document.getElementById('scholar-layer').classList.toggle('hidden', room !== 'scholar');
-            
             const widget = document.getElementById('weather-widget');
             if(room === 'scholar') { 
-                ah.pause();
-                sv.muted = false; // Unmute to hear the rain/clock in the video!
-                sv.play();
-                widget.classList.remove('hidden');
+                ah.pause(); sv.muted = false; sv.play(); widget.classList.remove('hidden'); fetchWeather();
             } else { 
-                sv.pause();
-                ah.play();
-                widget.classList.add('hidden');
+                sv.pause(); ah.play(); widget.classList.add('hidden');
             }
         }
 
@@ -174,74 +196,45 @@
         }
 
         function toggleDeskUI() { document.getElementById('desk-ui').classList.toggle('open'); }
+        function openSubject(subject) { alert(`Opening Grimoire: ${subject}`); }
 
         function createEmbers() {
-            const p = document.getElementById('embers-container');
-            for(let i=0; i<25; i++) { // Calmed down fire
+            const p = document.getElementById('embers-container'); p.innerHTML = '';
+            for(let i=0; i<25; i++) {
                 let e = document.createElement('div'); e.className = 'ember';
-                e.style.left = Math.random()*100+'%';
-                e.style.animationDuration = (Math.random()*5+4)+'s';
-                e.style.setProperty('--drift', (Math.random()*100 - 50)+'px');
-                p.appendChild(e);
+                e.style.left = Math.random()*100+'%'; e.style.animationDuration = (Math.random()*5+4)+'s';
+                e.style.setProperty('--drift', (Math.random()*100 - 50)+'px'); p.appendChild(e);
             }
         }
 
         function createDust() {
-            const p = document.getElementById('dust-container');
+            const p = document.getElementById('dust-container'); p.innerHTML = '';
             for(let i=0; i<80; i++) {
                 let d = document.createElement('div'); d.className = 'dust-mote';
                 let s = Math.random()*3+1+'px'; d.style.width = s; d.style.height = s;
                 d.style.left = Math.random()*100+'%'; d.style.top = Math.random()*100+'%';
-                d.style.animationDuration = (Math.random()*10+8)+'s';
-                p.appendChild(d);
+                d.style.animationDuration = (Math.random()*10+8)+'s'; p.appendChild(d);
             }
         }
 
-        // Calendar, Timer, and Blog logic stays the same but cleaned...
         function renderCalendar() {
             const cb = document.getElementById('calendar-body'); cb.innerHTML = '';
+            const n = new Date();
             for(let i=1; i<=31; i++) {
                 let d = document.createElement('div'); d.className = 'day-num'; d.innerText = i;
-                if(i === new Date().getDate()) d.classList.add('today');
-                cb.appendChild(d);
+                let k = `log-${n.getFullYear()}-${n.getMonth()}-${i}`;
+                if(localStorage.getItem(k)) d.classList.add('has-log');
+                if(i === n.getDate()) d.classList.add('today');
+                d.onclick = () => openLog(i, k); cb.appendChild(d);
             }
         }
 
-        function startTimer(m) { 
-            clearInterval(timerInterval); secondsRemaining = m*60; 
-            timerInterval = setInterval(() => { 
-                secondsRemaining--; 
-                let min = Math.floor(secondsRemaining/60).toString().padStart(2,'0');
-                let sec = (secondsRemaining%60).toString().padStart(2,'0');
-                document.getElementById('timer-display').innerText = `${min}:${sec}`;
-                if(secondsRemaining <= 0) clearInterval(timerInterval);
-            }, 1000);
-        }
+        function openLog(d, k) { selectedDate = k; document.getElementById('log-date-title').innerText = `Record Day ${d}`; document.getElementById('log-entry').value = localStorage.getItem(k) || ''; document.getElementById('log-modal').style.display = 'flex'; setTimeout(() => document.getElementById('log-modal').style.opacity = '1', 10); }
+        function saveLog() { const v = document.getElementById('log-entry').value; if(!v.trim()) localStorage.removeItem(selectedDate); else localStorage.setItem(selectedDate, v); closeLog(); renderCalendar(); }
+        function closeLog() { document.getElementById('log-modal').style.opacity = '0'; setTimeout(() => document.getElementById('log-modal').style.display = 'none', 500); }
+
+        function startTimer(m) { clearInterval(timerInterval); secondsRemaining = m*60; timerInterval = setInterval(() => { secondsRemaining--; let min = Math.floor(secondsRemaining/60).toString().padStart(2,'0'); let sec = (secondsRemaining%60).toString().padStart(2,'0'); document.getElementById('timer-display').innerText = `${min}:${sec}`; if(secondsRemaining <= 0) clearInterval(timerInterval); }, 1000); }
         function stopTimer() { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "00:00"; }
 
-        function logWork() {
-            const n = document.getElementById('work-note').value; if(!n.trim()) return;
-            const b = JSON.parse(localStorage.getItem('journal') || '[]');
-            b.unshift({ts: new Date().toLocaleString(), note: n});
-            localStorage.setItem('journal', JSON.stringify(b));
-            document.getElementById('work-note').value = ''; renderBlog();
-        }
-        function renderBlog() {
-            const c = document.getElementById('blog-container');
-            const b = JSON.parse(localStorage.getItem('journal') || '[]');
-            c.innerHTML = b.map(p => `<div style="margin-bottom:10px; border-left:2px solid var(--gold); padding-left:10px; font-size:0.9rem;"><div style="color:var(--gold); font-size:0.7rem;">${p.ts}</div>${p.note}</div>`).join('');
-        }
-        function addReagent() {
-            const i = document.getElementById('reagent-input'); if(!i.value) return;
-            const r = JSON.parse(localStorage.getItem('reagents') || '[]');
-            r.push(i.value); localStorage.setItem('reagents', JSON.stringify(r));
-            i.value = ''; renderReagents();
-        }
-        function renderReagents() {
-            const d = document.getElementById('reagent-display');
-            const r = JSON.parse(localStorage.getItem('reagents') || '[]');
-            d.innerHTML = r.map(it => `<div style="font-size:0.9rem; margin-bottom:4px;">✦ ${it}</div>`).join('');
-        }
-    </script>
-</body>
-</html>
+        function logWork() { const n = document.getElementById('work-note').value; if(!n.trim()) return; const b = JSON.parse(localStorage.getItem('journal') || '[]'); b.unshift({ts: new Date().toLocaleString(), note: n}); localStorage.setItem('journal', JSON.stringify(b)); document.getElementById('work-note').value = ''; renderBlog(); }
+        function renderBlog() { const c = document.getElementById('blog-container'); const b = JSON.parse(localStorage.getItem('journal') || '[]'); c.innerHTML = b.map(p => `<div style="margin-bottom:10px; border-left:2px solid var(--gold); padding-left:10px; font-size:0.9rem;"><div style="color:var(--gold); font-size
