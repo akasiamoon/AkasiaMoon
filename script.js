@@ -1,3 +1,35 @@
+// --- TAB NAVIGATION LOGIC ---
+const btns = {
+    sanctuary: document.getElementById('btn-sanctuary'),
+    recipes: document.getElementById('btn-recipes'),
+    custom: document.getElementById('btn-custom')
+};
+
+const sections = {
+    sanctuary: document.getElementById('sanctuary-section'),
+    recipes: document.getElementById('recipes-section'),
+    custom: document.getElementById('custom-section')
+};
+
+function switchTab(tabName) {
+    // 1. Remove 'active' class from all sections & buttons
+    Object.values(sections).forEach(sec => sec.classList.remove('active'));
+    Object.values(btns).forEach(btn => btn.classList.remove('active-tab'));
+
+    // 2. Add 'active' class to the clicked target
+    sections[tabName].classList.add('active');
+    btns[tabName].classList.add('active-tab');
+}
+
+// Event Listeners for Nav Buttons
+btns.sanctuary.addEventListener('click', () => switchTab('sanctuary'));
+btns.recipes.addEventListener('click', () => switchTab('recipes'));
+btns.custom.addEventListener('click', () => switchTab('custom'));
+
+// Set default active tab style
+btns.sanctuary.classList.add('active-tab');
+
+
 // --- REACTIVE MAGIC PARTICLE ENGINE ---
 const canvas = document.getElementById('magicOverlay');
 const ctx = canvas.getContext('2d');
@@ -14,6 +46,20 @@ const mouse = { x: null, y: null, radius: 150 };
 window.addEventListener('mousemove', function(event) {
     mouse.x = event.x;
     mouse.y = event.y;
+    
+    // --- 3D TILT EFFECT ON ACTIVE CARD ---
+    const activeCard = document.querySelector('.card.active');
+    if (activeCard) {
+        let xAxis = (window.innerWidth / 2 - event.pageX) / 40;
+        let yAxis = (window.innerHeight / 2 - event.pageY) / 40;
+        activeCard.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+    }
+});
+
+// Reset tilt when mouse leaves screen
+document.addEventListener('mouseleave', () => {
+    const activeCard = document.querySelector('.card.active');
+    if (activeCard) activeCard.style.transform = `rotateY(0deg) rotateX(0deg)`;
 });
 
 class Particle {
@@ -39,7 +85,6 @@ class Particle {
         if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
         if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
         
-        // Mouse interaction (repel magic dust slightly)
         let dx = mouse.x - this.x;
         let dy = mouse.y - this.y;
         let distance = Math.sqrt(dx*dx + dy*dy);
@@ -66,13 +111,12 @@ function init() {
         let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
         let directionX = (Math.random() * 2) - 1;
         let directionY = (Math.random() * 2) - 1;
-        let color = Math.random() > 0.5 ? '#00ffff' : '#ff00aa'; // Cyan & Magenta magic
+        let color = Math.random() > 0.5 ? '#00ffff' : '#ff00aa'; 
         
         particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
     }
 }
 
-// Draw magical energy lines between close particles
 function connect() {
     let opacityValue = 1;
     for (let a = 0; a < particlesArray.length; a++) {
@@ -81,7 +125,7 @@ function connect() {
                            ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
             if (distance < (canvas.width/7) * (canvas.height/7)) {
                 opacityValue = 1 - (distance/20000);
-                ctx.strokeStyle = `rgba(139, 0, 255, ${opacityValue})`; // Purple energy lines
+                ctx.strokeStyle = `rgba(139, 0, 255, ${opacityValue})`; 
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -103,19 +147,3 @@ function animate() {
 
 init();
 animate();
-
-// --- 3D TILT EFFECT ON CARDS ---
-const tiltCard = document.querySelector('.tilt-card');
-
-document.addEventListener('mousemove', (e) => {
-    let xAxis = (window.innerWidth / 2 - e.pageX) / 40;
-    let yAxis = (window.innerHeight / 2 - e.pageY) / 40;
-    
-    // Apply 3D rotation based on mouse position
-    tiltCard.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
-});
-
-// Reset tilt when mouse leaves screen
-document.addEventListener('mouseleave', () => {
-    tiltCard.style.transform = `rotateY(0deg) rotateX(0deg)`;
-});
