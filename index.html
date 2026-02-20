@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moon's Kitchen - The Living Hearth</title>
+<title>Moon's Kitchen - The Hidden Hearth</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -33,11 +33,11 @@
         background: url('image_5.png') no-repeat center center;
         background-size: cover;
         z-index: 0;
-        animation: breathe 10s infinite alternate ease-in-out;
+        animation: breathe 12s infinite alternate ease-in-out;
     }
 
     @keyframes breathe {
-        0% { filter: brightness(0.85) contrast(1.1); transform: scale(1); }
+        0% { filter: brightness(0.8) contrast(1.1); transform: scale(1); }
         100% { filter: brightness(1) contrast(1.15); transform: scale(1.02); }
     }
 
@@ -47,35 +47,13 @@
         z-index: 1; pointer-events: none;
     }
 
-    /* --- THE REAL FIREPLACE (YouTube Overlay) --- */
-    .hearth-container {
-        position: absolute;
-        top: 45%; /* Adjusted for image_5.png hearth location */
-        left: 21%;
-        width: 300px; /* Size of the fireplace opening */
-        height: 200px;
-        z-index: 2;
-        overflow: hidden;
-        border-radius: 50% 50% 10px 10px; /* Arched to match the stone */
-        filter: blur(2px) contrast(1.2) brightness(1.2);
-        box-shadow: 0 0 40px var(--fire-orange);
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 2s ease;
+    /* --- Invisible YouTube Player --- */
+    #player-wrapper {
+        position: absolute; width: 1px; height: 1px;
+        opacity: 0; pointer-events: none; overflow: hidden;
     }
 
-    .hearth-container.ignited { opacity: 1; }
-
-    .hearth-container iframe {
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        pointer-events: none;
-    }
-
-    /* --- Floating Embers & Potions --- */
+    /* --- Floating Embers --- */
     #particle-container { position: absolute; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
     .ember {
         position: absolute; bottom: -20px; background: var(--fire-orange); border-radius: 50%;
@@ -89,17 +67,16 @@
         100% { opacity: 0; transform: translateY(-100vh) scale(0.5) translateX(var(--drift)); }
     }
 
-    /* --- UI Layer --- */
+    /* --- UI Elements --- */
     .ui-layer {
         position: relative; z-index: 10; width: 100%; height: 100%;
         display: flex; justify-content: space-between; padding: 40px; box-sizing: border-box; pointer-events: none;
     }
-
     .ignite-btn, .menu-sidebar { pointer-events: auto; }
 
     .ignite-btn {
         position: absolute; bottom: 40px; left: 40px; z-index: 50;
-        background: rgba(20, 15, 10, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        background: rgba(20, 15, 10, 0.6); backdrop-filter: blur(8px);
         border: 1px solid var(--glass-border); color: var(--gold);
         padding: 12px 28px; font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 2px;
         border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 12px;
@@ -108,15 +85,15 @@
     }
     .ignite-btn.active { border-color: var(--fire-orange); color: #ffaa00; box-shadow: 0 0 25px rgba(255, 106, 0, 0.5); }
 
-    /* --- Grimoire Sidebar --- */
+    /* --- The Grimoire --- */
     .menu-sidebar {
         background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 12px;
-        width: 400px; height: 100%; padding: 30px; display: flex; flex-direction: column;
+        width: 380px; height: 100%; padding: 30px; display: flex; flex-direction: column;
         position: absolute; right: 40px; top: 0; bottom: 0; margin: auto; max-height: 85vh;
     }
 
     .menu-header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 20px; }
-    .menu-header h1 { font-family: 'Cinzel', serif; font-size: 2.5rem; margin: 0; letter-spacing: 4px; }
+    .menu-header h1 { font-family: 'Cinzel', serif; font-size: 2.2rem; margin: 0; letter-spacing: 4px; }
 
     .recipe-list { flex-grow: 1; overflow-y: auto; padding-right: 15px; }
     .recipe-item {
@@ -143,7 +120,7 @@
     <div class="bg-layer"></div>
     <div class="vignette"></div>
 
-    <div class="hearth-container" id="hearth-fire">
+    <div id="player-wrapper">
         <div id="player"></div>
     </div>
 
@@ -163,15 +140,15 @@
             <div class="recipe-list">
                 <div class="recipe-item" onclick="openSpell('potato')">
                     <h4>Winter-Breaker Potato Soup</h4>
-                    <p>A thick, restorative root soup crafted for long nights and winter storms.</p>
+                    <p>A thick, restorative root soup for those long Adamsville nights without power.</p>
                 </div>
                 <div class="recipe-item" onclick="openSpell('lemon')">
                     <h4>Scholar's Lemon-Berry Loaf</h4>
-                    <p>A bright bread for mental clarity during intense study sessions.</p>
+                    <p>Zesty mental clarity for the homeschool teacher and apprentice alike.</p>
                 </div>
                 <div class="recipe-item" onclick="openSpell('pies')">
-                    <h4>Iron-Skillet Provisions</h4>
-                    <p>Crispy hand-pies designed for those in the gig economy or on long quests.</p>
+                    <h4>Dasher's Iron-Skillet Pies</h4>
+                    <p>Hand-held provisions perfect for a quick snack between deliveries.</p>
                 </div>
             </div>
         </div>
@@ -191,42 +168,27 @@
         let player;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
+                height: '0', width: '0',
                 videoId: 'cdKop6aixVE',
-                playerVars: {
-                    'autoplay': 0,
-                    'controls': 0,
-                    'loop': 1,
-                    'playlist': 'cdKop6aixVE',
-                    'modestbranding': 1,
-                    'mute': 0
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
+                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'cdKop6aixVE', 'mute': 0 },
+                events: { 'onReady': onPlayerReady }
             });
         }
-
         function onPlayerReady(event) {
-            // Player is ready, but we wait for Ignite click
+            // Audio is ready to be triggered by the button
         }
 
-        // --- Ignite Control ---
         const magicBtn = document.getElementById('magic-btn');
         const btnText = document.getElementById('btn-text');
-        const fireContainer = document.getElementById('hearth-fire');
         let isIgnited = false;
 
         magicBtn.addEventListener('click', () => {
             if (!isIgnited) {
                 player.playVideo();
-                fireContainer.classList.add('ignited');
                 btnText.innerText = 'Extinguish Hearth';
                 magicBtn.classList.add('active');
             } else {
                 player.pauseVideo();
-                fireContainer.classList.remove('ignited');
                 btnText.innerText = 'Ignite Hearth';
                 magicBtn.classList.remove('active');
             }
@@ -235,7 +197,7 @@
 
         // --- Embers Generator ---
         const particleContainer = document.getElementById('particle-container');
-        for(let i=0; i<30; i++) {
+        for(let i=0; i<35; i++) {
             let ember = document.createElement('div');
             ember.className = 'ember';
             ember.style.left = Math.random() * 100 + '%';
@@ -248,11 +210,10 @@
             particleContainer.appendChild(ember);
         }
 
-        // --- Grimoire Logic ---
         const grimoireData = {
-            'potato': { title: 'Winter-Breaker Potato Soup', desc: 'Crafted for times of outage and ice.', body: '<h3>Reagents</h3><ul><li>6 Potatoes</li><li>1 Onion</li><li>4c Broth</li></ul><h3>Incantation</h3><p>Simmer in the cauldron until tender.</p>' },
-            'lemon': { title: "Scholar's Lemon-Berry Loaf", desc: 'Mental focus for the homeschool apprentice.', body: '<h3>Reagents</h3><ul><li>1.5c Flour</li><li>Lemon Zest</li><li>Blueberries</li></ul>' },
-            'pies': { title: 'Iron-Skillet Provisions', desc: 'Portable energy for dashers and wanderers.', body: '<h3>Reagents</h3><ul><li>Fruit Filling</li><li>Pie Crust</li><li>Lard</li></ul>' }
+            'potato': { title: 'Winter-Breaker Potato Soup', desc: 'Crafted for ice storms and outages.', body: '<h3>Reagents</h3><ul><li>6 Potatoes</li><li>1 Onion</li><li>4c Broth</li></ul><p>Simmer in the cauldron until tender.</p>' },
+            'lemon': { title: "Scholar's Lemon-Berry Loaf", desc: 'Mental focus for homeschool sessions.', body: '<h3>Reagents</h3><ul><li>1.5c Flour</li><li>Lemon Zest</li><li>Blueberries</li></ul>' },
+            'pies': { title: "Dasher's Iron-Skillet Pies", desc: 'Quick energy for life in the gig economy.', body: '<h3>Reagents</h3><ul><li>Fruit Filling</li><li>Pie Crust</li><li>Lard</li></ul>' }
         };
 
         const modal = document.getElementById('spell-modal');
