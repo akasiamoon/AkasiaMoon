@@ -80,7 +80,6 @@
         display: flex; justify-content: space-between; padding: 40px; box-sizing: border-box; pointer-events: none;
     }
 
-    /* Make child elements clickable again */
     .ignite-btn, .menu-sidebar { pointer-events: auto; }
 
     /* --- The Epic Ignite Button --- */
@@ -171,8 +170,8 @@
 </head>
 <body>
 
-    <audio id="hearth-audio" loop>
-        <source src="fire.mp3" type="audio/mpeg">
+    <audio id="hearth-audio" loop preload="auto">
+        <source src="https://archive.org/download/CracklingFireplace/Crackling%20Fireplace.mp3" type="audio/mpeg">
     </audio>
 
     <div class="bg-layer"></div>
@@ -205,7 +204,7 @@
 
                 <div class="recipe-item" onclick="openSpell('lemon')">
                     <h4>Scholar's Lemon-Brambleberry Loaf</h4>
-                    <p>A bright, sweet bread infused with fresh citrus. Grants temporary mental clarity, ideal for guiding young apprentices through their daily studies.</p>
+                    <p>A bright, sweet bread infused with fresh citrus. Grants temporary mental clarity.</p>
                     <div class="meta"><span>✦ Baking</span><span>Focus: +20</span></div>
                 </div>
 
@@ -256,7 +255,7 @@
         const magicBtn = document.getElementById('magic-btn');
         const btnText = document.getElementById('btn-text');
         const audio = document.getElementById('hearth-audio');
-        audio.volume = 0.5; 
+        audio.volume = 0.8; 
         let isPlaying = false;
 
         magicBtn.addEventListener('click', () => {
@@ -294,7 +293,7 @@
             },
             'lemon': {
                 title: "Scholar's Lemon-Brambleberry Loaf",
-                desc: 'A bright, sweet bread infused with fresh citrus. Grants temporary mental clarity, ideal for guiding young apprentices through their daily studies.',
+                desc: 'A bright, sweet bread infused with fresh citrus. Grants temporary mental clarity.',
                 ingredients: [
                     '1.5 cups all-purpose flour',
                     '1 cup fresh blueberries',
