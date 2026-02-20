@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Provisioner's Guide to Tamriel</title>
+<title>Moon's Hearth - A Provisioner's Guide</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -22,7 +22,7 @@
         overflow: hidden; cursor: crosshair;
     }
 
-    /* --- Entrance Overlay --- */
+    /* --- Cinematic Entrance --- */
     #enter-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(circle, #1a120e 0%, #000 100%);
@@ -106,8 +106,8 @@
 <body>
 
     <div id="enter-overlay">
-        <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:8px; margin-bottom:30px;">PROVISIONER'S LOG</h2>
-        <button class="enter-btn" onclick="igniteHearth()">Read Journal</button>
+        <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:10px; margin-bottom:30px; text-shadow: 0 0 20px var(--gold-glow);">MOON'S HEARTH</h2>
+        <button class="enter-btn" onclick="igniteHearth()">Enter the Hearth</button>
     </div>
 
     <div class="bg-layer"></div>
@@ -126,7 +126,7 @@
         <div class="journal-panel">
             <div class="journal-header">
                 <h1 id="cat-title">Provisioning</h1>
-                <p id="cat-desc" style="font-family:'Cinzel'; font-size:0.6rem; text-align:center; color:var(--gold); margin-top:5px; letter-spacing: 2px;">Adamsville Master Class</p>
+                <p id="cat-desc" style="font-family:'Cinzel'; font-size:0.6rem; text-align:center; color:var(--gold); margin-top:5px; letter-spacing: 2px;">Adamsville Master Journal</p>
             </div>
             <div class="recipe-container" id="recipe-list">
                 </div>
@@ -148,29 +148,29 @@
             'meat': {
                 title: 'Grilled & Meaty',
                 recipes: [
-                    { name: 'Adamsville Winter Stew', desc: 'A restorative root soup crafted for deep ice storms and power outages.' },
-                    { name: 'Hunter’s Skillet Medley', desc: 'Seared meats seasoned with wild-harvested herbs.' }
+                    { name: 'Adamsville Winter Stew', desc: 'A restorative root soup crafted for the deep ice storms of Tennessee.' },
+                    { name: 'Hunter’s Skillet Medley', desc: 'Searing meat seasoned with wild-harvested forest herbs.' }
                 ]
             },
             'fruit': {
                 title: 'Orchard Sweets',
                 recipes: [
-                    { name: 'Scholar’s Lemon Loaf', desc: 'Zesty blueberry bread to grant focus during long study sessions.' },
+                    { name: 'Scholar’s Lemon Loaf', desc: 'Zesty bread to grant focus during homeschool study sessions.' },
                     { name: 'Hearth-Fried Pies', desc: 'Spiced fruit provisions sealed in golden, crispy dough.' }
                 ]
             },
             'veg': {
                 title: 'Garden Greens',
                 recipes: [
-                    { name: 'Traveling Dasher’s Beans', desc: 'Pinto beans slow-simmered for the road-weary guildsman.' },
-                    { name: 'Roasted Russet Coins', desc: 'Thinly sliced potatoes crisped over a stone-fire hearth.' }
+                    { name: 'Traveling Dasher’s Beans', desc: 'Slow-simmered pinto beans for the weary traveler on delivery quests.' },
+                    { name: 'Roasted Russet Coins', desc: 'Slices of potato crisped over a stone-fire hearth.' }
                 ]
             },
             'brew': {
                 title: 'Hearth Brews',
                 recipes: [
-                    { name: 'Blue Stitch Tonic', desc: 'A bright, tropical tonic inspired by island magic and energetic companions.' },
-                    { name: 'Night-Shift Spice Tea', desc: 'A warming beverage to maintain focus through the midnight hours.' }
+                    { name: 'Blue Stitch Tonic', desc: 'A bright, tropical tonic inspired by island magic and spirited companions.' },
+                    { name: 'Night-Shift Spice Tea', desc: 'A warming beverage for long night shifts at the forge.' }
                 ]
             }
         };
@@ -190,7 +190,6 @@
             });
         }
 
-        // Particle generator
         const pCont = document.getElementById('particles');
         for(let i=0; i<30; i++) {
             let e = document.createElement('div');
