@@ -66,10 +66,10 @@
 
     /* --- MODALS & GRIMOIRE --- */
     #log-modal, #grimoire-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
-    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 90%; max-width: 700px; padding: 40px; border-radius: 5px 40px; position: relative; box-shadow: 0 0 50px #000; border: 2px solid #8b5a2b; height: 80vh; display: flex; flex-direction: column; }
+    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 90%; max-width: 700px; padding: 40px; border-radius: 5px 40px; position: relative; box-shadow: 0 0 50px #000; border: 2px solid #8b5a2b; height: 85vh; display: flex; flex-direction: column; }
     
     .grimoire-tabs { display: flex; gap: 20px; margin-bottom: 15px; border-bottom: 1px solid #8b5a2b; }
-    .tab-btn { background: none; border: none; font-family: 'Cinzel'; cursor: pointer; padding: 5px 10px; color: #8b5a2b; opacity: 0.5; }
+    .tab-btn { background: none; border: none; font-family: 'Cinzel'; cursor: pointer; padding: 5px 10px; color: #8b5a2b; opacity: 0.5; transition: 0.3s; }
     .tab-btn.active { opacity: 1; border-bottom: 2px solid #8b5a2b; }
 
     #grimoire-toc { margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.8rem; font-family: 'Cinzel'; max-height: 40px; overflow-y: auto; }
@@ -79,12 +79,15 @@
     .grimoire-textarea { width: 100%; flex-grow: 1; background: rgba(0,0,0,0.03); border: 1px solid rgba(139, 90, 43, 0.3); padding: 15px; font-family: 'Cormorant Garamond'; font-size: 1.2rem; line-height: 1.5; outline: none; resize: none; color: var(--ink); }
 
     /* Lexicon Specific */
-    #lexicon-view { display: none; flex-direction: column; flex-grow: 1; }
+    #lexicon-view { display: none; flex-direction: column; flex-grow: 1; overflow: hidden; }
     .lexicon-input-row { display: flex; gap: 10px; margin-bottom: 15px; }
-    .lexicon-list { flex-grow: 1; overflow-y: auto; border: 1px solid rgba(139, 90, 43, 0.2); padding: 10px; background: rgba(0,0,0,0.02); }
-    .lexicon-item { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(139, 90, 43, 0.1); padding: 5px 0; }
-    .lexicon-term { font-family: 'Cinzel'; font-weight: bold; color: #8b5a2b; width: 30%; }
-    .lexicon-def { width: 65%; font-style: italic; }
+    .lexicon-list { flex-grow: 1; overflow-y: auto; border: 1px solid rgba(139, 90, 43, 0.2); padding: 15px; background: rgba(0,0,0,0.02); }
+    .lexicon-item { display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid rgba(139, 90, 43, 0.1); padding: 10px 0; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .lexicon-term { font-family: 'Cinzel'; font-weight: bold; color: #8b5a2b; width: 30%; font-size: 0.9rem; }
+    .lexicon-def { width: 60%; font-family: 'Cormorant Garamond'; font-size: 1.1rem; line-height: 1.3; color: var(--ink); }
+    .del-btn { cursor: pointer; color: #8a3324; opacity: 0.5; font-size: 1.2rem; padding: 0 5px; }
+    .del-btn:hover { opacity: 1; }
 
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.7rem; font-family: 'Cinzel'; }
     .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; }
@@ -219,12 +222,14 @@
             const term = document.getElementById('lex-term'); const def = document.getElementById('lex-def');
             if(!term.value || !def.value) return;
             const lex = JSON.parse(localStorage.getItem('lexicon') || '[]');
-            lex.push({t: term.value, d: def.value}); localStorage.setItem('lexicon', JSON.stringify(lex));
+            lex.push({t: term.value, d: def.value}); 
+            lex.sort((a,b) => a.t.localeCompare(b.t)); // Alphabetize
+            localStorage.setItem('lexicon', JSON.stringify(lex));
             term.value = ''; def.value = ''; renderLexicon();
         }
         function renderLexicon() {
             const list = document.getElementById('lexicon-list'); const lex = JSON.parse(localStorage.getItem('lexicon') || '[]');
-            list.innerHTML = lex.map((item, idx) => `<div class="lexicon-item"><div class="lexicon-term">${item.t}</div><div class="lexicon-def">${item.d}</div><span style="cursor:pointer; color:#8a3324" onclick="removeLex(${idx})">×</span></div>`).join('');
+            list.innerHTML = lex.map((item, idx) => `<div class="lexicon-item"><div class="lexicon-term">${item.t}</div><div class="lexicon-def">${item.d}</div><span class="del-btn" onclick="removeLex(${idx})">×</span></div>`).join('');
         }
         function removeLex(idx) { const lex = JSON.parse(localStorage.getItem('lexicon') || '[]'); lex.splice(idx, 1); localStorage.setItem('lexicon', JSON.stringify(lex)); renderLexicon(); }
         function scryText() { const query = document.getElementById('grimoire-search').value.toLowerCase(); const area = document.getElementById('grimoire-text'); if(!query) return; const index = area.value.toLowerCase().indexOf(query); if(index !== -1) { area.focus(); area.setSelectionRange(index, index + query.length); } }
