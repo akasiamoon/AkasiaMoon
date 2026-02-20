@@ -1,16 +1,46 @@
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Assistant | Command Center</title>
-<style>
-@import url('');
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akasia Moon's | Epic Grimoire</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="bg"></div>
-<script>
-if ('serviceWorker' in navigator) {
-navigator.serviceWorker.register('sw.js');
-}
-</script>
+    <canvas id="magicOverlay"></canvas>
+
+    <div class="hub-container">
+        <header class="epic-header">
+            <h1 class="glowing-text" data-text="Akasia Moon's">Akasia Moon's</h1>
+            <p class="subtitle">The Ultimate Sanctuary & Recipe Grimoire</p>
+            <div class="rune-divider">✧ ✦ ✧</div>
+        </header>
+
+        <nav class="main-nav">
+            <button class="nav-btn epic-btn" id="btn-sanctuary">
+                <span class="btn-text">The Sanctuary</span>
+                <span class="btn-glow"></span>
+            </button>
+            <button class="nav-btn epic-btn" id="btn-recipes">
+                <span class="btn-text">Potions & Provisions</span>
+                <span class="btn-glow"></span>
+            </button>
+            <button class="nav-btn epic-btn" id="btn-custom">
+                <span class="btn-text">Arcane Settings</span>
+                <span class="btn-glow"></span>
+            </button>
+        </nav>
+
+        <main id="content-area">
+            <section class="card active tilt-card" id="welcome-section">
+                <div class="card-content">
+                    <h2 class="pulse-text">Welcome Home, Traveler</h2>
+                    <p>The hearth is roaring. Your grimoire awaits its master. Select a destination above to weave your magic.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
