@@ -10,7 +10,7 @@
         --gold: #d4af37;
         --gold-glow: rgba(212, 175, 55, 0.4);
         --fire: #ff6a00;
-        --fire-glow: rgba(255, 106, 0, 0.6);
+        --fire-glow: rgba(255, 106, 0, 0.7);
         --glass: rgba(10, 8, 6, 0.85);
         --text: #fdf5e6;
         --parchment: #e3d5b8;
@@ -39,7 +39,7 @@
     }
     .enter-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 50px var(--gold); }
 
-    /* --- Atmosphere --- */
+    /* --- Atmosphere & Background --- */
     .bg-layer {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: url('image_5.png') no-repeat center center;
@@ -47,20 +47,29 @@
         animation: flicker 12s infinite alternate ease-in-out;
     }
     @keyframes flicker { 0% { filter: brightness(0.7) contrast(1.1); } 100% { filter: brightness(1) contrast(1.2); } }
+    
     .vignette {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.95) 100%);
         z-index: 1; pointer-events: none;
     }
 
-    /* --- Embers --- */
-    #particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; overflow: hidden; }
+    /* --- THE FLOATING EMBERS (Reinforced) --- */
+    #particles { 
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+        z-index: 5; /* Sitting between the background and UI */
+        pointer-events: none; overflow: hidden;
+    }
     .ember {
         position: absolute; bottom: -20px; background: var(--fire); border-radius: 50%;
-        box-shadow: 0 0 10px var(--fire), 0 0 20px var(--fire-glow);
+        box-shadow: 0 0 12px var(--fire), 0 0 24px var(--fire-glow);
         opacity: 0; animation: rise linear infinite;
     }
-    @keyframes rise { 0% { opacity: 0; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-110vh) translateX(var(--drift)); } }
+    @keyframes rise {
+        0% { opacity: 0; transform: translateY(0) scale(1); }
+        20% { opacity: 0.9; }
+        100% { opacity: 0; transform: translateY(-110vh) scale(0.3) translateX(var(--drift)); }
+    }
 
     /* --- Dashboard UI --- */
     .ui-container {
@@ -75,19 +84,18 @@
     .panel-header { text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 8px; margin-bottom: 12px; }
     .panel-header h1 { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--gold); margin: 0; letter-spacing: 2px; }
 
-    /* --- Almanac --- */
+    /* --- Almanac & Endeavors --- */
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-family: 'Cinzel'; font-size: 0.7rem; }
     .day-num { padding: 6px; border: 1px solid rgba(212, 175, 55, 0.1); cursor: pointer; transition: 0.3s; }
     .day-num.today { background: var(--gold); color: #000; font-weight: bold; }
     .day-num.has-log { border-color: var(--gold); color: var(--gold); }
 
-    /* --- ACTIVE ENDEAVORS --- */
     .manifest-body { font-size: 1.1rem; line-height: 1.4; color: var(--parchment); font-style: italic; max-height: 100px; overflow-y: auto; text-align: left; }
     .empty-msg { opacity: 0.4; font-size: 0.9rem; text-align: center; }
 
     /* --- Reagent List --- */
     .reagent-input-box { display: flex; gap: 8px; margin-bottom: 10px; }
-    input[type="text"] { flex-grow: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--gold-glow); color: var(--text); padding: 6px; outline: none; }
+    input[type="text"] { flex-grow: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--gold-glow); color: var(--text); padding: 8px; outline: none; font-family: 'Cormorant Garamond'; }
     .reagent-list { max-height: 120px; overflow-y: auto; text-align: left; }
     .reagent-item { display: flex; justify-content: space-between; padding: 6px; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
     .reagent-name.checked { text-decoration: line-through; opacity: 0.5; }
@@ -102,7 +110,7 @@
         background: var(--parchment); color: var(--ink); width: 85%; max-width: 480px;
         padding: 40px; border: 2px solid #8b5a2b; border-radius: 5px 40px 5px 40px; position: relative;
     }
-    textarea { width: 100%; height: 120px; background: transparent; border: none; border-bottom: 1px solid #8b5a2b; font-size: 1.2rem; margin-top: 15px; outline: none; resize: none; }
+    textarea { width: 100%; height: 120px; background: transparent; border: none; border-bottom: 1px solid #8b5a2b; font-size: 1.2rem; margin-top: 15px; outline: none; resize: none; font-family: 'Cormorant Garamond'; }
     .data-btn { background: transparent; border: 1px solid var(--gold-glow); color: var(--gold); font-family: 'Cinzel'; font-size: 0.6rem; padding: 5px 12px; cursor: pointer; transition: 0.3s; }
     .data-btn:hover { background: var(--gold); color: #000; }
 </style>
@@ -123,7 +131,7 @@
         <div class="glass-panel" id="today-panel">
             <div class="panel-header"><h1>Active Endeavors</h1></div>
             <div id="manifest-content" class="manifest-body">
-                <p class="empty-msg">No current missives from the guild. Consult the Almanac.</p>
+                <p class="empty-msg">Consult the Almanac below to record today's provisions or quests.</p>
             </div>
         </div>
 
@@ -139,24 +147,22 @@
             <div class="panel-header"><h1>Master's Reagent List</h1></div>
             <div class="reagent-input-box">
                 <input type="text" id="reagent-input" placeholder="Acquire new reagents...">
-                <button class="data-btn" onclick="addReagent()">Acquire</button>
+                <button class="data-btn" onclick="addReagent()" style="font-size:0.8rem">Acquire</button>
             </div>
             <div class="reagent-list" id="reagent-display"></div>
         </div>
 
-        <div class="glass-panel">
-            <div class="data-tools" style="display:flex; justify-content:space-around;">
-                <button class="data-btn" onclick="exportData()">Export Scroll</button>
-                <button class="data-btn" onclick="document.getElementById('import-file').click()">Import Scroll</button>
-                <input type="file" id="import-file" style="display:none" onchange="importData(event)">
-            </div>
+        <div class="glass-panel" style="display:flex; justify-content:space-around; padding:15px">
+            <button class="data-btn" onclick="exportData()">Export Scroll</button>
+            <button class="data-btn" onclick="document.getElementById('import-file').click()">Import Scroll</button>
+            <input type="file" id="import-file" style="display:none" onchange="importData(event)">
         </div>
     </div>
 
     <div id="log-modal" onclick="closeLog()">
         <div class="scroll-parchment" onclick="event.stopPropagation()">
             <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem;" onclick="closeLog()">×</span>
-            <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center;"></h2>
+            <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center; border-bottom: 1px solid #8b5a2b;"></h2>
             <textarea id="log-entry" placeholder="Record provisions, study sessions, or travel routes..."></textarea>
             <button class="data-btn" onclick="saveLog()" style="width:100%; margin-top:15px; padding:10px; font-size:1rem;">Finalize Record</button>
         </div>
@@ -170,7 +176,29 @@
             document.getElementById('enter-overlay').style.opacity = '0';
             setTimeout(() => { document.getElementById('enter-overlay').style.display = 'none'; }, 1000);
             audio.volume = 0.5; audio.play();
-            renderCalendar(); renderReagents(); updateTodayManifest(); createEmbers();
+            
+            // Kickstart all systems
+            renderCalendar(); 
+            renderReagents(); 
+            updateTodayManifest(); 
+            createEmbers(); 
+        }
+
+        /* --- THE EMBER ENGINE --- */
+        function createEmbers() {
+            const pCont = document.getElementById('particles');
+            pCont.innerHTML = ''; // Clear any old embers
+            for(let i=0; i<65; i++) {
+                let e = document.createElement('div');
+                e.className = 'ember';
+                e.style.left = Math.random() * 100 + '%';
+                let s = (Math.random() * 4 + 2) + 'px';
+                e.style.width = s; e.style.height = s;
+                e.style.animationDuration = (Math.random() * 6 + 4) + 's';
+                e.style.animationDelay = (Math.random() * 5) + 's';
+                e.style.setProperty('--drift', (Math.random() - 0.5) * 180 + 'px');
+                pCont.appendChild(e);
+            }
         }
 
         function updateTodayManifest() {
@@ -181,20 +209,7 @@
             if(content) {
                 display.innerHTML = `<p>✦ ${content.replace(/\n/g, '<br>✦ ')}</p>`;
             } else {
-                display.innerHTML = `<p class="empty-msg">The Provisioner is currently at rest.</p>`;
-            }
-        }
-
-        function createEmbers() {
-            const pCont = document.getElementById('particles');
-            for(let i=0; i<50; i++) {
-                let e = document.createElement('div'); e.className = 'ember';
-                e.style.left = Math.random() * 100 + '%';
-                let s = (Math.random() * 3 + 2) + 'px'; e.style.width = s; e.style.height = s;
-                e.style.animationDuration = (Math.random() * 5 + 4) + 's';
-                e.style.animationDelay = (Math.random() * 5) + 's';
-                e.style.setProperty('--drift', (Math.random() - 0.5) * 150 + 'px');
-                pCont.appendChild(e);
+                display.innerHTML = `<p class="empty-msg">No active endeavors recorded for today.</p>`;
             }
         }
 
