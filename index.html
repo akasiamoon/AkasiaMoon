@@ -59,10 +59,11 @@
     #embers-container { position: absolute; width: 100%; height: 100%; z-index: 11; pointer-events: none; }
     
     .hearth-click-layer { z-index: 25; position: absolute; width: 100%; height: 100%; }
-    #zone-soups { top: 35%; left: 10%; width: 12%; height: 18%; }
-    #zone-breads { top: 60%; left: 8%; width: 14%; height: 20%; }
-    #zone-casseroles { top: 45%; left: 25%; width: 15%; height: 15%; }
-    #zone-fried { top: 70%; left: 26%; width: 12%; height: 18%; }
+    #zone-soups { top: 30%; left: 10%; width: 12%; height: 15%; }
+    #zone-breads { top: 50%; left: 8%; width: 12%; height: 15%; }
+    #zone-casseroles { top: 70%; left: 10%; width: 12%; height: 15%; }
+    #zone-fried { top: 40%; left: 25%; width: 12%; height: 15%; }
+    #zone-beverages { top: 60%; left: 25%; width: 12%; height: 15%; } /* NEW BEVERAGE ZONE */
 
     /* --- ROOM 2: TOWER --- */
     #scholar-video-bg { width: 100%; height: 100%; object-fit: cover; z-index: 20; position: absolute; left: 0; top: 0; }
@@ -145,6 +146,7 @@
             <div id="zone-breads" class="click-zone" onclick="openGrimoire('Breads & Bakes')" title="Breads & Bakes"></div>
             <div id="zone-casseroles" class="click-zone" onclick="openGrimoire('Casseroles')" title="Casseroles"></div>
             <div id="zone-fried" class="click-zone" onclick="openGrimoire('Fried Delights')" title="Fried Delights"></div>
+            <div id="zone-beverages" class="click-zone" onclick="openGrimoire('Elixirs & Beverages')" title="Elixirs & Beverages"></div>
         </div>
 
         <div class="hearth-ui">
@@ -403,193 +405,4 @@
 
         function addReagent() { 
             const input = document.getElementById('reagent-input'); if(!input.value) return; 
-            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); reagents.push(input.value); 
-            localStorage.setItem('reagents', JSON.stringify(reagents)); input.value = ''; renderReagents(); 
-        }
-
-        function renderReagents() { 
-            const display = document.getElementById('reagent-display'); const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); 
-            display.innerHTML = reagents.map((item, idx) => `
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span>✦ ${item}</span>
-                    <span style="color:#8a3324; cursor:pointer;" onclick="removeReagent(${idx})">×</span>
-                </div>
-            `).join(''); 
-        }
-
-        function removeReagent(idx) { 
-            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); reagents.splice(idx, 1); 
-            localStorage.setItem('reagents', JSON.stringify(reagents)); renderReagents(); 
-        }
-
-        // 6. Tower Focus Systems
-        function startTimer(minutes) { 
-            clearInterval(timerInterval); secondsRemaining = minutes * 60; 
-            timerInterval = setInterval(() => { 
-                secondsRemaining--; 
-                let min = Math.floor(secondsRemaining / 60).toString().padStart(2, '0'); 
-                let sec = (secondsRemaining % 60).toString().padStart(2, '0'); 
-                document.getElementById('timer-display').innerText = `${min}:${sec}`; 
-                if(secondsRemaining <= 0) clearInterval(timerInterval); 
-            }, 1000); 
-        }
-
-        function stopTimer() { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "25:00"; }
-
-        function logWork() { 
-            const noteInput = document.getElementById('work-note').value; if(!noteInput.trim()) return; 
-            const journal = JSON.parse(localStorage.getItem('journal') || '[]'); 
-            journal.unshift({ts: new Date().toLocaleString(), note: noteInput}); 
-            localStorage.setItem('journal', JSON.stringify(journal)); 
-            document.getElementById('work-note').value = ''; renderBlog(); 
-        }
-
-        function renderBlog() { 
-            const container = document.getElementById('blog-container'); const journal = JSON.parse(localStorage.getItem('journal') || '[]'); 
-            container.innerHTML = journal.map(post => `
-                <div style="margin-bottom:10px; border-left:1px solid var(--gold); padding-left:10px;">
-                    <div style="color:var(--gold); font-size:0.7rem;">${post.ts}</div>
-                    <div style="font-size:0.9rem;">${post.note}</div>
-                </div>
-            `).join(''); 
-        }
-
-        // 7. Garden Vitals
-        function setMood(mood, element) { 
-            document.querySelectorAll('.mood-icons span').forEach(s => s.classList.remove('selected')); 
-            element.classList.add('selected'); localStorage.setItem('vital-mood', mood); 
-        }
-
-        function saveVitals() { 
-            localStorage.setItem('vital-sleep', document.getElementById('sleep-input').value); 
-            localStorage.setItem('vital-water', document.getElementById('water-input').value); 
-            localStorage.setItem('vital-meals', document.getElementById('meal-input').value); 
-        }
-
-        function loadVitals() { 
-            try {
-                document.getElementById('sleep-input').value = localStorage.getItem('vital-sleep') || 8; 
-                document.getElementById('water-input').value = localStorage.getItem('vital-water') || 0; 
-                document.getElementById('meal-input').value = localStorage.getItem('vital-meals') || 0; 
-                
-                const savedMood = localStorage.getItem('vital-mood'); 
-                if(savedMood) { 
-                    const moodMap = {ethereal:0, grounded:1, flickering:2, stormy:3, waning:4}; 
-                    if(moodMap[savedMood] !== undefined) {
-                        document.querySelectorAll('.mood-icons span')[moodMap[savedMood]].classList.add('selected'); 
-                    }
-                } 
-            } catch (error) { console.log("Error loading vitals"); }
-        }
-
-        // 8. Grimoire Modal Framework
-        function openGrimoire(subject) { 
-            activeGrimoire = `grim-${subject.replace(/\s+/g, '-').toLowerCase()}`; 
-            document.getElementById('grimoire-title').innerText = subject; 
-            document.getElementById('grimoire-text').value = localStorage.getItem(activeGrimoire) || ''; 
-            
-            // Contextual Placeholder
-            const isRecipe = ['Soups & Stews', 'Breads & Bakes', 'Casseroles', 'Fried Delights'].includes(subject);
-            document.getElementById('grimoire-text').placeholder = isRecipe ? "Scribe your recipe... use '#' for dish names." : "Scribe your research... use '#' for chapters.";
-
-            toggleView('grim'); document.getElementById('grimoire-modal').style.display = 'flex'; 
-            setTimeout(() => document.getElementById('grimoire-modal').style.opacity = '1', 10); updateTOC(); 
-        }
-
-        function saveGrimoire() { localStorage.setItem(activeGrimoire, document.getElementById('grimoire-text').value); closeGrimoire(); }
-        function closeGrimoire() { document.getElementById('grimoire-modal').style.opacity = '0'; setTimeout(() => document.getElementById('grimoire-modal').style.display = 'none', 500); }
-
-        function toggleView(view) { 
-            document.getElementById('grimoire-view').style.display = view === 'grim' ? 'flex' : 'none'; 
-            document.getElementById('lexicon-view').style.display = view === 'lex' ? 'flex' : 'none'; 
-            document.getElementById('legend-view').style.display = view === 'leg' ? 'flex' : 'none'; 
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
-            document.getElementById('tab-'+view).classList.add('active'); 
-            if(view === 'lex') renderLexicon(); if(view === 'leg') renderLegend(); 
-        }
-        
-        function updateTOC() { 
-            const text = document.getElementById('grimoire-text').value; const toc = document.getElementById('grimoire-toc'); toc.innerHTML = ''; 
-            text.split('\n').forEach(line => { 
-                if(line.startsWith('#')) { 
-                    const title = line.replace('#', '').trim(); const span = document.createElement('span'); 
-                    span.className = 'toc-link'; span.innerText = title; 
-                    span.onclick = () => { const area = document.getElementById('grimoire-text'); area.focus(); const index = text.indexOf(line); area.setSelectionRange(index, index); }; 
-                    toc.appendChild(span); 
-                }
-            }); 
-        }
-
-        function addLexicon() { 
-            const termInput = document.getElementById('lex-term'); const defInput = document.getElementById('lex-def'); 
-            if(!termInput.value || !defInput.value) return; 
-            const lexicon = JSON.parse(localStorage.getItem('lexicon') || '[]'); lexicon.push({t: termInput.value, d: defInput.value}); 
-            lexicon.sort((a,b) => a.t.localeCompare(b.t)); localStorage.setItem('lexicon', JSON.stringify(lexicon)); 
-            termInput.value = ''; defInput.value = ''; renderLexicon(); 
-        }
-
-        function renderLexicon() { 
-            const lexicon = JSON.parse(localStorage.getItem('lexicon') || '[]'); 
-            document.getElementById('lexicon-list').innerHTML = lexicon.map((item, idx) => `
-                <div class="lexicon-item">
-                    <div style="font-family:'Cinzel';font-weight:bold;color:#8b5a2b;width:30%;">${item.t}</div>
-                    <div style="width:60%;">${item.d}</div>
-                    <span style="cursor:pointer;color:#8a3324;" onclick="removeLex(${idx})">×</span>
-                </div>
-            `).join(''); 
-        }
-
-        function removeLex(idx) { 
-            const lexicon = JSON.parse(localStorage.getItem('lexicon') || '[]'); lexicon.splice(idx, 1); 
-            localStorage.setItem('lexicon', JSON.stringify(lexicon)); renderLexicon(); 
-        }
-        
-        function addLegend() { 
-            const input = document.getElementById('leg-input'); if(!input.value) return; 
-            const defaultMilestones = [{t:"The Primal Spark: Scribe your creation myth.", c:false}];
-            const legend = JSON.parse(localStorage.getItem('legend') || JSON.stringify(defaultMilestones)); 
-            legend.push({t: input.value, c: false}); localStorage.setItem('legend', JSON.stringify(legend)); 
-            input.value = ''; renderLegend(); 
-        }
-
-        function renderLegend() { 
-            const defaultMilestones = [{t:"The Primal Spark: Scribe your creation myth.", c:false}];
-            const legend = JSON.parse(localStorage.getItem('legend') || JSON.stringify(defaultMilestones)); 
-            
-            document.getElementById('legend-list').innerHTML = legend.map((item, idx) => `
-                <div class="legend-item">
-                    <label style="cursor:pointer; font-size:1.1rem;">
-                        <input type="checkbox" ${item.c ? 'checked' : ''} onchange="toggleLeg(${idx})"> ${item.t}
-                    </label>
-                    <span style="cursor:pointer;color:#8a3324;" onclick="removeLeg(${idx})">×</span>
-                </div>
-            `).join(''); 
-            
-            const done = legend.filter(i => i.c).length; 
-            document.getElementById('legend-bar').style.width = legend.length ? (done / legend.length) * 100 + '%' : '0%'; 
-        }
-
-        function toggleLeg(idx) { 
-            const legend = JSON.parse(localStorage.getItem('legend') || '[]'); legend[idx].c = !legend[idx].c; 
-            localStorage.setItem('legend', JSON.stringify(legend)); renderLegend(); 
-        }
-
-        function removeLeg(idx) { 
-            const legend = JSON.parse(localStorage.getItem('legend') || '[]'); legend.splice(idx, 1); 
-            localStorage.setItem('legend', JSON.stringify(legend)); renderLegend(); 
-        }
-
-        function exportData() { 
-            const dataObj = {}; 
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                dataObj[key] = localStorage.getItem(key);
-            } 
-            const blob = new Blob([JSON.stringify(dataObj)], {type: 'application/json'}); 
-            const url = URL.createObjectURL(blob); 
-            const a = document.createElement('a'); 
-            a.href = url; a.download = 'moons-hearth-scroll.json'; a.click(); 
-        }
-    </script>
-</body>
-</html>
+            const reagents = JSON.parse(localStorage.getItem('
