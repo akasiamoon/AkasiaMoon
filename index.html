@@ -9,7 +9,7 @@
     :root { --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.85); --text: #fdf5e6; --parchment: #e3d5b8; --ink: #2c1810; }
     body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Cormorant Garamond', serif; background-color: #000; color: var(--text); overflow: hidden; }
 
-    /* --- Overlays & UI --- */
+    /* --- UI Core --- */
     #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 3000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; }
     .enter-btn, .portal-btn, .data-btn { font-family: 'Cinzel', serif; color: var(--gold); background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer; transition: 0.3s; }
     .enter-btn { font-size: 1.5rem; padding: 15px 45px; letter-spacing: 5px; text-transform: uppercase; box-shadow: 0 0 30px var(--gold-glow); }
@@ -32,11 +32,10 @@
     #weather-temp { font-family: 'Cinzel'; color: var(--gold); font-size: 1.2rem; font-weight: 900; z-index: 2; text-shadow: 0 2px 4px #000; }
     #weather-desc { font-family: 'Cormorant Garamond'; color: var(--parchment); font-size: 0.6rem; font-style: italic; z-index: 2; letter-spacing: 1px; text-transform: uppercase; }
 
-    /* ================= LAYERING SYSTEM ================= */
+    /* --- LAYERING --- */
     .layer-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1s ease; }
     .layer-container.hidden { opacity: 0; pointer-events: none; }
 
-    /* --- HEARTH LAYER --- */
     #hearth-bg { background: url('image_5.png') no-repeat center center; background-size: cover; z-index: 10; }
     #embers-container { z-index: 11; pointer-events: none; }
     .ember { position: absolute; bottom:-20px; background:var(--fire); width: 5px; height: 5px; border-radius:50%; box-shadow:0 0 10px var(--fire); opacity:0; animation:rise linear infinite; }
@@ -44,15 +43,12 @@
     .hearth-ui { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); z-index: 15; width: 420px; display: flex; flex-direction: column; gap: 15px; }
     .glass-panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--gold-glow); padding: 20px; box-shadow: 0 15px 35px #000; }
 
-    /* --- SCHOLAR TOWER --- */
     #scholar-video-bg { width: 100%; height: 100%; object-fit: cover; z-index: 20; position: absolute; opacity: 1; }
     #dust-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 21; pointer-events: none; overflow: hidden; }
     .dust-mote { position: absolute; background: rgba(255, 230, 180, 0.4); border-radius: 50%; animation: floatDust linear infinite; }
     @keyframes floatDust { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.8; } 100% { opacity: 0; transform: translateY(-40vh) translateX(30px); } }
 
-    /* Click Zones */
-    .scholar-click-layer { z-index: 25; }
-    .click-zone { position: absolute; cursor: pointer; transition: 0.3s; border-radius: 5px; }
+    .click-zone { position: absolute; cursor: pointer; transition: 0.3s; z-index: 25; }
     .click-zone:hover { box-shadow: inset 0 0 30px var(--gold-glow), 0 0 15px var(--gold-glow); background: rgba(212,175,55,0.1); }
     #zone-lore { top: 58%; left: 5%; width: 18%; height: 25%; } 
     #zone-bard { top: 63%; right: 5%; width: 15%; height: 20%; } 
@@ -60,7 +56,7 @@
     #zone-survival { top: 55%; left: 53%; width: 10%; height: 20%; } 
     #zone-merchant { top: 75%; left: 68%; width: 25%; height: 15%; } 
 
-    /* --- DESK UI --- */
+    /* --- DESK --- */
     .desk-ui-container { position: absolute; right: -450px; top: 50%; transform: translateY(-50%); width: 380px; z-index: 26; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
     .desk-ui-container.open { right: 40px; } 
     .desk-panel { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--gold-glow); padding: 20px; color: var(--parchment); }
@@ -68,17 +64,21 @@
     #timer-display { font-family: 'Cinzel'; font-size: 2.2rem; color: var(--gold); text-align: center; margin: 10px 0; }
     .blog-container { max-height: 250px; overflow-y: auto; margin-top: 10px; }
 
-    /* Typography & Calendar */
-    .panel-header h1 { font-family: 'Cinzel'; font-size: 1.1rem; color: var(--gold); text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 5px; margin-bottom: 15px; }
+    /* --- MODALS & GRIMOIRE --- */
+    #log-modal, #grimoire-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
+    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 85%; max-width: 600px; padding: 40px; border-radius: 5px 40px; position: relative; box-shadow: 0 0 50px #000; border: 2px solid #8b5a2b; }
+    
+    #grimoire-toc { border-bottom: 1px double #8b5a2b; margin-bottom: 10px; padding-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.8rem; font-family: 'Cinzel'; max-height: 60px; overflow-y: auto; }
+    .toc-link { color: #8b5a2b; cursor: pointer; text-decoration: underline; opacity: 0.7; }
+    .toc-link:hover { opacity: 1; color: var(--ink); }
+
+    .search-scryer { width: 100%; background: rgba(0,0,0,0.05); border: none; border-bottom: 1px solid #8b5a2b; font-family: 'Cinzel'; font-size: 0.7rem; padding: 5px 0; margin-bottom: 15px; outline: none; color: #8b5a2b; }
+    .grimoire-textarea { width: 100%; height: 350px; background: rgba(0,0,0,0.03); border: 1px solid rgba(139, 90, 43, 0.3); padding: 15px; font-family: 'Cormorant Garamond'; font-size: 1.2rem; line-height: 1.5; outline: none; resize: none; color: var(--ink); }
+
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.7rem; font-family: 'Cinzel'; }
     .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; }
     .day-num.today { background: var(--gold); color: #000; }
     .day-num.has-log { border-color: var(--gold); color: var(--gold); }
-
-    /* Modals & Grimoire Pages */
-    #log-modal, #grimoire-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
-    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 85%; max-width: 500px; padding: 50px; border-radius: 5px 40px; position: relative; box-shadow: 0 0 50px #000; border: 2px solid #8b5a2b; }
-    .grimoire-textarea { width: 100%; height: 300px; background: rgba(0,0,0,0.03); border: 1px solid rgba(139, 90, 43, 0.3); padding: 15px; font-family: 'Cormorant Garamond'; font-size: 1.2rem; line-height: 1.5; outline: none; resize: none; color: var(--ink); }
 </style>
 </head>
 <body>
@@ -105,10 +105,7 @@
         <div id="hearth-bg" class="layer-container"></div>
         <div id="embers-container" class="layer-container"></div>
         <div class="hearth-ui">
-            <div class="glass-panel">
-                <div class="panel-header"><h1>The Almanac</h1></div>
-                <div class="calendar-grid" id="calendar-body"></div>
-            </div>
+            <div class="glass-panel"><div class="panel-header"><h1>The Almanac</h1></div><div class="calendar-grid" id="calendar-body"></div></div>
             <div class="glass-panel">
                 <div class="panel-header"><h1>Reagent List</h1></div>
                 <div style="display:flex; gap:8px;"><input type="text" id="reagent-input" class="scholar-input" placeholder="Add ingredient..."><button class="data-btn" onclick="addReagent()">Add</button></div>
@@ -126,11 +123,11 @@
         <video id="scholar-video-bg" loop muted playsinline><source src="scholar_bg.mp4" type="video/mp4"></video>
         <div id="dust-container"></div>
         <div class="scholar-click-layer layer-container">
-            <div id="zone-lore" class="click-zone" onclick="openGrimoire('Global Mythos')" title="Global Mythos"></div>
-            <div id="zone-bard" class="click-zone" onclick="openGrimoire('Bardic Arts')" title="Bardic Arts"></div>
-            <div id="zone-art" class="click-zone" onclick="openGrimoire('Visual Design')" title="Visual Design"></div>
-            <div id="zone-survival" class="click-zone" onclick="openGrimoire('Hearth Resilience')" title="Hearth Resilience"></div>
-            <div id="zone-merchant" class="click-zone" onclick="openGrimoire('Guild Logic')" title="Guild Logic"></div>
+            <div id="zone-lore" class="click-zone" onclick="openGrimoire('Global Mythos')"></div>
+            <div id="zone-bard" class="click-zone" onclick="openGrimoire('Bardic Arts')"></div>
+            <div id="zone-art" class="click-zone" onclick="openGrimoire('Visual Design')"></div>
+            <div id="zone-survival" class="click-zone" onclick="openGrimoire('Hearth Resilience')"></div>
+            <div id="zone-merchant" class="click-zone" onclick="openGrimoire('Guild Logic')"></div>
         </div>
         <button id="desk-toggle-btn" class="portal-btn ui-toggle-btn" onclick="toggleDeskUI()">Open Desk</button>
         <div id="desk-ui" class="desk-ui-container">
@@ -152,8 +149,10 @@
     <div id="grimoire-modal" onclick="closeGrimoire()">
         <div class="scroll-parchment" onclick="event.stopPropagation()">
             <span style="position:absolute; top:15px; right:20px; cursor:pointer;" onclick="closeGrimoire()">×</span>
-            <h2 id="grimoire-title" style="font-family:'Cinzel'; text-align:center; margin-bottom:15px; border-bottom:1px solid #8b5a2b; padding-bottom:10px;"></h2>
-            <textarea id="grimoire-text" class="grimoire-textarea" placeholder="Scribe your research here..."></textarea>
+            <h2 id="grimoire-title" style="font-family:'Cinzel'; text-align:center; margin-bottom:10px;"></h2>
+            <div id="grimoire-toc"></div>
+            <input type="text" id="grimoire-search" class="search-scryer" placeholder="Scry Lexicon (Search)..." oninput="scryText()">
+            <textarea id="grimoire-text" class="grimoire-textarea" oninput="updateGrimoireUI()" placeholder="Scribe your research here... use '#' for chapters."></textarea>
             <button class="data-btn" onclick="saveGrimoire()" style="width:100%; margin-top:15px; color:#000; background:var(--gold); padding:10px;">Scribe to Grimoire</button>
         </div>
     </div>
@@ -167,9 +166,30 @@
         async function fetchWeather() { try { const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.94&longitude=-88.52&current=temperature_2m,weather_code&temperature_unit=fahrenheit'); const data = await res.json(); document.getElementById('weather-temp').innerText = Math.round(data.current.temperature_2m) + "°F"; document.getElementById('weather-desc').innerText = "Farmington, MS"; let icon = "✨"; const code = data.current.weather_code; if (code === 0) icon = "🌙"; else if (code <= 3) icon = "☁️"; else if (code >= 51) icon = "🌧️"; document.getElementById('weather-icon').innerText = icon; } catch(e) { document.getElementById('weather-desc').innerText = "Skies obscured."; } }
         function toggleDeskUI() { document.getElementById('desk-ui').classList.toggle('open'); }
 
-        function openGrimoire(subject) { activeGrimoire = `grim-${subject.replace(/\s+/g, '-').toLowerCase()}`; document.getElementById('grimoire-title').innerText = subject; document.getElementById('grimoire-text').value = localStorage.getItem(activeGrimoire) || ''; document.getElementById('grimoire-modal').style.display = 'flex'; setTimeout(() => document.getElementById('grimoire-modal').style.opacity = '1', 10); }
+        function openGrimoire(subject) { activeGrimoire = `grim-${subject.replace(/\s+/g, '-').toLowerCase()}`; document.getElementById('grimoire-title').innerText = subject; document.getElementById('grimoire-text').value = localStorage.getItem(activeGrimoire) || ''; document.getElementById('grimoire-search').value = ''; updateGrimoireUI(); document.getElementById('grimoire-modal').style.display = 'flex'; setTimeout(() => document.getElementById('grimoire-modal').style.opacity = '1', 10); }
         function saveGrimoire() { localStorage.setItem(activeGrimoire, document.getElementById('grimoire-text').value); closeGrimoire(); }
         function closeGrimoire() { document.getElementById('grimoire-modal').style.opacity = '0'; setTimeout(() => document.getElementById('grimoire-modal').style.display = 'none', 500); }
+
+        function updateGrimoireUI() { updateTOC(); }
+        function updateTOC() {
+            const text = document.getElementById('grimoire-text').value;
+            const toc = document.getElementById('grimoire-toc');
+            const lines = text.split('\n'); toc.innerHTML = '<span>TOC: </span>';
+            lines.forEach(line => { if(line.startsWith('#')) {
+                const title = line.replace('#', '').trim();
+                const span = document.createElement('span'); span.className = 'toc-link'; span.innerText = title;
+                span.onclick = () => { const area = document.getElementById('grimoire-text'); area.focus(); const index = text.indexOf(line); area.setSelectionRange(index, index); area.blur(); area.focus(); };
+                toc.appendChild(span);
+            }});
+        }
+
+        function scryText() {
+            const query = document.getElementById('grimoire-search').value.toLowerCase();
+            const area = document.getElementById('grimoire-text');
+            if(!query) return;
+            const index = area.value.toLowerCase().indexOf(query);
+            if(index !== -1) { area.focus(); area.setSelectionRange(index, index + query.length); }
+        }
 
         function createEmbers() { const p = document.getElementById('embers-container'); p.innerHTML = ''; for(let i=0; i<25; i++) { let e = document.createElement('div'); e.className = 'ember'; e.style.left = Math.random()*100+'%'; e.style.animationDuration = (Math.random()*5+4)+'s'; e.style.setProperty('--drift', (Math.random()*100 - 50)+'px'); p.appendChild(e); } }
         function createDust() { const p = document.getElementById('dust-container'); p.innerHTML = ''; for(let i=0; i<80; i++) { let d = document.createElement('div'); d.className = 'dust-mote'; let s = Math.random()*3+1+'px'; d.style.width = s; d.style.height = s; d.style.left = Math.random()*100+'%'; d.style.top = Math.random()*100+'%'; d.style.animationDuration = (Math.random()*10+8)+'s'; p.appendChild(d); } }
