@@ -1,77 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akasia Moon's | Epic Grimoire</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moon's Kitchen - The Hearth</title>
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+    }
+
+    /* The Living Background */
+    .bg-layer {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: url('image_5.png') no-repeat center center;
+        background-size: cover;
+        z-index: 0;
+        animation: flicker 6s infinite alternate ease-in-out;
+    }
+
+    /* Subtle flickering light effect */
+    @keyframes flicker {
+        0%, 100% { filter: brightness(1) contrast(1); }
+        50% { filter: brightness(1.1) contrast(1.05); }
+    }
+
+    /* Vignette for focus */
+    .vignette {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.7) 90%);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    /* Floating Embers Container */
+    #particle-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    /* Individual Ember Style */
+    .ember {
+        position: absolute;
+        bottom: -20px;
+        width: 4px; height: 4px;
+        background: #ff6a00;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #ff6a00, 0 0 20px #ffcc00;
+        opacity: 0;
+        animation: rise 5s linear infinite;
+    }
+
+    /* Potion Glow Effect */
+    .potion-glow {
+        position: absolute;
+        width: 30px; height: 40px;
+        border-radius: 50%;
+        filter: blur(15px);
+        opacity: 0.6;
+        animation: pulse 4s infinite alternate;
+    }
+    .potion-1 { top: 40%; right: 12%; background: #00f7ff; } /* Blue */
+    .potion-2 { top: 40%; right: 6%; background: #ff00e6; } /* Purple */
+    .potion-3 { top: 58%; right: 6%; background: #ffaa00; } /* Orange */
+
+    @keyframes pulse {
+        0% { opacity: 0.4; transform: scale(1); }
+        100% { opacity: 0.8; transform: scale(1.2); }
+    }
+
+    /* Ember Animation */
+    @keyframes rise {
+        0% { opacity: 0; transform: translateY(0) scale(1); }
+        20% { opacity: 0.8; }
+        80% { opacity: 0.5; }
+        100% { opacity: 0; transform: translateY(-80vh) scale(0.5); }
+    }
+
+    /* Hidden Audio Player */
+    #audio-controls {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        z-index: 10;
+        opacity: 0.3;
+        transition: opacity 0.3s;
+    }
+    #audio-controls:hover { opacity: 1; }
+</style>
 </head>
 <body>
-    <canvas id="magicOverlay"></canvas>
 
-    <div class="hub-container">
-        <header class="epic-header">
-            <h1 class="glowing-text" data-text="Akasia Moon's">Akasia Moon's</h1>
-            <p class="subtitle">The Ultimate Sanctuary & Recipe Grimoire</p>
-            <div class="rune-divider">✧ ✦ ✧</div>
-        </header>
+    <div class="bg-layer"></div>
+    <div class="vignette"></div>
+    <div id="particle-container"></div>
+    
+    <div class="potion-glow potion-1"></div>
+    <div class="potion-glow potion-2"></div>
+    <div class="potion-glow potion-3"></div>
 
-        <nav class="main-nav">
-            <button class="nav-btn epic-btn" id="btn-sanctuary">
-                <span class="btn-text">The Sanctuary</span>
-            </button>
-            <button class="nav-btn epic-btn" id="btn-recipes">
-                <span class="btn-text">Potions & Provisions</span>
-            </button>
-            <button class="nav-btn epic-btn" id="btn-custom">
-                <span class="btn-text">Arcane Settings</span>
-            </button>
-        </nav>
-
-        <main id="content-area">
-            <section class="card active" id="sanctuary-section">
-                <div class="card-content">
-                    <h2 class="pulse-text">Welcome Home, Traveler</h2>
-                    <p>The hearth is roaring. Your grimoire awaits its master. Select a destination above to weave your magic.</p>
-                </div>
-            </section>
-
-            <section class="card" id="recipes-section">
-                <div class="card-content">
-                    <h2 class="pulse-text">Potions & Provisions</h2>
-                    
-                    <div class="recipe-grid">
-                        <div class="recipe-card">
-                            <div class="recipe-icon">🍲</div>
-                            <h3>Hearty Tavern Potato Soup</h3>
-                            <p>A thick, soul-warming brew perfect for weathering a long winter storm.</p>
-                        </div>
-
-                        <div class="recipe-card">
-                            <div class="recipe-icon">🍋🫐</div>
-                            <h3>Moonlit Lemon Blueberry Bread</h3>
-                            <p>Sweet, vibrant, and bursting with forest-foraged flavors.</p>
-                        </div>
-
-                        <div class="recipe-card">
-                            <div class="recipe-icon">🥧</div>
-                            <h3>Golden Fried Hand Pies</h3>
-                            <p>A traveler's favorite. Crispy outside, magical sweetness inside.</p>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-            
-            <section class="card" id="custom-section">
-                <div class="card-content">
-                    <h2 class="pulse-text">Arcane Settings</h2>
-                    <p>Customize your grimoire's aesthetic and UI elements here.</p>
-                </div>
-            </section>
-        </main>
+    <audio id="hearth-audio" autoplay loop>
+        <source src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Fire_crackling.ogg" type="audio/ogg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <div id="audio-controls">
+        <button onclick="document.getElementById('hearth-audio').play()">Is the fire silent? Click here to ignite.</button>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // --- Dynamic Embers Generator ---
+        const particleContainer = document.getElementById('particle-container');
+        const emberCount = 30;
+
+        for(let i=0; i<emberCount; i++) {
+            let ember = document.createElement('div');
+            ember.className = 'ember';
+            // Randomize start position, size, and speed
+            ember.style.left = Math.random() * 100 + '%';
+            let size = (Math.random() * 3 + 2) + 'px';
+            ember.style.width = size;
+            ember.style.height = size;
+            ember.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            ember.style.animationDelay = (Math.random() * 5) + 's';
+            
+            // Add a slight random horizontal drift
+            let drift = (Math.random() - 0.5) * 50 + 'px';
+            ember.style.setProperty('--drift', drift);
+            
+            particleContainer.appendChild(ember);
+        }
+        
+        // Try to play audio on load (might be blocked by browser policy)
+        window.addEventListener('load', function() {
+            const audio = document.getElementById('hearth-audio');
+            audio.volume = 0.7; // Set volume
+            audio.play().catch(error => {
+                // Auto-play was prevented, the user button is there as a backup.
+                console.log("Autoplay prevented. User interaction required.");
+            });
+        });
+    </script>
+
 </body>
 </html>
