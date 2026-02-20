@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moon's Hearth - The Provisioner's Almanac</title>
+<title>Moon's Hearth - The Master's Almanac & Manifest</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -23,7 +23,7 @@
         overflow: hidden; cursor: crosshair;
     }
 
-    /* --- Cinematic Entrance --- */
+    /* --- Entrance --- */
     #enter-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(circle, #1a120e 0%, #000 100%);
@@ -34,7 +34,6 @@
         font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--gold);
         background: rgba(0,0,0,0.5); border: 1px solid var(--gold); padding: 15px 45px;
         cursor: pointer; letter-spacing: 5px; transition: 0.4s;
-        box-shadow: 0 0 30px var(--gold-glow);
     }
     .enter-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 50px var(--gold); }
 
@@ -51,48 +50,55 @@
         z-index: 1; pointer-events: none;
     }
 
-    /* --- Almanac Panel --- */
+    /* --- Dashboard UI --- */
     .ui-container {
         position: absolute; right: 40px; top: 50%; transform: translateY(-50%);
-        z-index: 10; display: flex; flex-direction: column; gap: 20px; width: 440px;
+        z-index: 10; display: flex; flex-direction: column; gap: 15px; width: 440px;
     }
     .glass-panel {
         background: var(--glass); backdrop-filter: blur(25px);
-        border: 1px solid var(--gold-glow); padding: 30px;
+        border: 1px solid var(--gold-glow); padding: 25px;
         box-shadow: 0 25px 70px #000;
     }
-    .almanac-header { text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 10px; margin-bottom: 20px; }
-    .almanac-header h1 { font-family: 'Cinzel', serif; font-size: 1.6rem; color: var(--gold); margin: 0; }
+    .panel-header { text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px; }
+    .panel-header h1 { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); margin: 0; letter-spacing: 2px; }
 
-    /* --- Calendar Grid --- */
+    /* --- Calendar --- */
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-family: 'Cinzel'; font-size: 0.7rem; }
-    .day-name { color: var(--gold); padding-bottom: 10px; }
-    .day-num { padding: 8px; border: 1px solid rgba(212, 175, 55, 0.1); cursor: pointer; transition: 0.3s; }
-    .day-num:hover { background: rgba(212, 175, 55, 0.2); color: var(--gold); }
+    .day-num { padding: 6px; border: 1px solid rgba(212, 175, 55, 0.1); cursor: pointer; }
     .day-num.today { background: var(--gold); color: #000; font-weight: bold; }
     .day-num.has-log { border-color: var(--gold); color: var(--gold); }
 
-    /* --- Modal Scroll --- */
+    /* --- Reagents --- */
+    .reagent-input-box { display: flex; gap: 10px; margin-bottom: 10px; }
+    input[type="text"] {
+        flex-grow: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--gold-glow);
+        color: var(--text); font-family: 'Cormorant Garamond'; padding: 6px; outline: none;
+    }
+    .reagent-list { max-height: 140px; overflow-y: auto; text-align: left; }
+    .reagent-item { display: flex; justify-content: space-between; padding: 6px; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
+    .reagent-name { cursor: pointer; }
+    .reagent-name.checked { text-decoration: line-through; opacity: 0.5; }
+
+    /* --- Data Chronomancy (Export/Import) --- */
+    .data-tools { display: flex; justify-content: space-around; margin-top: 10px; gap: 10px; }
+    .data-btn {
+        background: transparent; border: 1px solid var(--gold-glow); color: var(--gold);
+        font-family: 'Cinzel'; font-size: 0.6rem; padding: 5px 10px; cursor: pointer; transition: 0.3s;
+    }
+    .data-btn:hover { background: var(--gold); color: #000; }
+
+    /* --- Modal --- */
     #log-modal {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.85); z-index: 2000; display: none;
         justify-content: center; align-items: center; opacity: 0; transition: 0.5s;
     }
     .scroll-parchment {
-        background: var(--parchment); color: var(--ink); width: 80%; max-width: 500px;
-        padding: 50px; border: 2px solid #8b5a2b; box-shadow: 0 0 50px #000;
-        border-radius: 5px 40px 5px 40px; position: relative;
+        background: var(--parchment); color: var(--ink); width: 85%; max-width: 480px;
+        padding: 40px; border: 2px solid #8b5a2b; border-radius: 5px 40px 5px 40px; position: relative;
     }
-    .close-log { position: absolute; top: 20px; right: 30px; cursor: pointer; font-size: 2rem; }
-    textarea {
-        width: 100%; height: 150px; background: transparent; border: none;
-        border-bottom: 1px solid #8b5a2b; font-family: 'Cormorant Garamond';
-        font-size: 1.3rem; outline: none; resize: none; margin-top: 20px;
-    }
-    .save-btn {
-        margin-top: 20px; font-family: 'Cinzel'; background: #8b5a2b; color: #fff;
-        border: none; padding: 10px 25px; cursor: pointer; width: 100%;
-    }
+    textarea { width: 100%; height: 120px; background: transparent; border: none; border-bottom: 1px solid #8b5a2b; font-size: 1.2rem; margin-top: 15px; outline: none; }
 
     #particles { position: absolute; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
     .ember { position: absolute; bottom: -20px; background: var(--fire); border-radius: 50%; opacity: 0; animation: rise linear infinite; }
@@ -113,23 +119,39 @@
 
     <div class="ui-container">
         <div class="glass-panel">
-            <div class="almanac-header">
+            <div class="panel-header">
                 <h1 id="current-month">The Almanac</h1>
-                <p id="current-year" style="font-family:'Cinzel'; font-size:0.6rem; color:var(--gold); margin:5px 0 0 0;"></p>
+                <p id="current-year" style="font-family:'Cinzel'; font-size:0.6rem; color:var(--gold);"></p>
             </div>
             <div class="calendar-grid" id="calendar-body"></div>
-            <p style="font-size: 0.8rem; text-align: center; margin-top: 15px; opacity: 0.6; font-style: italic;">
-                Click a day to log your provisions.
-            </p>
+        </div>
+
+        <div class="glass-panel">
+            <div class="panel-header"><h1>Hearth Manifest</h1></div>
+            <div class="reagent-input-box">
+                <input type="text" id="reagent-input" placeholder="New reagent...">
+                <button class="data-btn" onclick="addReagent()" style="font-size: 0.8rem;">Add</button>
+            </div>
+            <div class="reagent-list" id="reagent-display"></div>
+        </div>
+
+        <div class="glass-panel">
+            <div class="panel-header"><h1>Chronomancy</h1></div>
+            <div class="data-tools">
+                <button class="data-btn" onclick="exportData()">Export Scroll</button>
+                <button class="data-btn" onclick="document.getElementById('import-file').click()">Import Scroll</button>
+                <input type="file" id="import-file" style="display:none" onchange="importData(event)">
+            </div>
+            <p style="font-size: 0.6rem; text-align: center; margin-top: 10px; opacity: 0.5;">Download your data to carry across devices.</p>
         </div>
     </div>
 
     <div id="log-modal" onclick="closeLog()">
         <div class="scroll-parchment" onclick="event.stopPropagation()">
-            <span class="close-log" onclick="closeLog()">×</span>
-            <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center; border-bottom: 1px solid #8b5a2b;"></h2>
-            <textarea id="log-entry" placeholder="What is on the hearth today?"></textarea>
-            <button class="save-btn" onclick="saveLog()">Record Provision</button>
+            <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem;" onclick="closeLog()">×</span>
+            <h2 id="log-date-title" style="font-family:'Cinzel'; text-align:center;"></h2>
+            <textarea id="log-entry" placeholder="Log provisions or lessons..."></textarea>
+            <button class="data-btn" onclick="saveLog()" style="width:100%; margin-top:10px;">Record Entry</button>
         </div>
     </div>
 
@@ -141,63 +163,124 @@
             document.getElementById('enter-overlay').style.opacity = '0';
             setTimeout(() => { document.getElementById('enter-overlay').style.display = 'none'; }, 1000);
             audio.volume = 0.5; audio.play();
-            renderCalendar();
+            renderCalendar(); renderReagents();
         }
 
+        /* --- Almanac --- */
         function renderCalendar() {
             const now = new Date();
             const monthNames = ["Morning Star", "Sun's Dawn", "First Seed", "Rain's Hand", "Second Seed", "Midyear", "Sun's Height", "Last Seed", "Hearthfire", "Frostfall", "Sun's Dusk", "Evening Star"];
             document.getElementById('current-month').innerText = monthNames[now.getMonth()];
             document.getElementById('current-year').innerText = "Year " + now.getFullYear();
-
             const calBody = document.getElementById('calendar-body');
             calBody.innerHTML = '';
             ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(d => {
                 let dayEl = document.createElement('div'); dayEl.className = 'day-name'; dayEl.innerText = d;
                 calBody.appendChild(dayEl);
             });
-
             const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
             const totalDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-
             for(let i=0; i<firstDay; i++) calBody.appendChild(document.createElement('div'));
-
             for(let d=1; d<=totalDays; d++) {
-                let dateEl = document.createElement('div');
-                dateEl.className = 'day-num';
-                let dateKey = `${now.getFullYear()}-${now.getMonth()}-${d}`;
+                let dateEl = document.createElement('div'); dateEl.className = 'day-num';
+                let dateKey = `log-${now.getFullYear()}-${now.getMonth()}-${d}`;
                 if(localStorage.getItem(dateKey)) dateEl.classList.add('has-log');
                 if(d === now.getDate()) dateEl.classList.add('today');
-                dateEl.innerText = d;
-                dateEl.onclick = () => openLog(d, dateKey);
+                dateEl.innerText = d; dateEl.onclick = () => openLog(d, dateKey);
                 calBody.appendChild(dateEl);
             }
         }
 
         function openLog(day, key) {
             selectedDate = key;
-            const month = document.getElementById('current-month').innerText;
-            document.getElementById('log-date-title').innerText = `${month} ${day}`;
+            document.getElementById('log-date-title').innerText = `Entry for Day ${day}`;
             document.getElementById('log-entry').value = localStorage.getItem(key) || '';
             const modal = document.getElementById('log-modal');
-            modal.style.display = 'flex';
-            setTimeout(() => { modal.style.opacity = '1'; }, 10);
+            modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 10);
         }
 
         function saveLog() {
             const entry = document.getElementById('log-entry').value;
             if (entry.trim() === '') { localStorage.removeItem(selectedDate); }
             else { localStorage.setItem(selectedDate, entry); }
-            closeLog();
-            renderCalendar();
+            closeLog(); renderCalendar();
         }
 
         function closeLog() {
             const modal = document.getElementById('log-modal');
-            modal.style.opacity = '0';
-            setTimeout(() => { modal.style.display = 'none'; }, 500);
+            modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 500);
         }
 
+        /* --- Reagents --- */
+        function addReagent() {
+            const input = document.getElementById('reagent-input');
+            const val = input.value.trim();
+            if(!val) return;
+            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]');
+            reagents.push({ name: val, checked: false });
+            localStorage.setItem('reagents', JSON.stringify(reagents));
+            input.value = ''; renderReagents();
+        }
+
+        function renderReagents() {
+            const display = document.getElementById('reagent-display');
+            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]');
+            display.innerHTML = '';
+            reagents.forEach((item, index) => {
+                display.innerHTML += `
+                    <div class="reagent-item">
+                        <span class="reagent-name ${item.checked ? 'checked' : ''}" onclick="toggleReagent(${index})">✦ ${item.name}</span>
+                        <span style="color:#8a3324; cursor:pointer" onclick="removeReagent(${index})">X</span>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleReagent(index) {
+            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]');
+            reagents[index].checked = !reagents[index].checked;
+            localStorage.setItem('reagents', JSON.stringify(reagents));
+            renderReagents();
+        }
+
+        function removeReagent(index) {
+            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]');
+            reagents.splice(index, 1);
+            localStorage.setItem('reagents', JSON.stringify(reagents));
+            renderReagents();
+        }
+
+        /* --- CHRONOMANCY (EXPORT/IMPORT) --- */
+        function exportData() {
+            const data = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                data[key] = localStorage.getItem(key);
+            }
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'moons-hearth-scroll.json';
+            a.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = JSON.parse(e.target.result);
+                for (const key in data) {
+                    localStorage.setItem(key, data[key]);
+                }
+                renderCalendar(); renderReagents();
+                alert("The Scroll has been integrated into the Hearth.");
+            };
+            reader.readAsText(file);
+        }
+
+        // Particle generator
         const pCont = document.getElementById('particles');
         for(let i=0; i<30; i++) {
             let e = document.createElement('div');
