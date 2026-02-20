@@ -10,10 +10,10 @@
     body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Cormorant Garamond', serif; background-color: #000; color: var(--text); overflow: hidden; }
 
     /* --- Overlays & UI --- */
-    #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 3000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; }
+    #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 3000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; opacity: 1; }
     .enter-btn, .portal-btn, .data-btn { font-family: 'Cinzel', serif; color: var(--gold); background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer; transition: 0.3s; }
     .enter-btn { font-size: 1.5rem; padding: 15px 45px; letter-spacing: 5px; text-transform: uppercase; box-shadow: 0 0 30px var(--gold-glow); }
-    .enter-btn:hover, .portal-btn:hover, .data-btn:hover, .portal-btn.active { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
+    .enter-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
 
     .room-portal { position: absolute; left: 30px; top: 30px; z-index: 2000; display: flex; gap: 10px; }
     .ui-toggle-btn { position: absolute; right: 30px; top: 30px; z-index: 2000; padding: 10px 20px; font-size: 0.9rem; letter-spacing: 2px; }
@@ -48,8 +48,8 @@
     #zone-merchant { top: 75%; left: 68%; width: 25%; height: 15%; } 
 
     /* --- WEATHER WIDGET --- */
-    .weather-widget { position: absolute; top: 30px; right: 260px; z-index: 2000; background: rgba(10, 8, 6, 0.8); border: 1px solid var(--gold-glow); padding: 8px 15px; border-radius: 8px; display: flex; align-items: center; gap: 12px; transition: 0.5s; }
-    #weather-icon { font-size: 1.8rem; }
+    .weather-widget { position: absolute; top: 30px; right: 260px; z-index: 2000; background: rgba(10, 8, 6, 0.8); border: 1px solid var(--gold-glow); padding: 8px 15px; border-radius: 8px; display: flex; align-items: center; gap: 12px; transition: 0.5s; opacity: 0; }
+    .weather-widget.visible { opacity: 1; }
 
     /* --- DESK UI --- */
     .desk-ui-container { position: absolute; right: -450px; top: 50%; transform: translateY(-50%); width: 380px; z-index: 26; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -83,7 +83,7 @@
         <button id="btn-scholar" class="portal-btn" onclick="switchRoom('scholar')">Scholar's Tower</button>
     </div>
 
-    <div id="weather-widget" class="weather-widget hidden">
+    <div id="weather-widget" class="weather-widget">
         <div id="weather-icon">✨</div>
         <div class="weather-text">
             <div id="weather-temp" style="font-family:'Cinzel'; color:var(--gold);">--°F</div>
@@ -122,7 +122,6 @@
             <source src="scholar_bg.mp4" type="video/mp4">
         </video>
         <div id="dust-container"></div>
-        
         <div class="scholar-click-layer layer-container">
             <div id="zone-lore" class="click-zone" onclick="openSubject('Global Mythos')" title="Global Mythos"></div>
             <div id="zone-bard" class="click-zone" onclick="openSubject('Bardic Arts')" title="Bardic Arts"></div>
@@ -130,9 +129,7 @@
             <div id="zone-survival" class="click-zone" onclick="openSubject('Hearth Resilience')" title="Hearth Resilience"></div>
             <div id="zone-merchant" class="click-zone" onclick="openSubject('Guild Logic')" title="Guild Logic"></div>
         </div>
-
         <button id="desk-toggle-btn" class="portal-btn ui-toggle-btn" onclick="toggleDeskUI()">Open Desk</button>
-
         <div id="desk-ui" class="desk-ui-container">
             <div class="desk-panel">
                 <div id="timer-display">00:00</div>
@@ -180,9 +177,9 @@
             document.getElementById('scholar-layer').classList.toggle('hidden', room !== 'scholar');
             const widget = document.getElementById('weather-widget');
             if(room === 'scholar') { 
-                ah.pause(); sv.muted = false; sv.play(); widget.classList.remove('hidden'); fetchWeather();
+                ah.pause(); sv.muted = false; sv.play(); widget.classList.add('visible'); fetchWeather();
             } else { 
-                sv.pause(); ah.play(); widget.classList.add('hidden');
+                sv.pause(); ah.play(); widget.classList.remove('visible');
             }
         }
 
@@ -192,6 +189,9 @@
                 const data = await res.json();
                 document.getElementById('weather-temp').innerText = Math.round(data.current.temperature_2m) + "°F";
                 document.getElementById('weather-desc').innerText = "Farmington, MS";
+                let icon = "✨"; const code = data.current.weather_code;
+                if (code === 0) icon = "🌙"; else if (code <= 3) icon = "☁️"; else if (code >= 51) icon = "🌧️";
+                document.getElementById('weather-icon').innerText = icon;
             } catch(e) { document.getElementById('weather-desc').innerText = "Skies obscured."; }
         }
 
@@ -218,8 +218,7 @@
         }
 
         function renderCalendar() {
-            const cb = document.getElementById('calendar-body'); cb.innerHTML = '';
-            const n = new Date();
+            const cb = document.getElementById('calendar-body'); cb.innerHTML = ''; const n = new Date();
             for(let i=1; i<=31; i++) {
                 let d = document.createElement('div'); d.className = 'day-num'; d.innerText = i;
                 let k = `log-${n.getFullYear()}-${n.getMonth()}-${i}`;
@@ -232,9 +231,15 @@
         function openLog(d, k) { selectedDate = k; document.getElementById('log-date-title').innerText = `Record Day ${d}`; document.getElementById('log-entry').value = localStorage.getItem(k) || ''; document.getElementById('log-modal').style.display = 'flex'; setTimeout(() => document.getElementById('log-modal').style.opacity = '1', 10); }
         function saveLog() { const v = document.getElementById('log-entry').value; if(!v.trim()) localStorage.removeItem(selectedDate); else localStorage.setItem(selectedDate, v); closeLog(); renderCalendar(); }
         function closeLog() { document.getElementById('log-modal').style.opacity = '0'; setTimeout(() => document.getElementById('log-modal').style.display = 'none', 500); }
-
         function startTimer(m) { clearInterval(timerInterval); secondsRemaining = m*60; timerInterval = setInterval(() => { secondsRemaining--; let min = Math.floor(secondsRemaining/60).toString().padStart(2,'0'); let sec = (secondsRemaining%60).toString().padStart(2,'0'); document.getElementById('timer-display').innerText = `${min}:${sec}`; if(secondsRemaining <= 0) clearInterval(timerInterval); }, 1000); }
         function stopTimer() { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "00:00"; }
-
         function logWork() { const n = document.getElementById('work-note').value; if(!n.trim()) return; const b = JSON.parse(localStorage.getItem('journal') || '[]'); b.unshift({ts: new Date().toLocaleString(), note: n}); localStorage.setItem('journal', JSON.stringify(b)); document.getElementById('work-note').value = ''; renderBlog(); }
-        function renderBlog() { const c = document.getElementById('blog-container'); const b = JSON.parse(localStorage.getItem('journal') || '[]'); c.innerHTML = b.map(p => `<div style="margin-bottom:10px; border-left:2px solid var(--gold); padding-left:10px; font-size:0.9rem;"><div style="color:var(--gold); font-size
+        function renderBlog() { const c = document.getElementById('blog-container'); const b = JSON.parse(localStorage.getItem('journal') || '[]'); c.innerHTML = b.map(p => `<div style="margin-bottom:10px; border-left:2px solid var(--gold); padding-left:10px; font-size:0.9rem;"><div style="color:var(--gold); font-size:0.7rem;">${p.ts}</div>${p.note}</div>`).join(''); }
+        function addReagent() { const i = document.getElementById('reagent-input'); if(!i.value) return; const r = JSON.parse(localStorage.getItem('reagents') || '[]'); r.push(i.value); localStorage.setItem('reagents', JSON.stringify(r)); i.value = ''; renderReagents(); }
+        function renderReagents() { const d = document.getElementById('reagent-display'); const r = JSON.parse(localStorage.getItem('reagents') || '[]'); d.innerHTML = r.map((it, idx) => `<div style="font-size:0.9rem; margin-bottom:4px; display:flex; justify-content:space-between;"><span>✦ ${it}</span><span style="color:#8a3324; cursor:pointer;" onclick="removeReagent(${idx})">×</span></div>`).join(''); }
+        function removeReagent(idx) { const r = JSON.parse(localStorage.getItem('reagents') || '[]'); r.splice(idx, 1); localStorage.setItem('reagents', JSON.stringify(r)); renderReagents(); }
+        function exportData(){const d={}; for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);d[k]=localStorage.getItem(k);} const b=new Blob([JSON.stringify(d)],{type:'application/json'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='moons-hearth-scroll.json'; a.click();}
+        function importData(e){const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=(ev)=>{const d=JSON.parse(ev.target.result); for(const k in d)localStorage.setItem(k,d[k]); location.reload();}; r.readAsText(f);}
+    </script>
+</body>
+</html>
