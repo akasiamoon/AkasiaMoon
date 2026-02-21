@@ -527,4 +527,526 @@
             document.getElementById('btn-'+room).classList.add('active');
             
             document.querySelectorAll('.layer-container').forEach(l => l.classList.add('hidden'));
-            document.getElementById(room+'-
+            document.getElementById(room+'-layer').classList.remove('hidden');
+
+            ah.pause(); an.pause(); ac.pause(); sv.pause(); as.pause();
+
+            if(room === 'hearth') { ah.play(); }
+            if(room === 'nook') { an.play(); }
+            if(room === 'cellar') { ac.play(); }
+            if(room === 'scholar') { sv.muted = false; sv.play(); }
+            if(room === 'springs') { as.play(); }
+        }
+
+        function toggleDeskUI() { document.getElementById('desk-ui').classList.toggle('open'); }
+        function toggleNookUI() { document.getElementById('nook-ui').classList.toggle('open'); }
+
+        // 3. Particle Engines
+        function createEmbers() {
+            const container = document.getElementById('embers-container'); container.innerHTML = '';
+            for(let i=0; i<30; i++) {
+                let ember = document.createElement('div'); ember.className = 'ember';
+                ember.style.left = Math.random() * 100 + '%';
+                ember.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                ember.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+                container.appendChild(ember);
+            }
+        }
+
+        function createDust() {
+            const container = document.getElementById('dust-container'); container.innerHTML = '';
+            for(let i=0; i<60; i++) {
+                let dust = document.createElement('div'); dust.className = 'dust-mote';
+                let size = Math.random() * 3 + 1 + 'px'; dust.style.width = size; dust.style.height = size;
+                dust.style.left = Math.random() * 100 + '%'; dust.style.top = Math.random() * 100 + '%';
+                dust.style.animationDuration = (Math.random() * 10 + 8) + 's';
+                container.appendChild(dust);
+            }
+        }
+
+        function createNookDust() {
+            const container = document.getElementById('nook-particles'); container.innerHTML = '';
+            for(let i=0; i<25; i++) {
+                let dust = document.createElement('div'); dust.className = 'dust-mote';
+                let size = Math.random() * 3 + 1 + 'px'; dust.style.width = size; dust.style.height = size;
+                dust.style.left = Math.random() * 100 + '%'; dust.style.top = Math.random() * 100 + '%';
+                dust.style.animationDuration = (Math.random() * 12 + 10) + 's'; 
+                container.appendChild(dust);
+            }
+        }
+        
+        function createCellarDust() {
+            const container = document.getElementById('cellar-particles'); container.innerHTML = '';
+            for(let i=0; i<20; i++) {
+                let dust = document.createElement('div'); dust.className = 'dust-mote';
+                let size = Math.random() * 4 + 1 + 'px'; dust.style.width = size; dust.style.height = size;
+                dust.style.left = Math.random() * 100 + '%'; dust.style.top = Math.random() * 100 + '%';
+                dust.style.animationDuration = (Math.random() * 15 + 10) + 's'; 
+                dust.style.opacity = '0.2';
+                container.appendChild(dust);
+            }
+        }
+
+        // 4. API Systems
+        async function fetchWeather() {
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.94&longitude=-88.52&current=temperature_2m,weather_code&temperature_unit=fahrenheit');
+                const data = await response.json();
+                
+                document.getElementById('weather-temp').innerText = Math.round(data.current.temperature_2m) + "°F";
+                document.getElementById('weather-desc').innerText = "Farmington, MS";
+                
+                let icon = "✨"; const code = data.current.weather_code;
+                if (code === 0) icon = "🌙"; else if (code <= 3) icon = "☁️"; else if (code >= 51) icon = "🌧️";
+                document.getElementById('weather-icon').innerText = icon;
+            } catch(error) { console.log("Weather API failed to load."); }
+        }
+
+        // 5. Hearth Almanac & Reagents
+        function renderCalendar() { 
+            const container = document.getElementById('calendar-body'); container.innerHTML = ''; const date = new Date();
+            for(let i=1; i<=31; i++) {
+                let dayDiv = document.createElement('div'); dayDiv.className = 'day-num'; dayDiv.innerText = i;
+                let key = `log-${date.getFullYear()}-${date.getMonth()}-${i}`;
+                if(localStorage.getItem(key)) dayDiv.classList.add('has-log');
+                if(i === date.getDate()) dayDiv.classList.add('today');
+                dayDiv.onclick = () => { 
+                    selectedDate = key; document.getElementById('log-date-title').innerText = `Record Day ${i}`; 
+                    document.getElementById('log-entry').value = localStorage.getItem(key) || ''; 
+                    openModal('log-modal');
+                }
+                container.appendChild(dayDiv);
+            }
+        }
+
+        function saveLog() { 
+            const entryValue = document.getElementById('log-entry').value; 
+            if(!entryValue.trim()) localStorage.removeItem(selectedDate); 
+            else localStorage.setItem(selectedDate, entryValue); 
+            closeLog(); renderCalendar(); 
+        }
+        function closeLog() { closeModal('log-modal'); }
+
+        function addReagent() { 
+            const input = document.getElementById('reagent-input'); if(!input.value) return; 
+            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); reagents.push(input.value); 
+            localStorage.setItem('reagents', JSON.stringify(reagents)); input.value = ''; renderReagents(); 
+        }
+        function renderReagents() { 
+            const display = document.getElementById('reagent-display'); const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); 
+            display.innerHTML = reagents.map((item, idx) => `
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span>✦ ${item}</span>
+                    <span style="color:#8a3324; cursor:pointer;" onclick="removeReagent(${idx})">×</span>
+                </div>
+            `).join(''); 
+        }
+        function removeReagent(idx) { 
+            const reagents = JSON.parse(localStorage.getItem('reagents') || '[]'); reagents.splice(idx, 1); 
+            localStorage.setItem('reagents', JSON.stringify(reagents)); renderReagents(); 
+        }
+
+        // 6. Tower Focus Systems
+        function startTimer(minutes) { 
+            clearInterval(timerInterval); secondsRemaining = minutes * 60; 
+            timerInterval = setInterval(() => { 
+                secondsRemaining--; 
+                let min = Math.floor(secondsRemaining / 60).toString().padStart(2, '0'); 
+                let sec = (secondsRemaining % 60).toString().padStart(2, '0'); 
+                document.getElementById('timer-display').innerText = `${min}:${sec}`; 
+                if(secondsRemaining <= 0) clearInterval(timerInterval); 
+            }, 1000); 
+        }
+        function stopTimer() { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "25:00"; }
+        function logWork() { 
+            const noteInput = document.getElementById('work-note').value; if(!noteInput.trim()) return; 
+            const journal = JSON.parse(localStorage.getItem('journal') || '[]'); 
+            journal.unshift({ts: new Date().toLocaleString(), note: noteInput}); 
+            localStorage.setItem('journal', JSON.stringify(journal)); 
+            document.getElementById('work-note').value = ''; renderBlog(); 
+        }
+        function renderBlog() { 
+            const container = document.getElementById('blog-container'); const journal = JSON.parse(localStorage.getItem('journal') || '[]'); 
+            container.innerHTML = journal.map(post => `
+                <div style="margin-bottom:10px; border-left:1px solid var(--gold); padding-left:10px;">
+                    <div style="color:var(--gold); font-size:0.7rem;">${post.ts}</div>
+                    <div style="font-size:0.9rem;">${post.note}</div>
+                </div>
+            `).join(''); 
+        }
+
+        // 7. Reading Nook Vitals
+        function setMood(mood, element) { 
+            document.querySelectorAll('.mood-icons span').forEach(s => s.classList.remove('selected')); 
+            element.classList.add('selected'); localStorage.setItem('vital-mood', mood); 
+        }
+        function saveVitals() { 
+            localStorage.setItem('vital-sleep', document.getElementById('sleep-input').value); 
+            localStorage.setItem('vital-water', document.getElementById('water-input').value); 
+            localStorage.setItem('vital-meals', document.getElementById('meal-input').value); 
+        }
+        function loadVitals() { 
+            try {
+                document.getElementById('sleep-input').value = localStorage.getItem('vital-sleep') || 8; 
+                document.getElementById('water-input').value = localStorage.getItem('vital-water') || 0; 
+                document.getElementById('meal-input').value = localStorage.getItem('vital-meals') || 0; 
+                const savedMood = localStorage.getItem('vital-mood'); 
+                if(savedMood) { 
+                    const moodMap = {ethereal:0, grounded:1, flickering:2, stormy:3, waning:4}; 
+                    if(moodMap[savedMood] !== undefined) {
+                        document.querySelectorAll('.mood-icons span')[moodMap[savedMood]].classList.add('selected'); 
+                    }
+                } 
+            } catch (error) { console.log("Error loading vitals"); }
+        }
+
+        // 8. Grimoire Modal Framework
+        function openGrimoire(subject) { 
+            activeGrimoire = `grim-${subject.replace(/\s+/g, '-').toLowerCase()}`; 
+            document.getElementById('grimoire-title').innerText = subject; 
+            document.getElementById('grimoire-text').value = localStorage.getItem(activeGrimoire) || ''; 
+            const isRecipe = ['Soups & Stews', 'Breads & Bakes', 'Casseroles', 'Fried Delights', 'Elixirs & Beverages'].includes(subject);
+            document.getElementById('grimoire-text').placeholder = isRecipe ? "Scribe your recipe... use '#' for dish names." : "Scribe your research... use '#' for chapters.";
+            toggleView('grim'); openModal('grimoire-modal'); updateTOC(); 
+        }
+        function saveGrimoire() { localStorage.setItem(activeGrimoire, document.getElementById('grimoire-text').value); closeModal('grimoire-modal'); }
+        function toggleView(view) { 
+            document.getElementById('grimoire-view').style.display = view === 'grim' ? 'flex' : 'none'; 
+            document.getElementById('lexicon-view').style.display = view === 'lex' ? 'flex' : 'none'; 
+            document.getElementById('legend-view').style.display = view === 'leg' ? 'flex' : 'none'; 
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById('tab-'+view).classList.add('active'); 
+            if(view === 'lex') renderLexicon(); if(view === 'leg') renderLegend(); 
+        }
+        function updateTOC() { 
+            const text = document.getElementById('grimoire-text').value; const toc = document.getElementById('grimoire-toc'); toc.innerHTML = ''; 
+            text.split('\n').forEach(line => { 
+                if(line.startsWith('#')) { 
+                    const title = line.replace('#', '').trim(); const span = document.createElement('span'); 
+                    span.className = 'toc-link'; span.innerText = title; 
+                    span.onclick = () => { const area = document.getElementById('grimoire-text'); area.focus(); const index = text.indexOf(line); area.setSelectionRange(index, index); }; 
+                    toc.appendChild(span); 
+                }
+            }); 
+        }
+        function addLexicon() { 
+            const termInput = document.getElementById('lex-term'); const defInput = document.getElementById('lex-def'); 
+            if(!termInput.value || !defInput.value) return; 
+            const lexicon = JSON.parse(localStorage.getItem('lexicon') || '[]'); lexicon.push({t: termInput.value, d: defInput.value}); 
+            lexicon.sort((a,b) => a.t.localeCompare(b.t)); localStorage.setItem('lexicon', JSON.stringify(lexicon)); 
+            termInput.value = ''; defInput.value = ''; renderLexicon(); 
+        }
+        function renderLexicon() { 
+            const lexicon = JSON.parse(localStorage.getItem('lexicon') || '[]'); 
+            document.getElementById('lexicon-list').innerHTML = lexicon.map((item, idx) => `
+                <div class="lexicon-item">
+                    <div style="font-family:'Cinzel';font-weight:bold;color:#8b5a2b;width:30%;">${item.t}</div>
+                    <div style="width:60%;">${item.d}</div>
+                    <span style="cursor:pointer;color:#8a3324;" onclick="removeLex(${idx})">×</span>
+                </div>
+            `).join(''); 
+        }
+        function removeLex(idx) { 
+            const lexicon = JSON.parse(localStorage.getItem('lexicon') || '[]'); lexicon.splice(idx, 1); 
+            localStorage.setItem('lexicon', JSON.stringify(lexicon)); renderLexicon(); 
+        }
+        function addLegend() { 
+            const input = document.getElementById('leg-input'); if(!input.value) return; 
+            const defaultMilestones = [{t:"The Primal Spark: Scribe your creation myth.", c:false}];
+            const legend = JSON.parse(localStorage.getItem('legend') || JSON.stringify(defaultMilestones)); 
+            legend.push({t: input.value, c: false}); localStorage.setItem('legend', JSON.stringify(legend)); 
+            input.value = ''; renderLegend(); 
+        }
+        function renderLegend() { 
+            const defaultMilestones = [{t:"The Primal Spark: Scribe your creation myth.", c:false}];
+            const legend = JSON.parse(localStorage.getItem('legend') || JSON.stringify(defaultMilestones)); 
+            document.getElementById('legend-list').innerHTML = legend.map((item, idx) => `
+                <div class="legend-item">
+                    <label style="cursor:pointer; font-size:1.1rem; color: ${item.c ? '#8b5a2b' : 'var(--parchment)'}; text-decoration: ${item.c ? 'line-through' : 'none'};">
+                        <input type="checkbox" ${item.c ? 'checked' : ''} onchange="toggleLeg(${idx})"> ${item.t}
+                    </label>
+                    <span style="cursor:pointer;color:#8a3324;" onclick="removeLeg(${idx})">×</span>
+                </div>
+            `).join(''); 
+            const done = legend.filter(i => i.c).length; 
+            document.getElementById('legend-bar').style.width = legend.length ? (done / legend.length) * 100 + '%' : '0%'; 
+        }
+        function toggleLeg(idx) { 
+            const legend = JSON.parse(localStorage.getItem('legend') || '[]'); legend[idx].c = !legend[idx].c; 
+            localStorage.setItem('legend', JSON.stringify(legend)); renderLegend(); 
+        }
+        function removeLeg(idx) { 
+            const legend = JSON.parse(localStorage.getItem('legend') || '[]'); legend.splice(idx, 1); 
+            localStorage.setItem('legend', JSON.stringify(legend)); renderLegend(); 
+        }
+        function exportData() { 
+            const dataObj = {}; 
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                dataObj[key] = localStorage.getItem(key);
+            } 
+            const blob = new Blob([JSON.stringify(dataObj)], {type: 'application/json'}); 
+            const url = URL.createObjectURL(blob); 
+            const a = document.createElement('a'); 
+            a.href = url; a.download = 'moons-hearth-scroll.json'; a.click(); 
+        }
+
+        // 9. Nook Mysteries Logic
+        function openDreamLedger() {
+            const today = new Date();
+            const dreamKey = `dream-${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+            document.getElementById('dream-text').value = localStorage.getItem(dreamKey) || ''; 
+            openModal('dream-modal');
+        }
+        function saveDream() {
+            const today = new Date();
+            const dreamKey = `dream-${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+            localStorage.setItem(dreamKey, document.getElementById('dream-text').value); 
+            closeDream(); 
+        }
+        function closeDream() { closeModal('dream-modal'); }
+
+        const affirmations = [
+            "I release the need to control what is not mine to carry.",
+            "My boundaries are a spell of protection, not an act of war.",
+            "I am worthy of a love that is steady and safe.",
+            "Progress is not a straight line; I honor my winding path.",
+            "I hold space for my own healing today.",
+            "My worth is not tied to my productivity or exhaustion.",
+            "I am safe to pause. I am safe to rest.",
+            "I forgive myself for the days I only survived.",
+            "I am building a sanctuary within my own mind.",
+            "Every small act of care is a foundation for my peace."
+        ];
+        function drawOracleCard() {
+            const cardText = document.getElementById('oracle-card-text');
+            const randomIndex = Math.floor(Math.random() * affirmations.length);
+            cardText.style.opacity = 0;
+            setTimeout(() => {
+                cardText.innerText = `"${affirmations[randomIndex]}"`;
+                cardText.style.transition = "opacity 0.8s";
+                cardText.style.opacity = 1;
+            }, 300);
+            openModal('oracle-modal');
+        }
+
+        // 10. The Cellar Logic (Financial & Contingency)
+        function addTransaction() {
+            const desc = document.getElementById('transaction-desc').value;
+            const amtVal = document.getElementById('transaction-amt').value;
+            if(!desc || !amtVal) return;
+            const amt = parseFloat(amtVal);
+            const ledger = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
+            ledger.push({n: desc, a: amt, d: new Date().toLocaleDateString()});
+            localStorage.setItem('vault-ledger', JSON.stringify(ledger));
+            document.getElementById('transaction-desc').value = '';
+            document.getElementById('transaction-amt').value = '';
+            updateVaultUI();
+        }
+
+        function updateVaultUI() {
+            const ledger = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
+            const budgetMap = {};
+            let totalBalance = 0;
+            let totalIncome = 0;
+
+            document.getElementById('transaction-list').innerHTML = ledger.slice().reverse().map((b, idx) => {
+                totalBalance += b.a;
+                if(b.a > 0) totalIncome += b.a;
+                const isIncome = b.a >= 0;
+                const color = isIncome ? 'var(--gold)' : 'var(--spend)'; 
+                const tags = b.n.match(/#[a-z0-9]+/gi);
+                if(tags) {
+                    tags.forEach(tag => {
+                        const lowerTag = tag.toLowerCase();
+                        budgetMap[lowerTag] = (budgetMap[lowerTag] || 0) + b.a;
+                    });
+                }
+                return `
+                <div class="lexicon-item">
+                    <div style="font-family:'Cinzel';font-weight:bold;color:var(--parchment);width:45%; font-size:0.9rem;">${b.n}</div>
+                    <div style="width:25%;color:${color}; font-weight:bold;">${isIncome ? '+' : ''}${b.a.toFixed(2)}</div>
+                    <div style="width:20%;font-size:0.7rem;opacity:0.7;">${b.d}</div>
+                    <span style="cursor:pointer;color:#8a3324;" onclick="removeTransaction(${ledger.length - 1 - idx})">×</span>
+                </div>
+                `;
+            }).join('');
+
+            const balanceDisplay = document.getElementById('vault-total');
+            balanceDisplay.innerText = totalBalance.toFixed(2);
+            balanceDisplay.style.color = totalBalance >= 0 ? 'var(--gold)' : 'var(--spend)';
+
+            const budgetList = document.getElementById('budget-list');
+            if(Object.keys(budgetMap).length === 0) {
+                budgetList.innerHTML = '<div style="text-align:center; opacity:0.7;">No hashtags tracked yet.</div>';
+            } else {
+                budgetList.innerHTML = Object.entries(budgetMap).map(([tag, amount]) => {
+                     const isIncome = amount >= 0;
+                     const color = isIncome ? 'var(--gold)' : 'var(--spend)';
+                     return `
+                        <div style="display:flex; justify-content:space-between; font-size:0.9rem; padding: 5px 0; border-bottom: 1px dotted rgba(139, 90, 43, 0.3);">
+                            <span style="color:var(--parchment); font-family:'Cinzel';">${tag}</span>
+                            <span style="color:${color}; font-weight:bold;">${isIncome ? '+' : ''}${amount.toFixed(2)}</span>
+                        </div>
+                     `;
+                }).join('');
+            }
+
+            const savingsGoal = totalIncome * 0.10; 
+            let progress = 0;
+            if (totalBalance > 0 && savingsGoal > 0) {
+                progress = Math.min((totalBalance / savingsGoal) * 100, 100);
+            }
+            document.getElementById('reserve-bar').style.width = `${progress}%`;
+            document.getElementById('reserve-text').innerText = `${Math.round(progress)}% of 10% Income Goal`;
+        }
+        
+        function removeTransaction(actualIdx) {
+            const ledger = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
+            ledger.splice(actualIdx, 1);
+            localStorage.setItem('vault-ledger', JSON.stringify(ledger));
+            updateVaultUI();
+        }
+
+        function saveWorkbench() {
+            localStorage.setItem('workbench-notes', document.getElementById('workbench-text').value);
+            closeModal('workbench-modal');
+        }
+
+        function addCrateItem() {
+            const input = document.getElementById('crate-input');
+            if(!input.value) return;
+            const crate = JSON.parse(localStorage.getItem('supply-crate') || getDefaultCrate());
+            crate.push({t: input.value, c: false});
+            localStorage.setItem('supply-crate', JSON.stringify(crate));
+            input.value = '';
+            renderCrate();
+        }
+
+        function getDefaultCrate() {
+            return JSON.stringify([
+                {t:"Bottled Water (Emergency Supply)", c:false},
+                {t:"Batteries (AA, AAA)", c:false},
+                {t:"Flashlights / Lanterns", c:false},
+                {t:"Pantry Staples / Canned Goods", c:false},
+                {t:"Firewood / Heating Fuel", c:false}
+            ]);
+        }
+
+        function renderCrate() {
+            const crate = JSON.parse(localStorage.getItem('supply-crate') || getDefaultCrate());
+            document.getElementById('crate-list').innerHTML = crate.map((item, idx) => `
+                <div class="legend-item">
+                    <label style="cursor:pointer; font-size:1.1rem; color: ${item.c ? '#8b5a2b' : 'var(--parchment)'}; text-decoration: ${item.c ? 'line-through' : 'none'};">
+                        <input type="checkbox" ${item.c ? 'checked' : ''} onchange="toggleCrate(${idx})"> ${item.t}
+                    </label>
+                    <span style="cursor:pointer;color:#8a3324;" onclick="removeCrateItem(${idx})">×</span>
+                </div>
+            `).join('');
+        }
+
+        function toggleCrate(idx) {
+            const crate = JSON.parse(localStorage.getItem('supply-crate') || getDefaultCrate());
+            crate[idx].c = !crate[idx].c;
+            localStorage.setItem('supply-crate', JSON.stringify(crate));
+            renderCrate();
+        }
+
+        function removeCrateItem(idx) {
+            const crate = JSON.parse(localStorage.getItem('supply-crate') || '[]');
+            crate.splice(idx, 1);
+            localStorage.setItem('supply-crate', JSON.stringify(crate));
+            renderCrate();
+        }
+
+        // --- NEW: Apothecary System ---
+        function addMedItem() {
+            const input = document.getElementById('med-input');
+            if(!input.value) return;
+            const meds = JSON.parse(localStorage.getItem('apothecary') || getDefaultMeds());
+            meds.push({t: input.value, c: false});
+            localStorage.setItem('apothecary', JSON.stringify(meds));
+            input.value = '';
+            renderApothecary();
+        }
+
+        function getDefaultMeds() {
+            return JSON.stringify([
+                {t:"Morning Supplements", c:false},
+                {t:"Evening Restoratives", c:false},
+                {t:"Hydration Flask (32oz)", c:false}
+            ]);
+        }
+
+        function renderApothecary() {
+            const meds = JSON.parse(localStorage.getItem('apothecary') || getDefaultMeds());
+            document.getElementById('apothecary-list').innerHTML = meds.map((item, idx) => `
+                <div class="legend-item">
+                    <label style="cursor:pointer; font-size:1.1rem; color: ${item.c ? '#8b5a2b' : 'var(--parchment)'}; text-decoration: ${item.c ? 'line-through' : 'none'};">
+                        <input type="checkbox" ${item.c ? 'checked' : ''} onchange="toggleMed(${idx})"> ${item.t}
+                    </label>
+                    <span style="cursor:pointer;color:#8a3324;" onclick="removeMedItem(${idx})">×</span>
+                </div>
+            `).join('');
+        }
+
+        function toggleMed(idx) {
+            const meds = JSON.parse(localStorage.getItem('apothecary') || getDefaultMeds());
+            meds[idx].c = !meds[idx].c;
+            localStorage.setItem('apothecary', JSON.stringify(meds));
+            renderApothecary();
+        }
+
+        function removeMedItem(idx) {
+            const meds = JSON.parse(localStorage.getItem('apothecary') || '[]');
+            meds.splice(idx, 1);
+            localStorage.setItem('apothecary', JSON.stringify(meds));
+            renderApothecary();
+        }
+
+        // 11. The Soul Compass (Character Sheet Logic)
+        function openCompass() {
+            // Calculate Spirit Alignment (Mood from Nook)
+            const savedMood = localStorage.getItem('vital-mood');
+            const moodDisplay = document.getElementById('stat-mood');
+            if(savedMood) {
+                moodDisplay.innerText = savedMood.charAt(0).toUpperCase() + savedMood.slice(1);
+            } else {
+                moodDisplay.innerText = "Unaligned (Visit the Nook)";
+            }
+
+            // Calculate Legend Tier (Grimoire Progress)
+            const defaultMilestones = [{t:"The Primal Spark: Scribe your creation myth.", c:false}];
+            const legend = JSON.parse(localStorage.getItem('legend') || JSON.stringify(defaultMilestones));
+            const completed = legend.filter(i => i.c).length;
+            const total = legend.length;
+            const tier = Math.floor(completed / 3); 
+            
+            document.getElementById('stat-legend-level').innerText = `Tier ${tier}`;
+            document.getElementById('stat-legend-bar').style.width = total ? (completed / total * 100) + '%' : '0%';
+
+            // Calculate Vault Status (Financial from Cellar)
+            const ledger = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
+            let totalBalance = 0;
+            ledger.forEach(b => totalBalance += b.a);
+            
+            const vaultStatus = document.getElementById('stat-vault-status');
+            if(totalBalance <= 0) {
+                vaultStatus.innerText = "Depleted / Debt"; vaultStatus.style.color = "var(--spend)";
+            } else if (totalBalance < 500) {
+                vaultStatus.innerText = "Building Reserves"; vaultStatus.style.color = "var(--parchment)";
+            } else {
+                vaultStatus.innerText = "Fortified"; vaultStatus.style.color = "var(--gold)";
+            }
+
+            // Calculate Focus Mastery (Scholar Journal Entries)
+            const journal = JSON.parse(localStorage.getItem('journal') || '[]');
+            const sessionCount = journal.length;
+            document.getElementById('stat-focus-count').innerText = `${sessionCount} Sessions Logged in Tower`;
+
+            openModal('compass-modal');
+        }
+
+    </script>
+</body>
+</html>
