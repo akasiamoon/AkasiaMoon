@@ -178,10 +178,6 @@
 
     #zone-dream { top: 60%; left: 55%; width: 15%; height: 20%; }
 
-    .nook-ui-container { position: fixed; right: -450px; top: 50%; transform: translateY(-50%); width: 420px; z-index: 2000; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-
-    .nook-ui-container.open { right: 40px; }
-
 
 
     /* --- ROOM 4: THE CELLAR --- */
@@ -380,34 +376,6 @@
         <div id="zone-oracle" class="click-zone" onclick="drawOracleCard()"></div>
 
         <div id="zone-dream" class="click-zone" onclick="openDreamLedger()"></div>
-
-        <button id="nook-toggle-btn" class="portal-btn ui-toggle-btn" onclick="toggleNookUI()">Spirit Alignment</button>
-
-        <div id="nook-ui" class="nook-ui-container">
-
-            <div class="glass-panel">
-
-                <div class="panel-header"><h1 class="golden-text">Vital Alchemy</h1></div>
-
-                <div class="mood-icons">
-
-                    <span onclick="setMood('ethereal', this)">✨</span>
-
-                    <span onclick="setMood('grounded', this)">🌿</span>
-
-                    <span onclick="setMood('flickering', this)">🔥</span>
-
-                    <span onclick="setMood('stormy', this)">⛈️</span>
-
-                    <span onclick="setMood('waning', this)">🌑</span>
-
-                </div>
-
-                <div class="vital-stat"><span>Dream Cycle</span> <input type="number" id="sleep-input" class="vital-input" onchange="saveVitals()"></div>
-
-                <div class="vital-stat"><span>Restorative Elixir</span> <input type="number" id="water-input" class="vital-input" onchange="saveVitals()"></div>
-
-                <div class="vital-stat"><span>Mana Sustenance</span> <input type="number" id="meal-input" class="vital-input" onchange="saveVitals()"></div>
 
             </div>
 
