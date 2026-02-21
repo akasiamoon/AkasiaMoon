@@ -49,6 +49,9 @@
     #weather-temp { font-family: 'Cinzel'; color: var(--gold); font-size: 1.2rem; font-weight: 900; z-index: 2; text-shadow: 0 2px 4px #000; }
     #weather-desc { font-family: 'Cormorant Garamond'; color: var(--parchment); font-size: 0.6rem; font-style: italic; z-index: 2; letter-spacing: 1px; text-transform: uppercase; }
 
+    /* Soul Compass Hover */
+    #soul-compass-widget:hover { transform: scale(1.05); background: rgba(212, 175, 55, 0.2); }
+
     /* --- ROOM LAYERS --- */
     .layer-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1s ease; background-size: cover; background-position: center; }
     .hidden { opacity: 0; pointer-events: none; }
@@ -123,6 +126,20 @@
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
     .scroll-parchment { background: var(--parchment); color: var(--ink); width: 90%; max-width: 700px; padding: 40px; border-radius: 5px 40px; position: relative; box-shadow: 0 0 50px #000; border: 2px solid #8b5a2b; height: 85vh; display: flex; flex-direction: column; }
     
+    /* Responsive adjustment for the character sheet modal */
+    @media (max-width: 768px) {
+        .scroll-parchment[style*="flex-direction: row"] {
+            flex-direction: column !important;
+            align-items: center !important;
+            height: auto !important;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .scroll-parchment[style*="flex-direction: row"] > div:first-child {
+             width: 60% !important; /* Smaller avatar on mobile */
+        }
+    }
+
     /* Reused elements for Grimoire */
     .grimoire-tabs { display: flex; gap: 20px; margin-bottom: 15px; border-bottom: 1px solid #8b5a2b; }
     .tab-btn { background: none; border: none; font-family: 'Cinzel'; cursor: pointer; padding: 5px 10px; color: #8b5a2b; opacity: 0.5; transition: 0.3s; }
@@ -156,6 +173,11 @@
         <button id="btn-scholar" class="portal-btn" onclick="switchRoom('scholar')">Scholar's Tower</button>
         <button id="btn-nook" class="portal-btn" onclick="switchRoom('nook')">Reading Nook</button>
         <button id="btn-cellar" class="portal-btn" onclick="switchRoom('cellar')">The Cellar</button>
+    </div>
+
+    <div id="soul-compass-widget" class="weather-widget" style="left: 150px; cursor: pointer;" onclick="openCompass()">
+        <div style="font-size: 2rem; filter: drop-shadow(0 0 8px var(--gold));">🛡️</div>
+        <div class="golden-text" style="font-family: 'Cinzel'; font-size: 0.8rem; margin-top: 5px;">The Soul</div>
     </div>
 
     <div id="weather-widget" class="weather-widget">
@@ -380,6 +402,45 @@
         </div>
     </div>
 
+    <div id="compass-modal" class="modal-overlay" onclick="closeModal('compass-modal')">
+        <div class="scroll-parchment" onclick="event.stopPropagation()" style="width: 95%; max-width: 800px; flex-direction: row; gap: 30px; align-items: flex-start;">
+            <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem;" onclick="closeModal('compass-modal')">×</span>
+            
+            <div style="flex: 1; border: 3px solid var(--gold); border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px var(--gold-glow); aspect-ratio: 2/3;">
+                <img src="avatar.jpg" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%232c1810%22/><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2214%22 fill=%22%23d4af37%22>Avatar Not Found</text></svg>'">
+            </div>
+
+            <div style="flex: 2; display: flex; flex-direction: column; gap: 20px;">
+                <h2 class="golden-text" style="font-family:'Cinzel'; font-size: 2rem; margin: 0; border-bottom: 2px solid var(--gold);">Keeper of the Hearth</h2>
+                
+                <div>
+                    <h3 style="font-family:'Cinzel'; color:#8b5a2b; margin: 0;">Spirit Alignment</h3>
+                    <div id="stat-mood" style="font-size: 1.4rem; font-family: 'Cormorant Garamond'; font-style:italic;">Unaligned</div>
+                </div>
+
+                 <div>
+                    <h3 style="font-family:'Cinzel'; color:#8b5a2b; margin: 0;">Legend Tier</h3>
+                    <div style="display:flex; align-items:center; gap: 15px;">
+                        <div id="stat-legend-level" class="golden-text" style="font-size: 2.5rem; font-family:'Cinzel'; font-weight:bold;">0</div>
+                        <div style="font-size: 0.9rem; color: var(--ink);">Completed Milestones</div>
+                    </div>
+                     <div class="progress-track"><div id="stat-legend-bar" class="progress-fill"></div></div>
+                </div>
+
+                 <div>
+                    <h3 style="font-family:'Cinzel'; color:#8b5a2b; margin: 0;">Vault Status</h3>
+                    <div id="stat-vault-status" style="font-size: 1.2rem; font-family:'Cinzel'; color: var(--gold);">Checking ledger...</div>
+                </div>
+
+                <div>
+                    <h3 style="font-family:'Cinzel'; color:#8b5a2b; margin: 0;">Focus Mastery</h3>
+                    <div id="stat-focus-count" style="font-size: 1.1rem; font-family:'Cinzel';">0 Sessions Logged in Tower</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <script>
         // Global State Variables
         let currentRoom = 'hearth';
@@ -496,7 +557,7 @@
                 let size = Math.random() * 4 + 1 + 'px'; dust.style.width = size; dust.style.height = size;
                 dust.style.left = Math.random() * 100 + '%'; dust.style.top = Math.random() * 100 + '%';
                 dust.style.animationDuration = (Math.random() * 15 + 10) + 's'; 
-                dust.style.opacity = '0.2'; // Darker, slower dust
+                dust.style.opacity = '0.2';
                 container.appendChild(dust);
             }
         }
@@ -516,7 +577,7 @@
             } catch(error) { console.log("Weather API failed to load."); }
         }
 
-        // 5. Hearth Almanac & Reagents (Existing)
+        // 5. Hearth Almanac & Reagents
         function renderCalendar() { 
             const container = document.getElementById('calendar-body'); container.innerHTML = ''; const date = new Date();
             for(let i=1; i<=31; i++) {
@@ -560,7 +621,7 @@
             localStorage.setItem('reagents', JSON.stringify(reagents)); renderReagents(); 
         }
 
-        // 6. Tower Focus Systems (Existing)
+        // 6. Tower Focus Systems
         function startTimer(minutes) { 
             clearInterval(timerInterval); secondsRemaining = minutes * 60; 
             timerInterval = setInterval(() => { 
@@ -589,7 +650,7 @@
             `).join(''); 
         }
 
-        // 7. Reading Nook Vitals (Existing)
+        // 7. Reading Nook Vitals
         function setMood(mood, element) { 
             document.querySelectorAll('.mood-icons span').forEach(s => s.classList.remove('selected')); 
             element.classList.add('selected'); localStorage.setItem('vital-mood', mood); 
@@ -614,7 +675,7 @@
             } catch (error) { console.log("Error loading vitals"); }
         }
 
-        // 8. Grimoire Modal Framework (Existing)
+        // 8. Grimoire Modal Framework
         function openGrimoire(subject) { 
             activeGrimoire = `grim-${subject.replace(/\s+/g, '-').toLowerCase()}`; 
             document.getElementById('grimoire-title').innerText = subject; 
@@ -705,7 +766,7 @@
             a.href = url; a.download = 'moons-hearth-scroll.json'; a.click(); 
         }
 
-        // 9. Nook Mysteries Logic (Existing)
+        // 9. Nook Mysteries Logic
         function openDreamLedger() {
             const today = new Date();
             const dreamKey = `dream-${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
@@ -744,43 +805,31 @@
             openModal('oracle-modal');
         }
 
-        // 10. The Cellar Logic (UPDATED FINANCIAL SYSTEM)
-        
-        // --- Iron Safe (Financial Vault) ---
+        // 10. The Cellar Logic (Financial & Contingency)
         function addTransaction() {
             const desc = document.getElementById('transaction-desc').value;
             const amtVal = document.getElementById('transaction-amt').value;
             if(!desc || !amtVal) return;
-
-            // Parse amount (allow negatives)
             const amt = parseFloat(amtVal);
-            
             const ledger = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
-            // n=description/tags, a=amount, d=date
             ledger.push({n: desc, a: amt, d: new Date().toLocaleDateString()});
             localStorage.setItem('vault-ledger', JSON.stringify(ledger));
-            
             document.getElementById('transaction-desc').value = '';
             document.getElementById('transaction-amt').value = '';
             updateVaultUI();
         }
 
-        // Central function to calculate totals, budgets, and render UI
         function updateVaultUI() {
             const ledger = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
             const budgetMap = {};
             let totalBalance = 0;
             let totalIncome = 0;
 
-            // 1. Render Transaction List & Calculate Totals
             document.getElementById('transaction-list').innerHTML = ledger.slice().reverse().map((b, idx) => {
                 totalBalance += b.a;
                 if(b.a > 0) totalIncome += b.a;
-
                 const isIncome = b.a >= 0;
-                const color = isIncome ? 'var(--gold)' : 'var(--spend)'; // Gold for income, reddish for spend
-
-                // Hashtag parsing for budget breakdown
+                const color = isIncome ? 'var(--gold)' : 'var(--spend)'; 
                 const tags = b.n.match(/#[a-z0-9]+/gi);
                 if(tags) {
                     tags.forEach(tag => {
@@ -788,7 +837,6 @@
                         budgetMap[lowerTag] = (budgetMap[lowerTag] || 0) + b.a;
                     });
                 }
-
                 return `
                 <div class="lexicon-item">
                     <div style="font-family:'Cinzel';font-weight:bold;color:var(--parchment);width:45%; font-size:0.9rem;">${b.n}</div>
@@ -799,12 +847,10 @@
                 `;
             }).join('');
 
-            // 2. Update Total Balance Display
             const balanceDisplay = document.getElementById('vault-total');
             balanceDisplay.innerText = totalBalance.toFixed(2);
             balanceDisplay.style.color = totalBalance >= 0 ? 'var(--gold)' : 'var(--spend)';
 
-            // 3. Render Budget Hashtag Map
             const budgetList = document.getElementById('budget-list');
             if(Object.keys(budgetMap).length === 0) {
                 budgetList.innerHTML = '<div style="text-align:center; opacity:0.7;">No hashtags tracked yet.</div>';
@@ -821,16 +867,11 @@
                 }).join('');
             }
 
-            // 4. Update Iron Reserve (Contingency Fund) Progress based on Income
-            // Simple Goal: Save 10% of all income tracked.
             const savingsGoal = totalIncome * 0.10; 
-            // In a real app, you'd track actual transfers to savings. For now, we'll simulate progress based on the total balance vs that goal.
-            // If balance is negative, progress is 0. If balance exceeds goal, progress is 100%.
             let progress = 0;
             if (totalBalance > 0 && savingsGoal > 0) {
                 progress = Math.min((totalBalance / savingsGoal) * 100, 100);
             }
-            
             document.getElementById('reserve-bar').style.width = `${progress}%`;
             document.getElementById('reserve-text').innerText = `${Math.round(progress)}% of 10% Income Goal`;
         }
@@ -842,13 +883,11 @@
             updateVaultUI();
         }
 
-        // --- Workbench ---
         function saveWorkbench() {
             localStorage.setItem('workbench-notes', document.getElementById('workbench-text').value);
             closeModal('workbench-modal');
         }
 
-        // --- Supply Crate ---
         function addCrateItem() {
             const input = document.getElementById('crate-input');
             if(!input.value) return;
@@ -893,6 +932,49 @@
             crate.splice(idx, 1);
             localStorage.setItem('supply-crate', JSON.stringify(crate));
             renderCrate();
+        }
+
+        // 11. The Soul Compass (Character Sheet Logic)
+        function openCompass() {
+            // Calculate Spirit Alignment (Mood from Nook)
+            const savedMood = localStorage.getItem('vital-mood');
+            const moodDisplay = document.getElementById('stat-mood');
+            if(savedMood) {
+                moodDisplay.innerText = savedMood.charAt(0).toUpperCase() + savedMood.slice(1);
+            } else {
+                moodDisplay.innerText = "Unaligned (Visit the Nook)";
+            }
+
+            // Calculate Legend Tier (Grimoire Progress)
+            const defaultMilestones = [{t:"The Primal Spark: Scribe your creation myth.", c:false}];
+            const legend = JSON.parse(localStorage.getItem('legend') || JSON.stringify(defaultMilestones));
+            const completed = legend.filter(i => i.c).length;
+            const total = legend.length;
+            const tier = Math.floor(completed / 3); 
+            
+            document.getElementById('stat-legend-level').innerText = `Tier ${tier}`;
+            document.getElementById('stat-legend-bar').style.width = total ? (completed / total * 100) + '%' : '0%';
+
+            // Calculate Vault Status (Financial from Cellar)
+            const ledger = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
+            let totalBalance = 0;
+            ledger.forEach(b => totalBalance += b.a);
+            
+            const vaultStatus = document.getElementById('stat-vault-status');
+            if(totalBalance <= 0) {
+                vaultStatus.innerText = "Depleted / Debt"; vaultStatus.style.color = "var(--spend)";
+            } else if (totalBalance < 500) {
+                vaultStatus.innerText = "Building Reserves"; vaultStatus.style.color = "var(--parchment)";
+            } else {
+                vaultStatus.innerText = "Fortified"; vaultStatus.style.color = "var(--gold)";
+            }
+
+            // Calculate Focus Mastery (Scholar Journal Entries)
+            const journal = JSON.parse(localStorage.getItem('journal') || '[]');
+            const sessionCount = journal.length;
+            document.getElementById('stat-focus-count').innerText = `${sessionCount} Sessions Logged in Tower`;
+
+            openModal('compass-modal');
         }
 
     </script>
