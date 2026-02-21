@@ -9,21 +9,25 @@
     :root { --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.85); --text: #fdf5e6; --parchment: #e3d5b8; --ink: #2c1810; --spend: #c84b31; --water: #40e0d0; }
     body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Cormorant Garamond', serif; background-color: #000; color: var(--text); overflow: hidden; }
 
-    /* --- NAVIGATION --- */
-    .room-portal { position: fixed; left: 30px; top: 30px; z-index: 5000; display: flex; gap: 10px; }
-    .portal-btn { font-family: 'Cinzel'; padding: 10px 15px; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer; transition: 0.3s; }
-    .portal-btn.active, .portal-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+    /* --- CUSTOM SCROLLBARS --- */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.5); border-radius: 4px; border: 1px solid #8b5a2b; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-    /* --- THEMED UI BUTTONS (SURGICAL FIX) --- */
-    .ui-toggle-btn { 
-        position: fixed !important; right: 30px !important; top: 30px !important; z-index: 6000 !important;
-        font-family: 'Cinzel'; padding: 12px 20px; border: 2px solid #443322;
-        background: linear-gradient(145deg, #2c1810, #1a0f0a);
-        color: var(--gold); cursor: pointer; border-radius: 4px;
-        box-shadow: 0 4px 10px #000; text-transform: uppercase; letter-spacing: 2px;
+    /* --- ENTER OVERLAY --- */
+    #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 9000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; }
+    .enter-btn, .portal-btn, .data-btn { font-family: 'Cinzel', serif; color: var(--gold); background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer; transition: 0.3s; }
+    .enter-btn { font-size: 1.5rem; padding: 15px 45px; letter-spacing: 5px; text-transform: uppercase; box-shadow: 0 0 30px var(--gold-glow); }
+
+    .golden-text {
+        background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
     }
 
-    /* --- FIXED WIDGETS (Bottom Anchored) --- */
+    /* --- FIXED WIDGETS --- */
     .status-widget { 
         position: fixed !important; bottom: 30px; z-index: 8000 !important; 
         background: radial-gradient(circle, rgba(40, 30, 20, 0.9) 0%, rgba(10, 8, 5, 0.95) 100%);
@@ -41,16 +45,21 @@
     #weather-temp { font-family: 'Cinzel'; color: var(--gold); font-size: 1.2rem; font-weight: 900; }
     #weather-desc { font-family: 'Cormorant Garamond'; color: var(--parchment); font-size: 0.6rem; font-style: italic; letter-spacing: 1px; text-transform: uppercase; }
 
+    /* --- NAVIGATION --- */
+    .room-portal { position: fixed; left: 30px; top: 30px; z-index: 5000; display: flex; gap: 10px; }
+    .portal-btn { padding: 10px 15px; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; }
+    .portal-btn.active { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+
+    /* --- REFORGED BUTTON FIX --- */
+    .ui-toggle-btn {
+        position: fixed !important; right: 30px !important; top: 30px !important; z-index: 6000 !important;
+        font-family: 'Cinzel'; padding: 12px 20px; color: var(--gold);
+        background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer;
+    }
+
     /* --- ROOM LAYERS --- */
     .layer-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1s ease; background-size: cover; background-position: center; z-index: 10; }
-    .hidden { opacity: 0 !important; pointer-events: none !important; }
-
-    /* --- SIDEBAR CONTAINERS (SURGICAL FIX) --- */
-    .desk-ui-container, .nook-ui-container { 
-        position: fixed; right: -450px; top: 50%; transform: translateY(-50%); 
-        width: 380px; z-index: 2000; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); 
-    }
-    .desk-ui-container.open, .nook-ui-container.open { right: 40px; }
+    .hidden { opacity: 0; pointer-events: none; }
 
     /* UI PANELS */
     .glass-panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--gold-glow); padding: 20px; box-shadow: 0 15px 35px #000; }
@@ -59,31 +68,31 @@
     .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; }
     .day-num.today { background: var(--gold); color: #000; }
 
-    /* CLICK ZONES */
+    /* --- CLICK ZONES --- */
     .click-zone { position: absolute; cursor: pointer; transition: 0.3s; z-index: 100; }
-    .click-zone:hover { box-shadow: inset 0 0 30px var(--gold-glow); }
+    .click-zone:hover { box-shadow: inset 0 0 30px var(--gold-glow); background: rgba(212,175,55,0.1); }
 
-    .breathe-circle { width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(64, 224, 208, 0.8) 0%, rgba(0, 128, 128, 0.4) 100%); margin: 40px auto; transition: 4s ease-in-out; display: flex; justify-content: center; align-items: center; }
+    /* UI CONTAINERS (SIDEBARS) */
+    .hearth-ui { position: fixed; right: 40px; top: 50%; transform: translateY(-50%); z-index: 2000; width: 420px; display: flex; flex-direction: column; gap: 15px; }
+    .desk-ui-container, .nook-ui-container { position: fixed; right: -450px; top: 50%; transform: translateY(-50%); width: 380px; z-index: 2000; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .desk-ui-container.open, .nook-ui-container.open { right: 40px; }
+
+    /* --- ANIMATIONS & MODALS --- */
+    .breathe-circle { width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(64, 224, 208, 0.8) 0%, rgba(0, 128, 128, 0.4) 100%); margin: 40px auto; transition: transform 4s ease-in-out, opacity 4s ease-in-out; display: flex; justify-content: center; align-items: center; }
     .breathe-circle.inhale { transform: scale(1.6); opacity: 1; }
     .breathe-circle.exhale { transform: scale(1); opacity: 0.5; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
     .scroll-parchment { background: var(--parchment); color: var(--ink); width: 90%; max-width: 700px; padding: 40px; border-radius: 5px 40px; border: 2px solid #8b5a2b; height: 85vh; display: flex; flex-direction: column; overflow-y: auto; }
-    .progress-track { width: 100%; height: 15px; background: rgba(0,0,0,0.1); border-radius: 5px; margin: 10px 0; border: 1px solid #8b5a2b; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.5s ease; }
-    .mood-icons { display: flex; gap: 15px; font-size: 1.6rem; justify-content: center; margin-bottom: 15px; }
-    .mood-icons span { cursor: pointer; opacity: 0.4; transition: 0.3s; }
-    .mood-icons span.selected { opacity: 1; filter: drop-shadow(0 0 8px var(--gold)); }
-
+    
     .ember, .dust-mote, .steam { pointer-events: none; position: absolute; }
     .ember { bottom:-20px; background:var(--fire); width: 5px; height: 5px; border-radius:50%; animation:rise linear infinite; }
-    .dust-mote { background: rgba(255, 230, 180, 0.4); border-radius: 50%; animation: floatDust linear infinite; }
-    .steam { bottom: 10%; background: rgba(64, 224, 208, 0.15); border-radius: 50%; filter: blur(15px); animation: riseSteam linear infinite; }
+    .dust-mote { background: rgba(255, 230, 180, 0.4); border-radius: 50%; opacity: 0; animation: floatDust linear infinite; }
+    .steam { bottom: 10%; background: rgba(64, 224, 208, 0.15); border-radius: 50%; filter: blur(15px); opacity: 0; animation: riseSteam linear infinite; }
 
-    @keyframes rise { 0% {opacity:0; transform:translateY(0);} 20% {opacity:0.8;} 100% {opacity:0; transform:translateY(-110vh) translateX(var(--drift));} }
+    @keyframes rise { 0% {opacity:0; transform:translateY(0);} 100% {opacity:0; transform:translateY(-110vh) translateX(var(--drift));} }
     @keyframes floatDust { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-40vh) translateX(30px); } }
     @keyframes riseSteam { 0% {opacity:0; transform:translateY(0) scale(1);} 100% {opacity:0; transform:translateY(-60vh) scale(4) translateX(var(--drift));} }
-    #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 15000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; }
 </style>
 </head>
 <body>
@@ -104,9 +113,9 @@
     <div id="hearth-layer" class="layer-container">
         <div id="embers-container"></div>
         <div class="click-zone" style="top:30%; left:10%; width:12%; height:15%;" onclick="openGrimoire('Soups & Stews')"></div>
-        <div class="hearth-ui" style="position: fixed; right: 40px; top: 50%; transform: translateY(-50%); width: 420px;">
+        <div class="hearth-ui">
             <div class="glass-panel">
-                <div class="panel-header"><h1 class="golden-text">The Almanac</h1></div>
+                <h1 class="golden-text" style="font-family:'Cinzel'; text-align:center;">The Almanac</h1>
                 <div class="calendar-grid" id="calendar-body"></div>
             </div>
         </div>
@@ -114,25 +123,21 @@
 
     <div id="scholar-layer" class="layer-container hidden">
         <video autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover;"><source src="scholar_bg.mp4" type="video/mp4"></video>
-        <div id="dust-container"></div>
-        <button class="ui-toggle-btn" onclick="toggleDeskUI()">Forge Records</button>
+        <button class="ui-toggle-btn" onclick="toggleDeskUI()">Open Desk</button>
         <div id="desk-ui" class="desk-ui-container">
             <div class="glass-panel">
                 <h1 class="golden-text">Scholar's Focus</h1>
                 <div id="timer-display" style="font-family:'Cinzel'; font-size:2.8rem; color:var(--gold); text-align:center;">25:00</div>
-                <div style="display:flex; justify-content:center; gap:10px; margin: 15px 0;">
-                    <button class="portal-btn" onclick="startTimer(25)">Focus</button>
-                    <button class="portal-btn" onclick="stopTimer()">Reset</button>
+                <div style="display:flex; justify-content:center; gap:10px;">
+                    <button class="data-btn" onclick="startTimer(25)">Focus</button>
+                    <button class="data-btn" onclick="stopTimer()">Reset</button>
                 </div>
-                <textarea id="work-note" class="scholar-input" placeholder="Log progress..."></textarea>
-                <button class="portal-btn" style="width:100%" onclick="logWork()">Scribe Entry</button>
             </div>
         </div>
     </div>
 
     <div id="nook-layer" class="layer-container hidden">
         <div id="nook-particles"></div>
-        <div class="click-zone" style="top:40%; left:30%; width:15%; height:20%;" onclick="drawOracleCard()"></div>
         <button class="ui-toggle-btn" onclick="toggleNookUI()">Spirit Alignment</button>
         <div id="nook-ui" class="nook-ui-container">
             <div class="glass-panel">
@@ -140,8 +145,6 @@
                 <div class="mood-icons">
                     <span onclick="setMood('ethereal', this)">✨</span>
                     <span onclick="setMood('grounded', this)">🌿</span>
-                    <span onclick="setMood('flickering', this)">🔥</span>
-                    <span onclick="setMood('stormy', this)">⛈️</span>
                     <span onclick="setMood('waning', this)">🌑</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; margin-top:20px;"><span>Dream Cycle</span> <input type="number" id="sleep-input" style="width:50px; background:rgba(0,0,0,0.5); border:1px solid var(--gold); color:var(--gold);" onchange="saveVitals()"></div>
@@ -155,28 +158,9 @@
     <div id="weather-widget" class="status-widget">
         <div id="weather-icon">✨</div>
         <div id="weather-temp">--°F</div>
-        <div id="weather-desc">Scrying...</div>
     </div>
-
     <div id="soul-compass-widget" class="status-widget" onclick="openCompass()">
         <img src="avatar.jpg" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentNode.innerHTML='🛡️'">
-    </div>
-
-    <div id="safe-modal" class="modal-overlay" onclick="closeModal('safe-modal')">
-        <div class="scroll-parchment" onclick="event.stopPropagation()">
-            <h2 class="golden-text" style="text-align:center;">The Iron Safe</h2>
-            <div style="display:flex; gap:10px; margin: 20px 0;"><input type="text" id="t-desc" class="scholar-input" style="width:60%"><input type="number" id="t-amt" class="scholar-input" style="width:30%"><button class="portal-btn" onclick="addTransaction()">Log</button></div>
-            <div id="transaction-list"></div>
-        </div>
-    </div>
-
-    <div id="pool-modal" class="modal-overlay" onclick="closeModal('pool-modal')">
-        <div class="scroll-parchment" onclick="event.stopPropagation()" style="text-align:center;">
-            <h2 class="golden-text">The Reflection Pool</h2>
-            <div id="breathe-circle-ui" class="breathe-circle"></div>
-            <h3 id="breathe-text" style="color:var(--water); font-size:2rem;">Ready</h3>
-            <button class="portal-btn" onclick="startBreathing()">Begin Reset</button>
-        </div>
     </div>
 
     <audio id="audio-hearth" loop src="fire.mp3"></audio>
@@ -197,17 +181,13 @@
         }
 
         function switchRoom(room) {
-            if(room === currentRoom) return;
             currentRoom = room;
             document.querySelectorAll('.portal-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-'+room).classList.add('active');
             document.querySelectorAll('.layer-container').forEach(l => l.classList.add('hidden'));
             document.getElementById(room+'-layer').classList.remove('hidden');
             [ah, an, ac, as].forEach(m => m.pause());
-            if(room === 'hearth') ah.play();
-            if(room === 'nook') an.play();
-            if(room === 'cellar') ac.play();
-            if(room === 'springs') as.play();
+            if(room === 'hearth') ah.play(); if(room === 'nook') an.play(); if(room === 'cellar') ac.play(); if(room === 'springs') as.play();
         }
 
         function toggleDeskUI() { document.getElementById('desk-ui').classList.toggle('open'); }
@@ -216,12 +196,11 @@
         function closeModal(id) { document.getElementById(id).style.opacity = '0'; setTimeout(() => document.getElementById(id).style.display = 'none', 500); }
 
         function createEmbers() { const c = document.getElementById('embers-container'); for(let i=0; i<20; i++){ let e = document.createElement('div'); e.className='ember'; e.style.left = Math.random()*100+'%'; e.style.animationDuration = (Math.random()*5+4)+'s'; e.style.setProperty('--drift', (Math.random()*100-50)+'px'); c.appendChild(e); } }
-        function createDust() { const boxes = [document.getElementById('dust-container'), document.getElementById('nook-particles'), document.getElementById('cellar-particles')]; boxes.forEach(b => { if(b){ for(let i=0; i<25; i++){ let d = document.createElement('div'); d.className='dust-mote'; d.style.left = Math.random()*100+'%'; d.style.top = Math.random()*100+'%'; d.style.animationDuration = (Math.random()*10+8)+'s'; b.appendChild(d); }}}); }
-        async function fetchWeather() { try { const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.94&longitude=-88.52&current=temperature_2m&temperature_unit=fahrenheit'); const d = await r.json(); document.getElementById('weather-temp').innerText = Math.round(d.current.temperature_2m) + "°F"; } catch(e) {} }
-        function setMood(m, el) { document.querySelectorAll('.mood-icons span').forEach(s => s.classList.remove('selected')); el.classList.add('selected'); localStorage.setItem('vital-mood', m); }
-        function startBreathing() { let inh = true; setInterval(() => { inh = !inh; document.getElementById('breathe-circle-ui').className = 'breathe-circle ' + (inh?'inhale':'exhale'); document.getElementById('breathe-text').innerText = inh?"Inhale...":"Exhale..."; }, 4500); }
+        function createDust() { const boxes = [document.getElementById('dust-container'), document.getElementById('nook-particles')]; boxes.forEach(b => { if(b){ for(let i=0; i<30; i++){ let d = document.createElement('div'); d.className='dust-mote'; d.style.left = Math.random()*100+'%'; d.style.top = Math.random()*100+'%'; d.style.animationDuration = (Math.random()*10+8)+'s'; b.appendChild(d); }}}); }
+        async function fetchWeather() { try { const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.94&longitude=-88.52&current=temperature_2m,weather_code&temperature_unit=fahrenheit'); const d = await r.json(); document.getElementById('weather-temp').innerText = Math.round(d.current.temperature_2m) + "°F"; } catch(e) {} }
+        function setMood(m, el) { document.querySelectorAll('.mood-icons span').forEach(s => s.style.opacity = '0.4'); el.style.opacity = '1'; localStorage.setItem('vital-mood', m); }
         function renderCalendar() { let c = document.getElementById('calendar-body'); for(let i=1; i<=31; i++){ let d = document.createElement('div'); d.className='day-num'; if(i===new Date().getDate()) d.classList.add('today'); d.innerText=i; c.appendChild(d); } }
-        function openCompass() { alert("Soul: " + (localStorage.getItem('vital-mood') || "Unaligned").toUpperCase()); }
+        function openCompass() { alert("Soul Medallion Accessed"); }
     </script>
 </body>
 </html>
