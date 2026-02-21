@@ -3,50 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moon's Hearth - Triple Realm Hub</title>
+<title>Moon's Hearth - Master Realm Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-    :root { --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.95); --text: #fdf5e6; --parchment: #e3d5b8; --ink: #2c1810; --spend: #c84b31; --water: #40e0d0; }
+    :root { --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.9); --text: #fdf5e6; --parchment: #e3d5b8; --ink: #2c1810; --spend: #c84b31; --water: #40e0d0; }
     body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Cormorant Garamond', serif; background-color: #000; color: var(--text); overflow: hidden; }
 
-    /* --- REFORGED ENTER OVERLAY --- */
-    #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 20000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; }
-    
-    .enter-btn { 
-        font-family: 'Cinzel', serif; color: var(--gold); background: rgba(0,0,0,0.6); 
-        border: 1px solid var(--gold); cursor: pointer; transition: 0.3s; 
-        font-size: 1.5rem; padding: 15px 45px; letter-spacing: 5px; 
-        text-transform: uppercase; box-shadow: 0 0 30px var(--gold-glow); 
-    }
-    .enter-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 50px var(--gold-glow); transform: scale(1.05); }
-
-    .golden-text {
-        background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        text-shadow: 0px 2px 10px rgba(212, 175, 55, 0.2);
-    }
-
     /* --- NAVIGATION TABS --- */
-    .room-portal { position: fixed; left: 30px; top: 30px; z-index: 5000; display: flex; gap: 10px; transition: opacity 0.5s; }
-    .portal-btn { font-family: 'Cinzel'; padding: 10px 15px; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer; transition: 0.3s; }
+    .room-portal { position: fixed; left: 30px; top: 30px; z-index: 9000; display: flex; gap: 10px; }
+    .portal-btn { font-family: 'Cinzel'; padding: 10px 15px; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); background: rgba(0,0,0,0.8); border: 1px solid var(--gold); cursor: pointer; transition: 0.3s; }
     .portal-btn.active, .portal-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
 
-    /* --- THEMED UI BUTTONS (SURGICAL ANCHOR) --- */
+    /* --- ACTION BUTTONS (TOP RIGHT FIX) --- */
+    .action-overlay { position: fixed; right: 30px; top: 30px; z-index: 9500; display: flex; flex-direction: column; align-items: flex-end; gap: 15px; pointer-events: none; }
     .reforged-btn { 
-        position: fixed !important; right: 30px !important; top: 30px !important; z-index: 6000 !important;
-        font-family: 'Cinzel'; padding: 12px 20px; border: 2px solid #443322;
-        background: linear-gradient(145deg, #2c1810, #1a0f0a);
-        color: var(--gold); cursor: pointer; border-radius: 4px;
-        box-shadow: 0 4px 10px #000, inset 0 0 10px rgba(212,175,55,0.2);
-        text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
+        pointer-events: auto; font-family: 'Cinzel'; padding: 12px 20px; border: 2px solid #443322;
+        background: linear-gradient(145deg, #2c1810, #1a0f0a); color: var(--gold); cursor: pointer; border-radius: 4px;
+        box-shadow: 0 4px 10px #000; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
     }
-    .reforged-btn:hover { border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); transform: translateY(-2px); }
+    .reforged-btn:hover { border-color: var(--gold); transform: translateY(-2px); }
 
     /* --- STATUS WIDGETS --- */
     .status-widget { 
-        position: fixed !important; bottom: 30px; z-index: 9000 !important; 
+        position: fixed; bottom: 30px; z-index: 10000; 
         background: radial-gradient(circle, rgba(40, 30, 20, 0.95) 0%, rgba(10, 8, 5, 1) 100%);
         border: 2px solid var(--gold); width: 110px; height: 110px; border-radius: 50%;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -55,48 +34,42 @@
     }
     .status-widget.visible { opacity: 1; pointer-events: auto; }
     #weather-widget { left: 30px; }
-    #soul-compass-widget { right: 30px; padding: 0; cursor: pointer; }
+    #soul-compass-widget { right: 30px; cursor: pointer; padding: 0; }
     
-    #weather-icon { font-size: 2rem; filter: drop-shadow(0 0 8px var(--gold)); }
-    #weather-temp { font-family: 'Cinzel'; color: var(--gold); font-size: 1.2rem; font-weight: 900; }
-    #weather-desc { font-family: 'Cormorant Garamond'; color: var(--parchment); font-size: 0.6rem; font-style: italic; text-transform: uppercase; }
-
     /* --- ROOM LAYERS --- */
     .layer-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1s ease; background-size: cover; background-position: center; z-index: 10; }
     .hidden { opacity: 0; pointer-events: none; }
 
-    /* --- SIDE UI --- */
-    .side-ui-container { position: fixed; right: -450px; top: 50%; transform: translateY(-50%); width: 420px; z-index: 2000; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-    .side-ui-container.open { right: 40px; }
-
-    .glass-panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--gold-glow); padding: 20px; box-shadow: 0 15px 35px #000; }
-    .scholar-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-glow); color: var(--parchment); padding: 10px; font-family: 'Cormorant Garamond'; margin-bottom: 10px; outline: none; }
+    /* UI PANELS */
+    .side-ui { position: fixed; right: -450px; top: 50%; transform: translateY(-50%); width: 400px; z-index: 8000; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .side-ui.open { right: 40px; }
+    .glass-panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--gold-glow); padding: 25px; box-shadow: 0 15px 35px #000; }
+    .scholar-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--gold-glow); color: var(--parchment); padding: 12px; font-family: 'Cormorant Garamond'; margin-bottom: 10px; outline: none; box-sizing: border-box; }
     
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.7rem; font-family: 'Cinzel'; }
-    .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; }
-    .day-num.today { background: var(--gold); color: #000; font-weight: bold; }
+    /* CLICK ZONES (Invisible Links) */
+    .click-zone { position: absolute; cursor: pointer; z-index: 100; transition: 0.3s; }
+    .click-zone:hover { box-shadow: inset 0 0 30px var(--gold-glow); background: rgba(212,175,55,0.1); }
 
-    /* --- BREATHING --- */
-    .breathe-circle { width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, var(--water) 0%, rgba(0, 128, 128, 0.4) 100%); margin: 40px auto; transition: transform 4s ease-in-out, opacity 4s ease-in-out; display: flex; justify-content: center; align-items: center; }
+    /* BREATHING POOL */
+    .breathe-circle { width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, var(--water) 0%, rgba(0, 128, 128, 0.4) 100%); margin: 30px auto; transition: 4.5s ease-in-out; }
     .breathe-circle.inhale { transform: scale(1.7); opacity: 1; }
-    .breathe-circle.exhale { transform: scale(1); opacity: 0.5; }
+    .breathe-circle.exhale { transform: scale(1); opacity: 0.4; }
 
-    /* --- MODALS --- */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
-    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 90%; max-width: 700px; padding: 40px; border-radius: 5px 40px; border: 2px solid #8b5a2b; height: 85vh; display: flex; flex-direction: column; overflow-y: auto; }
+    /* MODALS */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 20000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
+    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 90%; max-width: 750px; padding: 40px; border-radius: 5px 40px; border: 3px solid #8b5a2b; height: 80vh; overflow-y: auto; display: flex; flex-direction: column; }
     
-    .mood-icons span { cursor: pointer; opacity: 0.4; font-size: 1.8rem; margin: 0 10px; transition: 0.3s; }
-    .mood-icons span.selected { opacity: 1; filter: drop-shadow(0 0 8px var(--gold)); }
+    .mood-icons span { cursor: pointer; opacity: 0.3; font-size: 2rem; margin: 0 10px; transition: 0.3s; }
+    .mood-icons span.selected { opacity: 1; filter: drop-shadow(0 0 10px var(--gold)); }
 
-    /* --- PARTICLES --- */
+    /* ENTER OVERLAY */
+    #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 30000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; }
+    .enter-btn { font-family: 'Cinzel', serif; color: var(--gold); background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer; font-size: 1.5rem; padding: 15px 45px; letter-spacing: 5px; text-transform: uppercase; box-shadow: 0 0 30px var(--gold-glow); transition: 0.3s; }
+    .enter-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 50px var(--gold-glow); transform: scale(1.05); }
+
+    /* PARTICLES */
     .particle-container { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 15; }
-    .ember { position: absolute; bottom:-20px; background:var(--fire); width: 5px; height: 5px; border-radius:50%; animation:rise linear infinite; }
-    .dust-mote { position: absolute; background: rgba(255, 230, 180, 0.4); border-radius: 50%; animation: floatDust linear infinite; opacity: 0; }
-    .steam { position: absolute; bottom: 10%; background: rgba(64, 224, 208, 0.15); border-radius: 50%; filter: blur(15px); animation: riseSteam linear infinite; opacity: 0; }
-
-    @keyframes rise { 0% {opacity:0; transform:translateY(0);} 20% {opacity:0.8;} 100% {opacity:0; transform:translateY(-110vh) translateX(var(--drift));} }
-    @keyframes floatDust { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-40vh) translateX(30px); } }
-    @keyframes riseSteam { 0% {opacity:0; transform:translateY(0) scale(1);} 100% {opacity:0; transform:translateY(-60vh) scale(4) translateX(var(--drift));} }
+    .ember { position: absolute; bottom:-20px; background:var(--fire); width: 4px; height: 4px; border-radius:50%; animation:rise linear infinite; }
 </style>
 </head>
 <body>
@@ -106,41 +79,45 @@
         <button class="enter-btn" onclick="igniteRealm()">Enter the Realm</button>
     </div>
 
-    <div id="main-nav" class="room-portal">
+    <div class="room-portal">
         <button id="btn-hearth" class="portal-btn active" onclick="switchRoom('hearth')">The Hearth</button>
-        <button id="btn-scholar" class="portal-btn" onclick="switchRoom('scholar')">Scholar's Tower</button>
-        <button id="btn-nook" class="portal-btn" onclick="switchRoom('nook')">Reading Nook</button>
-        <button id="btn-cellar" class="portal-btn" onclick="switchRoom('cellar')">The Cellar</button>
-        <button id="btn-springs" class="portal-btn" onclick="switchRoom('springs')">Healing Springs</button>
+        <button id="btn-scholar" class="portal-btn" onclick="switchRoom('scholar')">Tower</button>
+        <button id="btn-nook" class="portal-btn" onclick="switchRoom('nook')">Nook</button>
+        <button id="btn-cellar" class="portal-btn" onclick="switchRoom('cellar')">Cellar</button>
+        <button id="btn-springs" class="portal-btn" onclick="switchRoom('springs')">Springs</button>
+    </div>
+
+    <div class="action-overlay">
+        <button id="tower-btn" class="reforged-btn hidden" onclick="toggleSide('desk-ui')">Forge Records</button>
+        <button id="nook-btn" class="reforged-btn hidden" onclick="toggleSide('nook-ui')">Spirit Alignment</button>
     </div>
 
     <div id="hearth-layer" class="layer-container" style="background-image: url('image_5.png');">
         <div id="embers-container" class="particle-container"></div>
-        <div class="hearth-ui" style="position: fixed; right: 40px; top: 50%; transform: translateY(-50%); width: 420px;">
+        <div class="click-zone" style="top:30%; left:10%; width:15%; height:20%;" onclick="openGrimoire('Soups & Stews')"></div>
+        <div class="click-zone" style="top:50%; left:8%; width:15%; height:20%;" onclick="openGrimoire('Breads & Bakes')"></div>
+        <div style="position: fixed; right: 40px; top: 50%; transform: translateY(-50%); width: 420px;">
             <div class="glass-panel">
-                <h1 class="golden-text" style="font-family:'Cinzel'; text-align:center;">The Almanac</h1>
-                <div class="calendar-grid" id="calendar-body"></div>
+                <h1 class="golden-text" style="text-align:center; font-family:'Cinzel';">The Almanac</h1>
+                <div id="calendar-body" style="display:grid; grid-template-columns:repeat(7,1fr); gap:5px; text-align:center;"></div>
             </div>
         </div>
     </div>
 
     <div id="scholar-layer" class="layer-container hidden">
-        <video id="scholar-video-bg" loop muted playsinline style="width:100%; height:100%; object-fit:cover;"><source src="scholar_bg.mp4" type="video/mp4"></video>
-        <div id="dust-container" class="particle-container"></div>
-        <button class="reforged-btn" onclick="toggleDeskUI()">Forge Records</button>
-        <div id="desk-ui" class="side-ui-container">
+        <video autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover;"><source src="scholar_bg.mp4" type="video/mp4"></video>
+        <div id="desk-ui" class="side-ui">
             <div class="glass-panel">
                 <h1 class="golden-text">Scholar's Focus</h1>
-                <div id="timer-display" style="font-family:'Cinzel'; font-size:2.8rem; color:var(--gold); text-align:center;">25:00</div>
-                <button class="portal-btn" style="width:100%;" onclick="startTimer(25)">Focus</button>
+                <div id="timer-display" style="font-family:'Cinzel'; font-size:3rem; text-align:center; color:var(--gold);">25:00</div>
+                <button class="portal-btn" style="width:100%; margin-top:15px;" onclick="startTimer(25)">Focus</button>
             </div>
         </div>
     </div>
 
     <div id="nook-layer" class="layer-container hidden" style="background-image: url('garden_bg.png');">
-        <div id="nook-particles" class="particle-container"></div>
-        <button class="reforged-btn" onclick="toggleNookUI()">Spirit Alignment</button>
-        <div id="nook-ui" class="side-ui-container">
+        <div class="click-zone" style="top:40%; left:30%; width:20%; height:30%;" onclick="alert('Oracle Draw')"></div>
+        <div id="nook-ui" class="side-ui">
             <div class="glass-panel">
                 <h1 class="golden-text">Spirit Vitality</h1>
                 <div class="mood-icons">
@@ -160,50 +137,55 @@
         <div class="click-zone" style="top:60%; left:35%; width:30%; height:25%;" onclick="openModal('pool-modal')"></div>
     </div>
 
-    <div id="weather-widget" class="status-widget">
-        <div id="weather-icon">✨</div>
-        <div id="weather-temp">--°F</div>
-    </div>
-
-    <div id="soul-compass-widget" class="status-widget" onclick="openCompass()">
-        <img src="avatar.jpg" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentNode.innerHTML='🛡️'">
-    </div>
+    <div id="weather-widget" class="status-widget"><div id="weather-temp" style="font-size:1.5rem; font-family:'Cinzel';">--°F</div></div>
+    <div id="soul-compass-widget" class="status-widget" onclick="openModal('compass-modal')"><img src="avatar.jpg" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentNode.innerHTML='🛡️'"></div>
 
     <div id="safe-modal" class="modal-overlay" onclick="closeModal('safe-modal')">
         <div class="scroll-parchment" onclick="event.stopPropagation()">
-            <h2 class="golden-text" style="font-family:'Cinzel'; text-align:center;">The Iron Safe</h2>
-            <h3 style="text-align:center;">Vault: <span id="vault-total">0.00</span></h3>
-            <div style="display:flex; gap:10px; margin: 20px 0;">
-                <input type="text" id="transaction-desc" class="scholar-input" style="width:50%" placeholder="Desc & #tag">
-                <input type="number" id="transaction-amt" class="scholar-input" style="width:30%" placeholder="Amt">
+            <h2 class="golden-text" style="text-align:center;">The Iron Safe</h2>
+            <div style="display:flex; gap:10px; margin:20px 0;">
+                <input type="text" id="t-desc" class="scholar-input" placeholder="Desc #tag">
+                <input type="number" id="t-amt" class="scholar-input" placeholder="Amt">
                 <button class="portal-btn" onclick="addTransaction()">Log</button>
             </div>
-            <div id="transaction-list"></div>
+            <div id="ledger-list"></div>
         </div>
     </div>
 
     <div id="pool-modal" class="modal-overlay" onclick="closeModal('pool-modal')">
-        <div class="scroll-parchment" onclick="event.stopPropagation()" style="text-align:center; height:auto;">
-            <h2 class="golden-text">The Reflection Pool</h2>
-            <div id="breathe-circle-ui" class="breathe-circle"></div>
-            <h3 id="breathe-text" style="color:var(--water); font-size:2rem;">Ready</h3>
-            <button class="portal-btn" onclick="startBreathing()">Begin Reset</button>
+        <div class="scroll-parchment" onclick="event.stopPropagation()" style="text-align:center;">
+            <div id="b-circle" class="breathe-circle"></div>
+            <h2 id="b-text" style="color:var(--water); font-family:'Cinzel';">Ready</h2>
+            <button class="portal-btn" onclick="startBreathing()">Start Reset</button>
+        </div>
+    </div>
+
+    <div id="grimoire-modal" class="modal-overlay" onclick="closeModal('grimoire-modal')">
+        <div class="scroll-parchment" onclick="event.stopPropagation()">
+            <h2 id="gr-title" class="golden-text"></h2>
+            <textarea id="gr-text" class="scholar-input" style="height:300px;"></textarea>
+            <button class="portal-btn" onclick="saveGrimoire()">Save</button>
+        </div>
+    </div>
+
+    <div id="compass-modal" class="modal-overlay" onclick="closeModal('compass-modal')">
+        <div class="scroll-parchment" onclick="event.stopPropagation()" style="flex-direction:row; height:auto;">
+            <div style="flex:1; border:2px solid var(--gold); border-radius:8px; overflow:hidden;"><img src="avatar.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+            <div style="flex:2; padding-left:20px;"><h2 class="golden-text">Soul Compass</h2><p>Alignment: <span id="stat-mood">Unaligned</span></p></div>
         </div>
     </div>
 
     <audio id="audio-hearth" loop src="fire.mp3"></audio>
-    <audio id="audio-nook" loop src="nature.mp3"></audio>
-    <audio id="audio-cellar" loop src="cellar.mp3"></audio>
-    <audio id="audio-springs" loop src="springs.mp3"></audio>
 
     <script>
         let currentRoom = 'hearth';
-        const ah = document.getElementById('audio-hearth'), an = document.getElementById('audio-nook'), ac = document.getElementById('audio-cellar'), as = document.getElementById('audio-springs'), sv = document.getElementById('scholar-video-bg');
+        let activeGrimoire = '';
+        const ah = document.getElementById('audio-hearth');
 
         function igniteRealm() {
             document.getElementById('enter-overlay').style.opacity = '0';
-            setTimeout(() => document.getElementById('enter-overlay').style.display = 'none', 1200);
-            ah.play().catch(e => {}); createEmbers(); createDust(); renderCalendar(); fetchWeather();
+            setTimeout(() => document.getElementById('enter-overlay').style.display='none', 1000);
+            ah.play().catch(e => {}); createEmbers(); renderCalendar(); fetchWeather();
             document.getElementById('weather-widget').classList.add('visible');
             document.getElementById('soul-compass-widget').classList.add('visible');
         }
@@ -214,25 +196,48 @@
             document.getElementById('btn-'+room).classList.add('active');
             document.querySelectorAll('.layer-container').forEach(l => l.classList.add('hidden'));
             document.getElementById(room+'-layer').classList.remove('hidden');
-            [ah, an, ac, as, sv].forEach(m => { if(m) m.pause(); });
-            if(room === 'hearth') ah.play(); if(room === 'nook') an.play(); if(room === 'cellar') ac.play(); if(room === 'springs') as.play();
-            if(room === 'scholar' && sv) { sv.muted=false; sv.play(); }
+            
+            document.getElementById('tower-btn').classList.toggle('hidden', room !== 'scholar');
+            document.getElementById('nook-btn').classList.toggle('hidden', room !== 'nook');
         }
 
-        function toggleDeskUI() { document.getElementById('desk-ui').classList.toggle('open'); }
-        function toggleNookUI() { document.getElementById('nook-ui').classList.toggle('open'); }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).style.opacity = '1', 10); if(id === 'safe-modal') updateVaultUI(); }
-        function closeModal(id) { document.getElementById(id).style.opacity = '0'; setTimeout(() => document.getElementById(id).style.display = 'none', 500); }
+        function toggleSide(id) { document.getElementById(id).classList.toggle('open'); }
+        function openModal(id) { document.getElementById(id).style.display='flex'; setTimeout(()=>document.getElementById(id).style.opacity='1', 10); if(id==='safe-modal') updateVaultUI(); }
+        function closeModal(id) { document.getElementById(id).style.opacity='0'; setTimeout(()=>document.getElementById(id).style.display='none', 500); }
 
-        function createEmbers() { const c = document.getElementById('embers-container'); for(let i=0; i<25; i++){ let e = document.createElement('div'); e.className='ember'; e.style.left = Math.random()*100+'%'; e.style.animationDuration = (Math.random()*5+4)+'s'; e.style.setProperty('--drift', (Math.random()*100-50)+'px'); c.appendChild(e); } }
-        function createDust() { const boxes = [document.getElementById('dust-container'), document.getElementById('nook-particles')]; boxes.forEach(b => { if(b){ b.innerHTML = ''; for(let i=0; i<25; i++){ let d = document.createElement('div'); d.className='dust-mote'; d.style.left = Math.random()*100+'%'; d.style.top = Math.random()*100+'%'; d.style.animationDuration = (Math.random()*10+8)+'s'; b.appendChild(d); }}}); }
-        async function fetchWeather() { try { const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.94&longitude=-88.52&current=temperature_2m,weather_code&temperature_unit=fahrenheit'); const d = await r.json(); document.getElementById('weather-temp').innerText = Math.round(d.current.temperature_2m) + "°F"; } catch(e) {} }
-        function setMood(m, el) { document.querySelectorAll('.mood-icons span').forEach(s => s.classList.remove('selected')); el.classList.add('selected'); localStorage.setItem('vital-mood', m); }
-        function addTransaction() { const d = document.getElementById('transaction-desc').value, a = document.getElementById('transaction-amt').value; if(!d || !a) return; const l = JSON.parse(localStorage.getItem('vault-ledger') || '[]'); l.push({n: d, a: parseFloat(a), d: new Date().toLocaleDateString()}); localStorage.setItem('vault-ledger', JSON.stringify(l)); updateVaultUI(); }
-        function updateVaultUI() { const l = JSON.parse(localStorage.getItem('vault-ledger') || '[]'); let t = 0; document.getElementById('transaction-list').innerHTML = l.slice().reverse().map(b => { t += b.a; return `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(0,0,0,0.1);"><span>${b.n}</span><span>${b.a.toFixed(2)}</span></div>`; }).join(''); document.getElementById('vault-total').innerText = t.toFixed(2); }
-        function startBreathing() { let inh = true; setInterval(() => { inh = !inh; document.getElementById('breathe-circle-ui').className = 'breathe-circle ' + (inh?'inhale':'exhale'); document.getElementById('breathe-text').innerText = inh?"Inhale...":"Exhale..."; }, 4500); }
-        function renderCalendar() { let c = document.getElementById('calendar-body'); c.innerHTML=''; for(let i=1; i<=31; i++){ let d = document.createElement('div'); d.className='day-num'; if(i===new Date().getDate()) d.classList.add('today'); d.innerText=i; c.appendChild(d); } }
-        function openCompass() { alert("Soul Medallion Accessed"); }
+        function openGrimoire(title) {
+            activeGrimoire = `grim-${title.toLowerCase().replace(/\s/g, '-')}`;
+            document.getElementById('gr-title').innerText = title;
+            document.getElementById('gr-text').value = localStorage.getItem(activeGrimoire) || '';
+            openModal('grimoire-modal');
+        }
+        function saveGrimoire() { localStorage.setItem(activeGrimoire, document.getElementById('gr-text').value); closeModal('grimoire-modal'); }
+
+        async function fetchWeather() {
+            const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.94&longitude=-88.52&current=temperature_2m&temperature_unit=fahrenheit');
+            const d = await r.json(); document.getElementById('weather-temp').innerText = Math.round(d.current.temperature_2m) + "°F";
+        }
+
+        function addTransaction() {
+            const d = document.getElementById('t-desc').value, a = document.getElementById('t-amt').value;
+            if(!d || !a) return;
+            const l = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
+            l.push({n: d, a: parseFloat(a)});
+            localStorage.setItem('vault-ledger', JSON.stringify(l));
+            updateVaultUI();
+        }
+        function updateVaultUI() {
+            const l = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
+            let t = 0; document.getElementById('ledger-list').innerHTML = l.slice().reverse().map(b => {
+                t += b.a; return `<div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(0,0,0,0.1); padding:5px 0;"><span>${b.n}</span><span>${b.a.toFixed(2)}</span></div>`;
+            }).join('');
+            document.getElementById('vault-total').innerText = t.toFixed(2);
+        }
+
+        function setMood(m, el) { document.querySelectorAll('.mood-icons span').forEach(s => s.classList.remove('selected')); el.classList.add('selected'); localStorage.setItem('vital-mood', m); document.getElementById('stat-mood').innerText = m; }
+        function startBreathing() { let inh = true; setInterval(() => { inh = !inh; document.getElementById('b-circle').className = 'breathe-circle ' + (inh?'inhale':'exhale'); document.getElementById('b-text').innerText = inh?"Inhale...":"Exhale..."; }, 4500); }
+        function renderCalendar() { let c = document.getElementById('calendar-body'); for(let i=1; i<=31; i++){ let d = document.createElement('div'); d.className='day-num'; d.innerText=i; if(i===new Date().getDate()) d.classList.add('today'); c.appendChild(d); }}
+        function createEmbers() { const c = document.getElementById('embers-container'); for(let i=0; i<25; i++){ let e = document.createElement('div'); e.className='ember'; e.style.left = Math.random()*100+'%'; e.style.animationDuration = (Math.random()*5+4)+'s'; c.appendChild(e); } }
     </script>
 </body>
 </html>
