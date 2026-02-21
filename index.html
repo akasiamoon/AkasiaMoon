@@ -6,7 +6,7 @@
 <title>Moon's Hearth - Triple Realm Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-    :root { --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.85); --text: #fdf5e6; --parchment: #e3d5b8; --ink: #2c1810; }
+    :root { --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.85); --text: #fdf5e6; --parchment: #e3d5b8; --ink: #2c1810; --spend: #c84b31; }
     body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Cormorant Garamond', serif; background-color: #000; color: var(--text); overflow: hidden; }
 
     /* --- CUSTOM SCROLLBARS --- */
@@ -328,19 +328,28 @@
             <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem;" onclick="closeModal('safe-modal')">×</span>
             <h2 class="golden-text" style="font-family:'Cinzel'; text-align:center; margin-bottom:10px;">The Iron Safe</h2>
             
-            <h3 style="font-family:'Cinzel'; color:#8b5a2b; font-size:1rem; border-bottom: 1px solid #8b5a2b; padding-bottom: 5px;">Iron Reserve (Contingency)</h3>
-            <div class="progress-track" style="height: 25px;"><div id="reserve-bar" class="progress-fill" style="width: 45%;"></div></div>
+            <h3 style="font-family:'Cinzel'; color:var(--gold); text-align:center; font-size:1.5rem; margin-bottom: 20px;">
+                Vault Balance: <span id="vault-total">0.00</span>
+            </h3>
+
+            <h3 style="font-family:'Cinzel'; color:#8b5a2b; font-size:1rem; border-bottom: 1px solid #8b5a2b; padding-bottom: 5px;">Iron Reserve (Contingency Fund)</h3>
+            <div class="progress-track" style="height: 25px;"><div id="reserve-bar" class="progress-fill" style="width: 0%;"></div></div>
             <div style="display:flex; justify-content: space-between; font-family:'Cinzel'; font-size: 0.8rem; color:#8b5a2b; margin-bottom: 20px;">
-                <span>Current: 45%</span> <span>Goal: Impregnable</span>
+                <span>Goal Progress</span> <span id="reserve-text">0%</span>
             </div>
 
-            <h3 style="font-family:'Cinzel'; color:#8b5a2b; font-size:1rem; border-bottom: 1px solid #8b5a2b; padding-bottom: 5px;">Bounty Ledger</h3>
+            <h3 style="font-family:'Cinzel'; color:#8b5a2b; font-size:1rem; border-bottom: 1px solid #8b5a2b; padding-bottom: 5px;">Transaction Ledger</h3>
             <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <input type="text" id="bounty-name" class="scholar-input" style="width:50%" placeholder="Source of Gold...">
-                <input type="number" id="bounty-amt" class="scholar-input" style="width:30%" placeholder="Amount...">
-                <button class="data-btn" onclick="addBounty()">Log</button>
+                <input type="text" id="transaction-desc" class="scholar-input" style="width:50%" placeholder="Desc & #tags (e.g., Groceries #food)">
+                <input type="number" id="transaction-amt" class="scholar-input" style="width:30%" placeholder="+ Income / - Spend">
+                <button class="data-btn" onclick="addTransaction()">Log</button>
             </div>
-            <div id="bounty-list" class="lexicon-list"></div>
+
+            <h3 style="font-family:'Cinzel'; color:#8b5a2b; font-size:1rem; border-bottom: 1px solid #8b5a2b; padding-bottom: 5px; margin-top: 20px;">Budget Breakdown (#tags)</h3>
+            <div id="budget-list" class="lexicon-list" style="max-height: 150px; margin-bottom: 20px;"></div>
+
+            <h3 style="font-family:'Cinzel'; color:#8b5a2b; font-size:1rem; border-bottom: 1px solid #8b5a2b; padding-bottom: 5px;">Recent Activity</h3>
+            <div id="transaction-list" class="lexicon-list"></div>
         </div>
     </div>
 
@@ -391,7 +400,7 @@
             setTimeout(() => document.getElementById(modalId).style.opacity = '1', 10);
             
             // Render specific modal data if needed
-            if(modalId === 'safe-modal') renderBounties();
+            if(modalId === 'safe-modal') updateVaultUI();
             if(modalId === 'crate-modal') renderCrate();
             if(modalId === 'workbench-modal') {
                 document.getElementById('workbench-text').value = localStorage.getItem('workbench-notes') || '';
@@ -508,7 +517,7 @@
         }
 
         // 5. Hearth Almanac & Reagents (Existing)
-        function renderCalendar() { /* ... kept intact via unified structure ... */ 
+        function renderCalendar() { 
             const container = document.getElementById('calendar-body'); container.innerHTML = ''; const date = new Date();
             for(let i=1; i<=31; i++) {
                 let dayDiv = document.createElement('div'); dayDiv.className = 'day-num'; dayDiv.innerText = i;
@@ -696,7 +705,7 @@
             a.href = url; a.download = 'moons-hearth-scroll.json'; a.click(); 
         }
 
-        // 9. Nook Mysteries Logic
+        // 9. Nook Mysteries Logic (Existing)
         function openDreamLedger() {
             const today = new Date();
             const dreamKey = `dream-${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
@@ -735,40 +744,102 @@
             openModal('oracle-modal');
         }
 
-        // 10. The Cellar Logic
+        // 10. The Cellar Logic (UPDATED FINANCIAL SYSTEM)
         
-        // --- Bounty Ledger (Safe) ---
-        function addBounty() {
-            const name = document.getElementById('bounty-name').value;
-            const amt = document.getElementById('bounty-amt').value;
-            if(!name || !amt) return;
+        // --- Iron Safe (Financial Vault) ---
+        function addTransaction() {
+            const desc = document.getElementById('transaction-desc').value;
+            const amtVal = document.getElementById('transaction-amt').value;
+            if(!desc || !amtVal) return;
+
+            // Parse amount (allow negatives)
+            const amt = parseFloat(amtVal);
             
-            const bounties = JSON.parse(localStorage.getItem('bounty-ledger') || '[]');
-            bounties.push({n: name, a: parseFloat(amt).toFixed(2), d: new Date().toLocaleDateString()});
-            localStorage.setItem('bounty-ledger', JSON.stringify(bounties));
+            const ledger = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
+            // n=description/tags, a=amount, d=date
+            ledger.push({n: desc, a: amt, d: new Date().toLocaleDateString()});
+            localStorage.setItem('vault-ledger', JSON.stringify(ledger));
             
-            document.getElementById('bounty-name').value = '';
-            document.getElementById('bounty-amt').value = '';
-            renderBounties();
+            document.getElementById('transaction-desc').value = '';
+            document.getElementById('transaction-amt').value = '';
+            updateVaultUI();
         }
 
-        function renderBounties() {
-            const bounties = JSON.parse(localStorage.getItem('bounty-ledger') || '[]');
-            document.getElementById('bounty-list').innerHTML = bounties.reverse().map((b, idx) => `
+        // Central function to calculate totals, budgets, and render UI
+        function updateVaultUI() {
+            const ledger = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
+            const budgetMap = {};
+            let totalBalance = 0;
+            let totalIncome = 0;
+
+            // 1. Render Transaction List & Calculate Totals
+            document.getElementById('transaction-list').innerHTML = ledger.slice().reverse().map((b, idx) => {
+                totalBalance += b.a;
+                if(b.a > 0) totalIncome += b.a;
+
+                const isIncome = b.a >= 0;
+                const color = isIncome ? 'var(--gold)' : 'var(--spend)'; // Gold for income, reddish for spend
+
+                // Hashtag parsing for budget breakdown
+                const tags = b.n.match(/#[a-z0-9]+/gi);
+                if(tags) {
+                    tags.forEach(tag => {
+                        const lowerTag = tag.toLowerCase();
+                        budgetMap[lowerTag] = (budgetMap[lowerTag] || 0) + b.a;
+                    });
+                }
+
+                return `
                 <div class="lexicon-item">
-                    <div style="font-family:'Cinzel';font-weight:bold;color:var(--gold);width:40%;">${b.n}</div>
-                    <div style="width:30%;color:#8b5a2b;">$${b.a}</div>
-                    <div style="width:20%;font-size:0.8rem;">${b.d}</div>
-                    <span style="cursor:pointer;color:#8a3324;" onclick="removeBounty(${idx})">×</span>
+                    <div style="font-family:'Cinzel';font-weight:bold;color:var(--parchment);width:45%; font-size:0.9rem;">${b.n}</div>
+                    <div style="width:25%;color:${color}; font-weight:bold;">${isIncome ? '+' : ''}${b.a.toFixed(2)}</div>
+                    <div style="width:20%;font-size:0.7rem;opacity:0.7;">${b.d}</div>
+                    <span style="cursor:pointer;color:#8a3324;" onclick="removeTransaction(${ledger.length - 1 - idx})">×</span>
                 </div>
-            `).join('');
+                `;
+            }).join('');
+
+            // 2. Update Total Balance Display
+            const balanceDisplay = document.getElementById('vault-total');
+            balanceDisplay.innerText = totalBalance.toFixed(2);
+            balanceDisplay.style.color = totalBalance >= 0 ? 'var(--gold)' : 'var(--spend)';
+
+            // 3. Render Budget Hashtag Map
+            const budgetList = document.getElementById('budget-list');
+            if(Object.keys(budgetMap).length === 0) {
+                budgetList.innerHTML = '<div style="text-align:center; opacity:0.7;">No hashtags tracked yet.</div>';
+            } else {
+                budgetList.innerHTML = Object.entries(budgetMap).map(([tag, amount]) => {
+                     const isIncome = amount >= 0;
+                     const color = isIncome ? 'var(--gold)' : 'var(--spend)';
+                     return `
+                        <div style="display:flex; justify-content:space-between; font-size:0.9rem; padding: 5px 0; border-bottom: 1px dotted rgba(139, 90, 43, 0.3);">
+                            <span style="color:var(--parchment); font-family:'Cinzel';">${tag}</span>
+                            <span style="color:${color}; font-weight:bold;">${isIncome ? '+' : ''}${amount.toFixed(2)}</span>
+                        </div>
+                     `;
+                }).join('');
+            }
+
+            // 4. Update Iron Reserve (Contingency Fund) Progress based on Income
+            // Simple Goal: Save 10% of all income tracked.
+            const savingsGoal = totalIncome * 0.10; 
+            // In a real app, you'd track actual transfers to savings. For now, we'll simulate progress based on the total balance vs that goal.
+            // If balance is negative, progress is 0. If balance exceeds goal, progress is 100%.
+            let progress = 0;
+            if (totalBalance > 0 && savingsGoal > 0) {
+                progress = Math.min((totalBalance / savingsGoal) * 100, 100);
+            }
+            
+            document.getElementById('reserve-bar').style.width = `${progress}%`;
+            document.getElementById('reserve-text').innerText = `${Math.round(progress)}% of 10% Income Goal`;
         }
         
-        function removeBounty(idx) {
-            const bounties = JSON.parse(localStorage.getItem('bounty-ledger') || '[]');
-            bounties.reverse().splice(idx, 1);
-            localStorage.setItem('bounty-ledger', JSON.stringify(bounties.reverse()));
-            renderBounties();
+        function removeTransaction(actualIdx) {
+            const ledger = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
+            ledger.splice(actualIdx, 1);
+            localStorage.setItem('vault-ledger', JSON.stringify(ledger));
+            updateVaultUI();
         }
 
         // --- Workbench ---
