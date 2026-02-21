@@ -50,7 +50,7 @@
     #weather-desc { font-family: 'Cormorant Garamond'; color: var(--parchment); font-size: 0.6rem; font-style: italic; z-index: 2; letter-spacing: 1px; text-transform: uppercase; }
 
     /* Soul Compass Hover */
-    #soul-compass-widget:hover { transform: scale(1.05); background: rgba(212, 175, 55, 0.2); }
+    #soul-compass-widget:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--gold-glow); }
 
     /* --- ROOM LAYERS --- */
     .layer-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1s ease; background-size: cover; background-position: center; }
@@ -175,9 +175,8 @@
         <button id="btn-cellar" class="portal-btn" onclick="switchRoom('cellar')">The Cellar</button>
     </div>
 
-    <div id="soul-compass-widget" class="weather-widget" style="right: 30px; bottom: 30px; top: auto; cursor: pointer; z-index: 2500;" onclick="openCompass()">
-        <div style="font-size: 2rem; filter: drop-shadow(0 0 8px var(--gold));">🛡️</div>
-        <div class="golden-text" style="font-family: 'Cinzel'; font-size: 0.8rem; margin-top: 5px;">The Soul</div>
+    <div id="soul-compass-widget" class="weather-widget" style="right: 30px; bottom: 30px; top: auto; cursor: pointer; z-index: 2500; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center;" onclick="openCompass()">
+        <img src="avatar.jpg" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\'font-size: 2rem;\'>🛡️</div><div class=\'golden-text\' style=\'font-size: 0.6rem;\'>The Soul</div>'">
     </div>
 
     <div id="weather-widget" class="weather-widget">
