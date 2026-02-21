@@ -16,7 +16,7 @@
     ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
     /* --- ENTER OVERLAY --- */
-    #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 9000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; }
+    #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 15000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; }
     .enter-btn, .portal-btn, .data-btn { font-family: 'Cinzel', serif; color: var(--gold); background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer; transition: 0.3s; }
     .enter-btn { font-size: 1.5rem; padding: 15px 45px; letter-spacing: 5px; text-transform: uppercase; box-shadow: 0 0 30px var(--gold-glow); }
 
@@ -29,7 +29,7 @@
 
     /* --- FIXED WIDGETS (The Soul and Weather) --- */
     .status-widget { 
-        position: fixed !important; bottom: 30px; z-index: 8000 !important; 
+        position: fixed !important; bottom: 30px; z-index: 10000 !important; 
         background: radial-gradient(circle, rgba(40, 30, 20, 0.9) 0%, rgba(10, 8, 5, 0.95) 100%);
         border: 2px solid var(--gold); width: 110px; height: 110px; border-radius: 50%;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -46,9 +46,20 @@
     #weather-desc { font-family: 'Cormorant Garamond'; color: var(--parchment); font-size: 0.6rem; font-style: italic; letter-spacing: 1px; text-transform: uppercase; }
 
     /* --- NAVIGATION --- */
-    .room-portal { position: fixed; left: 30px; top: 30px; z-index: 5000; display: flex; gap: 10px; }
+    .room-portal { position: fixed; left: 30px; top: 30px; z-index: 9000; display: flex; gap: 10px; }
     .portal-btn { padding: 10px 15px; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; }
     .portal-btn.active { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+
+    /* --- THEMED INTERACTION BUTTONS (Spirit/Desk) --- */
+    .reforged-btn { 
+        position: fixed; right: 30px; top: 30px; z-index: 9000;
+        font-family: 'Cinzel'; padding: 12px 20px; border: 2px solid #443322;
+        background: linear-gradient(145deg, #2c1810, #1a0f0a);
+        color: var(--gold); cursor: pointer; border-radius: 4px;
+        box-shadow: 0 4px 10px #000, inset 0 0 10px rgba(212,175,55,0.2);
+        text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
+    }
+    .reforged-btn:hover { border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); transform: translateY(-2px); }
 
     /* --- ROOM LAYERS --- */
     .layer-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1s ease; background-size: cover; background-position: center; z-index: 10; }
@@ -60,69 +71,27 @@
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.7rem; font-family: 'Cinzel'; }
     .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; }
     .day-num.today { background: var(--gold); color: #000; }
-    .day-num.has-log { border-color: var(--gold); color: var(--gold); }
 
     /* --- CLICK ZONES --- */
     .click-zone { position: absolute; cursor: pointer; transition: 0.3s; z-index: 100; }
     .click-zone:hover { box-shadow: inset 0 0 30px var(--gold-glow); background: rgba(212,175,55,0.1); }
 
-    /* Hearth UI Layout */
+    /* --- ROOM SPECIFIC LAYOUTS --- */
     .hearth-ui { position: fixed; right: 40px; top: 50%; transform: translateY(-50%); z-index: 2000; width: 420px; display: flex; flex-direction: column; gap: 15px; }
+    .desk-ui-container, .nook-ui-container { position: fixed; right: -450px; top: 50%; transform: translateY(-50%); z-index: 2000; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .desk-ui-container.open, .nook-ui-container.open { right: 40px; }
 
-    /* --- ROOM 1: HEARTH --- */
-    #hearth-layer { background-image: url('image_5.png'); }
-    #zone-soups { top: 30%; left: 10%; width: 12%; height: 15%; }
-    #zone-breads { top: 50%; left: 8%; width: 12%; height: 15%; }
-    #zone-casseroles { top: 70%; left: 10%; width: 12%; height: 15%; }
-    #zone-fried { top: 40%; left: 25%; width: 12%; height: 15%; }
-    #zone-beverages { top: 60%; left: 25%; width: 12%; height: 15%; }
-
-    /* --- ROOM 2: TOWER --- */
-    #scholar-video-bg { width: 100%; height: 100%; object-fit: cover; position: absolute; }
-    #zone-lore { top: 58%; left: 5%; width: 18%; height: 25%; } 
-    #zone-merchant { top: 75%; left: 68%; width: 25%; height: 15%; } 
-    .desk-ui-container { position: fixed; right: -450px; top: 50%; transform: translateY(-50%); width: 380px; z-index: 2000; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-    .desk-ui-container.open { right: 40px; } 
-
-    /* --- ROOM 3: READING NOOK --- */
-    #nook-layer { background-image: url('garden_bg.png'); background-color: #111; }
-    #zone-oracle { top: 40%; left: 30%; width: 15%; height: 20%; }
-    #zone-dream { top: 60%; left: 55%; width: 15%; height: 20%; }
-    .nook-ui-container { position: fixed; right: -450px; top: 50%; transform: translateY(-50%); width: 420px; z-index: 2000; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-    .nook-ui-container.open { right: 40px; }
-
-    /* --- ROOM 4: THE CELLAR --- */
-    #cellar-layer { background-image: url('cellar_bg.png'); background-color: #080604; }
-    #zone-safe { top: 50%; left: 20%; width: 15%; height: 25%; }
-    #zone-workbench { top: 40%; left: 50%; width: 20%; height: 20%; }
-    #zone-crate { top: 65%; left: 75%; width: 15%; height: 20%; }
-
-    /* --- ROOM 5: THE HEALING SPRINGS --- */
-    #springs-layer { background-image: url('springs_bg.jpg'); background-color: #051014; }
-    #zone-vanity { top: 40%; left: 5%; width: 15%; height: 35%; }
-    #zone-pool { top: 60%; left: 35%; width: 30%; height: 25%; }
-    #zone-apothecary { top: 20%; right: 5%; width: 18%; height: 60%; }
-
-    .breathe-circle {
-        width: 150px; height: 150px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(64, 224, 208, 0.8) 0%, rgba(0, 128, 128, 0.4) 100%);
-        margin: 40px auto; transition: transform 4s ease-in-out, opacity 4s ease-in-out;
-        display: flex; justify-content: center; align-items: center; font-family: 'Cinzel'; color: #fff;
-    }
+    .breathe-circle { width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(64, 224, 208, 0.8) 0%, rgba(0, 128, 128, 0.4) 100%); margin: 40px auto; transition: transform 4s ease-in-out, opacity 4s ease-in-out; display: flex; justify-content: center; align-items: center; font-family: 'Cinzel'; color: #fff; }
     .breathe-circle.inhale { transform: scale(1.6); opacity: 1; }
     .breathe-circle.exhale { transform: scale(1); opacity: 0.5; }
 
-    /* --- MODALS --- */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 11000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
     .scroll-parchment { background: var(--parchment); color: var(--ink); width: 90%; max-width: 700px; padding: 40px; border-radius: 5px 40px; position: relative; box-shadow: 0 0 50px #000; border: 2px solid #8b5a2b; height: 85vh; display: flex; flex-direction: column; overflow-y: auto; }
     
-    .progress-track { width: 100%; height: 15px; background: rgba(0,0,0,0.1); border-radius: 5px; margin: 10px 0; border: 1px solid #8b5a2b; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.5s ease; }
+    .mood-icons { display: flex; gap: 15px; font-size: 1.8rem; justify-content: center; margin-bottom: 15px; }
+    .mood-icons span { cursor: pointer; opacity: 0.4; transition: 0.3s; }
 
-    .lexicon-item { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(139, 90, 43, 0.1); padding: 10px 0; }
-    .legend-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(139,90,43,0.1); }
-
-    /* Animations */
+    /* Particles */
     .ember, .dust-mote, .steam { pointer-events: none; }
     .ember { position: absolute; bottom:-20px; background:var(--fire); width: 5px; height: 5px; border-radius:50%; box-shadow:0 0 10px var(--fire); opacity:0; animation:rise linear infinite; }
     .dust-mote { position: absolute; background: rgba(255, 230, 180, 0.4); border-radius: 50%; opacity: 0; animation: floatDust linear infinite; }
@@ -130,7 +99,7 @@
     
     @keyframes rise { 0% {opacity:0; transform:translateY(0);} 20% {opacity:0.8;} 100% {opacity:0; transform:translateY(-110vh) translateX(var(--drift));} }
     @keyframes floatDust { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-40vh) translateX(30px); } }
-    @keyframes riseSteam { 0% {opacity:0; transform:translateY(0) scale(1);} 50% {opacity:0.6; transform:translateY(-30vh) scale(2.5);} 100% {opacity:0; transform:translateY(-60vh) scale(4) translateX(var(--drift));} }
+    @keyframes riseSteam { 0% {opacity:0; transform:translateY(0) scale(1);} 100% {opacity:0; transform:translateY(-60vh) scale(4) translateX(var(--drift));} }
 </style>
 </head>
 <body>
@@ -150,11 +119,8 @@
 
     <div id="hearth-layer" class="layer-container">
         <div id="embers-container"></div>
-        <div id="zone-soups" class="click-zone" onclick="openGrimoire('Soups & Stews')"></div>
-        <div id="zone-breads" class="click-zone" onclick="openGrimoire('Breads & Bakes')"></div>
-        <div id="zone-casseroles" class="click-zone" onclick="openGrimoire('Casseroles')"></div>
-        <div id="zone-fried" class="click-zone" onclick="openGrimoire('Fried Delights')"></div>
-        <div id="zone-beverages" class="click-zone" onclick="openGrimoire('Elixirs & Beverages')"></div>
+        <div id="zone-soups" class="click-zone" style="top:30%; left:10%; width:12%; height:15%;" onclick="openGrimoire('Soups & Stews')"></div>
+        <div id="zone-breads" class="click-zone" style="top:50%; left:8%; width:12%; height:15%;" onclick="openGrimoire('Breads & Bakes')"></div>
         <div class="hearth-ui">
             <div class="glass-panel">
                 <div class="panel-header"><h1 class="golden-text">The Almanac</h1></div>
@@ -175,12 +141,10 @@
     <div id="scholar-layer" class="layer-container hidden">
         <video id="scholar-video-bg" loop muted playsinline><source src="scholar_bg.mp4" type="video/mp4"></video>
         <div id="dust-container"></div>
-        <div id="zone-lore" class="click-zone" onclick="openGrimoire('Global Mythos')"></div>
-        <div id="zone-merchant" class="click-zone" onclick="openGrimoire('Guild Logic')"></div>
-        <button id="desk-toggle-btn" class="portal-btn ui-toggle-btn" onclick="toggleDeskUI()">Open Desk</button>
-        <div id="desk-ui" class="desk-ui-container">
+        <button class="reforged-btn" onclick="toggleDeskUI()">Forge Records</button>
+        <div id="desk-ui" class="desk-ui-container" style="width:380px;">
             <div class="glass-panel">
-                <div class="panel-header"><h1 class="golden-text">Scholar's Focus</h1></div>
+                <h1 class="golden-text">Scholar's Focus</h1>
                 <div id="timer-display" style="font-family:'Cinzel'; font-size:2.8rem; color:var(--gold); text-align:center;">25:00</div>
                 <div style="display:flex; justify-content:center; gap:10px; margin: 15px 0;">
                     <button class="data-btn" onclick="startTimer(25)">Focus</button>
@@ -197,12 +161,12 @@
 
     <div id="nook-layer" class="layer-container hidden">
         <div id="nook-particles"></div>
-        <div id="zone-oracle" class="click-zone" onclick="drawOracleCard()"></div>
-        <div id="zone-dream" class="click-zone" onclick="openDreamLedger()"></div>
-        <button id="nook-toggle-btn" class="portal-btn ui-toggle-btn" onclick="toggleNookUI()">Spirit Alignment</button>
-        <div id="nook-ui" class="nook-ui-container">
+        <div id="zone-oracle" class="click-zone" style="top:40%; left:30%; width:15%; height:20%;" onclick="drawOracleCard()"></div>
+        <div id="zone-dream" class="click-zone" style="top:60%; left:55%; width:15%; height:20%;" onclick="openDreamLedger()"></div>
+        <button class="reforged-btn" onclick="toggleNookUI()">Spirit Alignment</button>
+        <div id="nook-ui" class="nook-ui-container" style="width:420px;">
             <div class="glass-panel">
-                <div class="panel-header"><h1 class="golden-text">Vital Alchemy</h1></div>
+                <h1 class="golden-text">Vital Alchemy</h1>
                 <div class="mood-icons">
                     <span onclick="setMood('ethereal', this)">✨</span>
                     <span onclick="setMood('grounded', this)">🌿</span>
@@ -210,25 +174,20 @@
                     <span onclick="setMood('stormy', this)">⛈️</span>
                     <span onclick="setMood('waning', this)">🌑</span>
                 </div>
-                <div class="vital-stat"><span>Dream Cycle</span> <input type="number" id="sleep-input" class="vital-input" onchange="saveVitals()"></div>
-                <div class="vital-stat"><span>Restorative Elixir</span> <input type="number" id="water-input" class="vital-input" onchange="saveVitals()"></div>
-                <div class="vital-stat"><span>Mana Sustenance</span> <input type="number" id="meal-input" class="vital-input" onchange="saveVitals()"></div>
+                <div class="vital-stat" style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Dream Cycle</span> <input type="number" id="sleep-input" style="width:50px; background:rgba(0,0,0,0.5); border:1px solid var(--gold); color:var(--gold);" onchange="saveVitals()"></div>
+                <div class="vital-stat" style="display:flex; justify-content:space-between;"><span>Restorative Elixir</span> <input type="number" id="water-input" style="width:50px; background:rgba(0,0,0,0.5); border:1px solid var(--gold); color:var(--gold);" onchange="saveVitals()"></div>
             </div>
         </div>
     </div>
 
     <div id="cellar-layer" class="layer-container hidden">
         <div id="cellar-particles"></div>
-        <div id="zone-safe" class="click-zone" onclick="openModal('safe-modal')"></div>
-        <div id="zone-workbench" class="click-zone" onclick="openModal('workbench-modal')"></div>
-        <div id="zone-crate" class="click-zone" onclick="openModal('crate-modal')"></div>
+        <div id="zone-safe" class="click-zone" style="top:50%; left:20%; width:15%; height:25%;" onclick="openModal('safe-modal')"></div>
     </div>
 
     <div id="springs-layer" class="layer-container hidden">
         <div id="springs-particles"></div>
-        <div id="zone-vanity" class="click-zone" onclick="openModal('vanity-modal')"></div>
-        <div id="zone-pool" class="click-zone" onclick="openModal('pool-modal')"></div>
-        <div id="zone-apothecary" class="click-zone" onclick="openModal('apothecary-modal')"></div>
+        <div id="zone-pool" class="click-zone" style="top:60%; left:35%; width:30%; height:25%;" onclick="openModal('pool-modal')"></div>
     </div>
 
     <div id="soul-compass-widget" class="status-widget" onclick="openCompass()">
@@ -263,8 +222,7 @@
                 <input type="number" id="transaction-amt" class="scholar-input" style="width:30%" placeholder="+/- Amt">
                 <button class="data-btn" onclick="addTransaction()">Log</button>
             </div>
-            <div id="budget-list" style="margin-bottom:15px;"></div>
-            <div id="transaction-list" style="overflow-y:auto; flex-grow:1;"></div>
+            <div id="transaction-list"></div>
         </div>
     </div>
 
@@ -273,9 +231,7 @@
             <h2 class="golden-text">The Reflection Pool</h2>
             <div id="breathe-circle-ui" class="breathe-circle"></div>
             <h3 id="breathe-text" style="color:var(--water); font-size:2rem;">Ready</h3>
-            <div id="breathe-timer-text" style="font-size:1.5rem; margin: 15px 0;">00:00</div>
             <button class="data-btn" onclick="startBreathing(5)">Start 5m Reset</button>
-            <button class="data-btn" onclick="stopBreathing()">Stop</button>
         </div>
     </div>
 
@@ -286,8 +242,6 @@
                 <h2 class="golden-text">Keeper of the Hearth</h2>
                 <div style="margin-top:20px;">
                     <p>Spirit: <span id="stat-mood">Unaligned</span></p>
-                    <p>Legend Tier: <span id="stat-legend-level">0</span></p>
-                    <div class="progress-track"><div id="stat-legend-bar" class="progress-fill"></div></div>
                 </div>
             </div>
         </div>
@@ -295,15 +249,14 @@
 
     <script>
         let currentRoom = 'hearth';
-        let breatheInt, breatheTim;
         const ah = document.getElementById('audio-hearth'), an = document.getElementById('audio-nook'), ac = document.getElementById('audio-cellar'), as = document.getElementById('audio-springs'), sv = document.getElementById('scholar-video-bg');
 
         function igniteRealm() {
             document.getElementById('enter-overlay').style.opacity = '0';
             setTimeout(() => document.getElementById('enter-overlay').style.display = 'none', 1200);
-            ah.play().catch(e => console.log("Audio blocked."));
-            createEmbers(); createDust(); createSpringsSteam();
-            renderCalendar(); renderReagents(); renderBlog(); loadVitals(); fetchWeather();
+            ah.play().catch(e => console.log("Blocked"));
+            createEmbers(); createDust();
+            renderCalendar(); renderReagents(); loadVitals(); fetchWeather();
             document.getElementById('weather-widget').classList.add('visible');
             document.getElementById('soul-compass-widget').classList.add('visible');
         }
@@ -323,17 +276,18 @@
             if(room === 'scholar') { sv.muted=false; sv.play(); }
         }
 
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
-            setTimeout(() => document.getElementById(id).style.opacity = '1', 10);
-            if(id === 'safe-modal') updateVaultUI();
+        function toggleDeskUI() { 
+            const desk = document.getElementById('desk-ui');
+            desk.classList.toggle('open');
         }
-        function closeModal(id) {
-            document.getElementById(id).style.opacity = '0';
-            setTimeout(() => document.getElementById(id).style.display = 'none', 500);
+        function toggleNookUI() { 
+            const nook = document.getElementById('nook-ui');
+            nook.classList.toggle('open');
         }
 
-        // --- Particles ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).style.opacity = '1', 10); if(id === 'safe-modal') updateVaultUI(); }
+        function closeModal(id) { document.getElementById(id).style.opacity = '0'; setTimeout(() => document.getElementById(id).style.display = 'none', 500); }
+
         function createEmbers() {
             const c = document.getElementById('embers-container');
             for(let i=0; i<20; i++){
@@ -350,24 +304,15 @@
                 d.style.animationDuration = (Math.random()*10+8)+'s'; b.appendChild(d);
             }}});
         }
-        function createSpringsSteam() {
-            const c = document.getElementById('springs-particles');
-            for(let i=0; i<10; i++){
-                let s = document.createElement('div'); s.className='steam';
-                s.style.left = (Math.random()*60+20)+'%'; s.style.animationDuration = (Math.random()*8+6)+'s';
-                s.style.setProperty('--drift', (Math.random()*100-50)+'px'); c.appendChild(s);
-            }
-        }
 
-        // --- Weather & Vitals ---
         async function fetchWeather() {
             try {
                 const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.94&longitude=-88.52&current=temperature_2m,weather_code&temperature_unit=fahrenheit');
                 const d = await r.json();
                 document.getElementById('weather-temp').innerText = Math.round(d.current.temperature_2m) + "°F";
+                document.getElementById('weather-desc').innerText = "Farmington";
                 let icon = "✨"; if(d.current.weather_code === 0) icon = "🌙";
                 document.getElementById('weather-icon').innerText = icon;
-                document.getElementById('weather-desc').innerText = "Farmington";
             } catch(e) {}
         }
 
@@ -383,55 +328,39 @@
             document.getElementById('sleep-input').value = localStorage.getItem('vital-sleep') || 8;
         }
 
-        // --- Safe ---
         function addTransaction() {
             const d = document.getElementById('transaction-desc').value, a = document.getElementById('transaction-amt').value;
             if(!d || !a) return;
             const l = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
             l.push({n: d, a: parseFloat(a), d: new Date().toLocaleDateString()});
             localStorage.setItem('vault-ledger', JSON.stringify(l));
-            document.getElementById('transaction-desc').value = ''; document.getElementById('transaction-amt').value = '';
             updateVaultUI();
         }
         function updateVaultUI() {
             const l = JSON.parse(localStorage.getItem('vault-ledger') || '[]');
             let t = 0; document.getElementById('transaction-list').innerHTML = l.slice().reverse().map(b => {
-                t += b.a; return `<div class="lexicon-item"><span>${b.n}</span><span style="color:${b.a>=0?'var(--gold)':'var(--spend)'}">${b.a.toFixed(2)}</span></div>`;
+                t += b.a; return `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(0,0,0,0.05);"><span>${b.n}</span><span>${b.a.toFixed(2)}</span></div>`;
             }).join('');
             document.getElementById('vault-total').innerText = t.toFixed(2);
         }
 
-        // --- Breathing ---
         function startBreathing(m) {
-            let rem = m*60, inh = true;
-            breatheInt = setInterval(() => {
+            let inh = true;
+            setInterval(() => {
                 inh = !inh; document.getElementById('breathe-circle-ui').className = 'breathe-circle ' + (inh?'inhale':'exhale');
                 document.getElementById('breathe-text').innerText = inh?"Inhale...":"Exhale...";
             }, 4000);
-            breatheTim = setInterval(() => {
-                rem--; let min = Math.floor(rem/60).toString().padStart(2,'0'), sec = (rem%60).toString().padStart(2,'0');
-                document.getElementById('breathe-timer-text').innerText = `${min}:${sec}`;
-                if(rem <= 0) stopBreathing();
-            }, 1000);
-        }
-        function stopBreathing() { clearInterval(breatheInt); clearInterval(breatheTim); document.getElementById('breathe-text').innerText = "Ready"; }
-
-        function openCompass() {
-            document.getElementById('stat-mood').innerText = (localStorage.getItem('vital-mood') || "Unaligned").toUpperCase();
-            openModal('compass-modal');
         }
 
-        function toggleDeskUI() { document.getElementById('desk-ui').classList.toggle('open'); }
-        function toggleNookUI() { document.getElementById('nook-ui').classList.toggle('open'); }
-        
-        // Basic Grimoire / Reagent hooks (Shortened)
+        function renderCalendar() { let c = document.getElementById('calendar-body'); c.innerHTML=''; for(let i=1; i<=31; i++){ let d = document.createElement('div'); d.className='day-num'; d.innerText=i; c.appendChild(d); } }
+        function renderReagents() { document.getElementById('reagent-display').innerHTML = JSON.parse(localStorage.getItem('reagents') || '[]').map(i => `<div>✦ ${i}</div>`).join(''); }
         function openGrimoire(s) { activeGrimoire = `grim-${s}`; document.getElementById('grimoire-title').innerText = s; document.getElementById('grimoire-text').value = localStorage.getItem(activeGrimoire) || ''; openModal('grimoire-modal'); }
         function saveGrimoire() { localStorage.setItem(activeGrimoire, document.getElementById('grimoire-text').value); closeModal('grimoire-modal'); }
-        function addReagent() { let i = document.getElementById('reagent-input'); if(!i.value) return; let r = JSON.parse(localStorage.getItem('reagents') || '[]'); r.push(i.value); localStorage.setItem('reagents', JSON.stringify(r)); i.value=''; renderReagents(); }
-        function renderReagents() { document.getElementById('reagent-display').innerHTML = JSON.parse(localStorage.getItem('reagents') || '[]').map(i => `<div>✦ ${i}</div>`).join(''); }
-        function renderCalendar() { let c = document.getElementById('calendar-body'); c.innerHTML=''; for(let i=1; i<=31; i++){ let d = document.createElement('div'); d.className='day-num'; d.innerText=i; c.appendChild(d); } }
-        function renderBlog() {}
-        function exportData() {}
+        function openCompass() { openModal('compass-modal'); }
+        function openDreamLedger() { openGrimoire('Dreams'); }
+        function drawOracleCard() { alert("The Oracle sees clear skies ahead."); }
+        function logWork() { alert("Record Forge!"); }
+        function exportData() { alert("Exporting scroll..."); }
     </script>
 </body>
 </html>
