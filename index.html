@@ -1,93 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moon's Hearth - Triple Realm Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<style>
-    :root { --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.85); --text: #fdf5e6; --parchment: #e3d5b8; --ink: #2c1810; --spend: #c84b31; --water: #40e0d0; }
-    body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Cormorant Garamond', serif; background-color: #000; color: var(--text); overflow: hidden; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon's Hearth - Triple Realm Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); 
+            --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.85); 
+            --text: #fdf5e6; --parchment: #e3d5b8; 
+            --ink: #2c1810; --spend: #c84b31; --water: #40e0d0; 
+        }
 
-    /* --- CUSTOM SCROLLBARS --- */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.5); border-radius: 4px; border: 1px solid #8b5a2b; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            font-family: 'Cormorant Garamond', serif; 
+            background-color: #000; color: var(--text); overflow: hidden; 
+        }
 
-    /* --- ENTER OVERLAY --- */
-    #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 9000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; }
-    .enter-btn, .portal-btn, .data-btn { font-family: 'Cinzel', serif; color: var(--gold); background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer; transition: 0.3s; }
-    .enter-btn { font-size: 1.5rem; padding: 15px 45px; letter-spacing: 5px; text-transform: uppercase; box-shadow: 0 0 30px var(--gold-glow); }
+        /* --- ENTER OVERLAY --- */
+        #enter-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle, #1a120e 0%, #000 100%); 
+            z-index: 9999; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; transition: opacity 1.2s ease; 
+        }
 
-    .golden-text {
-        background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-    }
+        .enter-btn { 
+            font-family: 'Cinzel', serif; color: var(--gold); 
+            background: rgba(0,0,0,0.6); border: 1px solid var(--gold); 
+            cursor: pointer; font-size: 1.5rem; padding: 15px 45px; 
+            letter-spacing: 5px; text-transform: uppercase; 
+            box-shadow: 0 0 30px var(--gold-glow); 
+        }
 
-    /* --- FIXED WIDGETS --- */
-    .status-widget { 
-        position: fixed !important; bottom: 30px; z-index: 8000 !important; 
-        background: radial-gradient(circle, rgba(40, 30, 20, 0.9) 0%, rgba(10, 8, 5, 0.95) 100%);
-        border: 2px solid var(--gold); width: 110px; height: 110px; border-radius: 50%;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 15px var(--gold-glow);
-        transition: 0.8s; opacity: 0; pointer-events: none; overflow: hidden;
-    }
-    .status-widget.visible { opacity: 1; pointer-events: auto; }
-    #weather-widget { left: 30px; }
-    #soul-compass-widget { right: 30px; padding: 0; cursor: pointer; }
-    
-    #weather-icon { font-size: 2rem; margin-bottom: 2px; filter: drop-shadow(0 0 8px var(--gold)); }
-    #weather-temp { font-family: 'Cinzel'; color: var(--gold); font-size: 1.2rem; font-weight: 900; }
-    #weather-desc { font-family: 'Cormorant Garamond'; color: var(--parchment); font-size: 0.6rem; font-style: italic; letter-spacing: 1px; text-transform: uppercase; }
+        /* --- NAVIGATION --- */
+        .room-portal { 
+            position: fixed; left: 30px; top: 30px; z-index: 5000; 
+            display: flex; gap: 10px; 
+        }
 
-    /* --- NAVIGATION --- */
-    .room-portal { position: fixed; left: 30px; top: 30px; z-index: 5000; display: flex; gap: 10px; }
-    .portal-btn { padding: 10px 15px; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; }
-    .portal-btn.active { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+        .portal-btn { 
+            padding: 10px 15px; font-family: 'Cinzel'; font-size: 0.8rem; 
+            color: var(--gold); background: rgba(0,0,0,0.6); 
+            border: 1px solid var(--gold); cursor: pointer; 
+        }
 
-    /* --- ROOM LAYERS --- */
-    .layer-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1s ease; background-size: cover; background-position: center; z-index: 10; }
-    .hidden { opacity: 0; pointer-events: none; }
+        .portal-btn.active { background: var(--gold); color: #000; }
 
-    /* UI PANELS */
-    .glass-panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--gold-glow); padding: 20px; box-shadow: 0 15px 35px #000; }
-    .scholar-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-glow); color: var(--parchment); padding: 10px; font-family: 'Cormorant Garamond'; margin-bottom: 10px; outline: none; box-sizing: border-box; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.7rem; font-family: 'Cinzel'; }
-    .day-num { padding: 5px; border: 1px solid rgba(212,175,55,0.1); cursor:pointer; }
-    .day-num.today { background: var(--gold); color: #000; }
+        /* --- ROOM LAYERS --- */
+        .layer-container { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            transition: opacity 1s ease; z-index: 10; 
+        }
+        .hidden { opacity: 0; pointer-events: none; }
 
-    /* CLICK ZONES */
-    .click-zone { position: absolute; cursor: pointer; transition: 0.3s; z-index: 100; }
-    .click-zone:hover { box-shadow: inset 0 0 30px var(--gold-glow); background: rgba(212,175,55,0.1); }
+        /* VIDEO STYLING */
+        #scholar-video-bg { 
+            width: 100%; height: 100%; object-fit: cover; 
+            position: absolute; top: 0; left: 0; filter: brightness(0.6); 
+        }
 
-    /* ROOM 1: HEARTH */
-    #hearth-layer { background-image: url('image_5.png'); }
-    .hearth-ui { position: fixed; right: 40px; top: 50%; transform: translateY(-50%); z-index: 2000; width: 420px; display: flex; flex-direction: column; gap: 15px; }
+        /* --- CONTENT --- */
+        .glass-panel { 
+            background: var(--glass); backdrop-filter: blur(15px); 
+            border: 1px solid var(--gold-glow); padding: 20px; 
+            box-shadow: 0 15px 35px #000; 
+        }
 
-    /* ROOM 2: TOWER (AUDITED VIDEO LAYER) */
-    #scholar-video-bg { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; filter: brightness(0.7); }
-    #zone-lore { top: 58%; left: 5%; width: 18%; height: 25%; } 
-    #zone-merchant { top: 75%; left: 68%; width: 25%; height: 15%; } 
-    .desk-ui-container { position: fixed; right: -450px; top: 50%; transform: translateY(-50%); width: 380px; z-index: 2000; transition: right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-    .desk-ui-container.open { right: 40px; } 
-
-    /* OTHER ROOMS */
-    #nook-layer { background-image: url('garden_bg.png'); background-color: #111; }
-    #cellar-layer { background-image: url('cellar_bg.png'); }
-    #springs-layer { background-image: url('springs_bg.jpg'); }
-
-    /* MODALS */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
-    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 90%; max-width: 700px; padding: 40px; border-radius: 5px 40px; position: relative; box-shadow: 0 0 50px #000; border: 2px solid #8b5a2b; height: 85vh; display: flex; flex-direction: column; overflow-y: auto; }
-
-    /* Animations */
-    .ember { position: absolute; bottom:-20px; background:var(--fire); width: 5px; height: 5px; border-radius:50%; box-shadow:0 0 10px var(--fire); opacity:0; animation:rise linear infinite; }
-    @keyframes rise { 0% {opacity:0; transform:translateY(0);} 20% {opacity:0.8;} 100% {opacity:0; transform:translateY(-110vh) translateX(var(--drift));} }
-</style>
+        .golden-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+    </style>
 </head>
 <body>
 
@@ -99,17 +85,13 @@
     <div class="room-portal">
         <button id="btn-hearth" class="portal-btn active" onclick="switchRoom('hearth')">The Hearth</button>
         <button id="btn-scholar" class="portal-btn" onclick="switchRoom('scholar')">Scholar's Tower</button>
-        <button id="btn-nook" class="portal-btn" onclick="switchRoom('nook')">Reading Nook</button>
-        <button id="btn-cellar" class="portal-btn" onclick="switchRoom('cellar')">The Cellar</button>
-        <button id="btn-springs" class="portal-btn" onclick="switchRoom('springs')">Healing Springs</button>
     </div>
 
     <div id="hearth-layer" class="layer-container">
-        <div id="embers-container"></div>
-        <div class="hearth-ui">
-            <div class="glass-panel">
-                <h1 class="golden-text">The Almanac</h1>
-                <div class="calendar-grid" id="calendar-body"></div>
+        <div style="padding: 100px;">
+            <div class="glass-panel" style="max-width: 400px;">
+                <h1 class="golden-text">The Hearth</h1>
+                <p>Welcome back to the sanctuary.</p>
             </div>
         </div>
     </div>
@@ -118,57 +100,45 @@
         <video id="scholar-video-bg" loop muted playsinline>
             <source src="Viking_Scholar_s_Nook_Video_Generation.mp4" type="video/mp4">
         </video>
-        <div id="zone-lore" class="click-zone" onclick="openGrimoire('Global Mythos')"></div>
-        <button id="desk-toggle-btn" class="portal-btn" style="position:fixed; right:40px; top:30px;" onclick="toggleDeskUI()">Open Desk</button>
-        <div id="desk-ui" class="desk-ui-container">
-            <div class="glass-panel">
-                <h1 class="golden-text">Scholar's Focus</h1>
-                <p>The fire crackles as you scribe your legends.</p>
-                <textarea id="work-note" class="scholar-input" placeholder="Log progress..."></textarea>
-                <button class="data-btn" style="width:100%;">Log Entry</button>
+        <div style="position: relative; z-index: 20; padding: 100px;">
+            <div class="glass-panel" style="max-width: 400px;">
+                <h1 class="golden-text">Scholar's Tower</h1>
+                <p>The orange cat is sleeping by the fire. It's time to work on your RPG lore.</p>
             </div>
         </div>
     </div>
 
     <script>
         let currentRoom = 'hearth';
-        const ah = document.getElementById('audio-hearth'), 
-              sv = document.getElementById('scholar-video-bg');
+        const sv = document.getElementById('scholar-video-bg');
 
         function igniteRealm() {
-            document.getElementById('enter-overlay').style.opacity = '0';
-            setTimeout(() => document.getElementById('enter-overlay').style.display = 'none', 1200);
-            createEmbers();
-            document.getElementById('weather-widget').classList.add('visible');
-            document.getElementById('soul-compass-widget').classList.add('visible');
+            const overlay = document.getElementById('enter-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 1200);
+            // Pre-load video but keep it paused until needed
+            sv.load(); 
         }
 
         function switchRoom(room) {
             if(room === currentRoom) return;
-            currentRoom = room;
-            document.querySelectorAll('.portal-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-'+room).classList.add('active');
-            document.querySelectorAll('.layer-container').forEach(l => l.classList.add('hidden'));
-            document.getElementById(room+'-layer').classList.remove('hidden');
             
-            // Handle Video Autoplay on Room Switch
-            if(room === 'scholar') { 
-                sv.play(); 
+            // 1. Update UI Buttons
+            document.querySelectorAll('.portal-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + room).classList.add('active');
+
+            // 2. Switch Visibility
+            document.querySelectorAll('.layer-container').forEach(l => l.classList.add('hidden'));
+            document.getElementById(room + '-layer').classList.remove('hidden');
+
+            // 3. Handle Video Playback logic
+            if(room === 'scholar') {
+                sv.play().catch(e => console.log("Video play failed:", e));
             } else {
                 sv.pause();
             }
-        }
 
-        function toggleDeskUI() { document.getElementById('desk-ui').classList.toggle('open'); }
-        
-        function createEmbers() {
-            const c = document.getElementById('embers-container');
-            if(!c) return;
-            for(let i=0; i<20; i++){
-                let e = document.createElement('div'); e.className='ember';
-                e.style.left = Math.random()*100+'%'; e.style.animationDuration = (Math.random()*5+4)+'s';
-                e.style.setProperty('--drift', (Math.random()*100-50)+'px'); c.appendChild(e);
-            }
+            currentRoom = room;
         }
     </script>
 </body>
