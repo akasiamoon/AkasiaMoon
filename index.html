@@ -1,79 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moon's Hearth - Triple Realm Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    <style>
-        :root { 
-            --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); 
-            --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.85); 
-            --text: #fdf5e6; --parchment: #e3d5b8; 
-            --ink: #2c1810; --spend: #c84b31; --water: #40e0d0; 
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moon's Hearth - Triple Realm Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+    :root { --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.85); --text: #fdf5e6; --parchment: #e3d5b8; --ink: #2c1810; --spend: #c84b31; --water: #40e0d0; }
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Cormorant Garamond', serif; background-color: #000; color: var(--text); overflow: hidden; }
 
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            font-family: 'Cormorant Garamond', serif; 
-            background-color: #000; color: var(--text); overflow: hidden; 
-        }
+    /* --- NAVIGATION --- */
+    .room-portal { position: fixed; left: 30px; top: 30px; z-index: 5000; display: flex; gap: 10px; }
+    .portal-btn { font-family: 'Cinzel', serif; color: var(--gold); background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer; padding: 10px 15px; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; }
+    .portal-btn.active { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
 
-        /* --- ENTER OVERLAY --- */
-        #enter-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: radial-gradient(circle, #1a120e 0%, #000 100%); 
-            z-index: 9999; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; transition: opacity 1.2s ease; 
-        }
+    /* --- ROOM LAYERS --- */
+    .layer-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 1s ease; background-size: cover; background-position: center; z-index: 10; }
+    .hidden { opacity: 0; pointer-events: none; }
 
-        .enter-btn { 
-            font-family: 'Cinzel', serif; color: var(--gold); 
-            background: rgba(0,0,0,0.6); border: 1px solid var(--gold); 
-            cursor: pointer; font-size: 1.5rem; padding: 15px 45px; 
-            letter-spacing: 5px; text-transform: uppercase; 
-            box-shadow: 0 0 30px var(--gold-glow); 
-        }
+    /* ROOM 2: TOWER VIDEO AUDIT */
+    #scholar-video-bg { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: -1; filter: brightness(0.6); }
 
-        /* --- NAVIGATION --- */
-        .room-portal { 
-            position: fixed; left: 30px; top: 30px; z-index: 5000; 
-            display: flex; gap: 10px; 
-        }
+    /* UI PANELS */
+    .glass-panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--gold-glow); padding: 20px; box-shadow: 0 15px 35px #000; }
+    .scholar-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-glow); color: var(--parchment); padding: 10px; font-family: 'Cormorant Garamond'; margin-bottom: 10px; outline: none; box-sizing: border-box; }
+    .golden-text { background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-        .portal-btn { 
-            padding: 10px 15px; font-family: 'Cinzel'; font-size: 0.8rem; 
-            color: var(--gold); background: rgba(0,0,0,0.6); 
-            border: 1px solid var(--gold); cursor: pointer; 
-        }
+    /* --- STATUS WIDGETS --- */
+    .status-widget { position: fixed !important; bottom: 30px; z-index: 8000 !important; background: radial-gradient(circle, rgba(40, 30, 20, 0.9) 0%, rgba(10, 8, 5, 0.95) 100%); border: 2px solid var(--gold); width: 110px; height: 110px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 15px var(--gold-glow); transition: 0.8s; opacity: 0; pointer-events: none; }
+    .status-widget.visible { opacity: 1; pointer-events: auto; }
+    #weather-widget { left: 30px; }
+    #soul-compass-widget { right: 30px; cursor: pointer; }
 
-        .portal-btn.active { background: var(--gold); color: #000; }
+    /* MODALS */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
+    .scroll-parchment { background: var(--parchment); color: var(--ink); width: 90%; max-width: 700px; padding: 40px; border-radius: 5px 40px; position: relative; box-shadow: 0 0 50px #000; border: 2px solid #8b5a2b; height: 85vh; display: flex; flex-direction: column; overflow-y: auto; }
 
-        /* --- ROOM LAYERS --- */
-        .layer-container { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            transition: opacity 1s ease; z-index: 10; 
-        }
-        .hidden { opacity: 0; pointer-events: none; }
-
-        /* VIDEO STYLING */
-        #scholar-video-bg { 
-            width: 100%; height: 100%; object-fit: cover; 
-            position: absolute; top: 0; left: 0; filter: brightness(0.6); 
-        }
-
-        /* --- CONTENT --- */
-        .glass-panel { 
-            background: var(--glass); backdrop-filter: blur(15px); 
-            border: 1px solid var(--gold-glow); padding: 20px; 
-            box-shadow: 0 15px 35px #000; 
-        }
-
-        .golden-text {
-            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            -webkit-background-clip: text; background-clip: text; color: transparent;
-        }
-    </style>
+    /* ENTER OVERLAY */
+    #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a120e 0%, #000 100%); z-index: 9000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s ease; }
+    .enter-btn { font-family: 'Cinzel', serif; color: var(--gold); background: rgba(0,0,0,0.6); border: 1px solid var(--gold); cursor: pointer; padding: 15px 45px; letter-spacing: 5px; text-transform: uppercase; box-shadow: 0 0 30px var(--gold-glow); font-size: 1.5rem; }
+    
+    /* Particles */
+    .ember { position: absolute; bottom:-20px; background:var(--fire); width: 5px; height: 5px; border-radius:50%; box-shadow:0 0 10px var(--fire); opacity:0; animation:rise linear infinite; }
+    @keyframes rise { 0% {opacity:0; transform:translateY(0);} 20% {opacity:0.8;} 100% {opacity:0; transform:translateY(-110vh) translateX(var(--drift));} }
+</style>
 </head>
 <body>
 
@@ -85,13 +55,17 @@
     <div class="room-portal">
         <button id="btn-hearth" class="portal-btn active" onclick="switchRoom('hearth')">The Hearth</button>
         <button id="btn-scholar" class="portal-btn" onclick="switchRoom('scholar')">Scholar's Tower</button>
+        <button id="btn-nook" class="portal-btn" onclick="switchRoom('nook')">Reading Nook</button>
+        <button id="btn-cellar" class="portal-btn" onclick="switchRoom('cellar')">The Cellar</button>
+        <button id="btn-springs" class="portal-btn" onclick="switchRoom('springs')">Healing Springs</button>
     </div>
 
-    <div id="hearth-layer" class="layer-container">
-        <div style="padding: 100px;">
+    <div id="hearth-layer" class="layer-container" style="background-image: url('image_5.png');">
+        <div id="embers-container"></div>
+        <div style="padding: 150px;">
             <div class="glass-panel" style="max-width: 400px;">
-                <h1 class="golden-text">The Hearth</h1>
-                <p>Welcome back to the sanctuary.</p>
+                <h1 class="golden-text">The Almanac</h1>
+                <p>Welcome back, Amber.</p>
             </div>
         </div>
     </div>
@@ -100,12 +74,27 @@
         <video id="scholar-video-bg" loop muted playsinline>
             <source src="Viking_Scholar_s_Nook_Video_Generation.mp4" type="video/mp4">
         </video>
-        <div style="position: relative; z-index: 20; padding: 100px;">
+        <div style="padding: 150px; position: relative; z-index: 20;">
             <div class="glass-panel" style="max-width: 400px;">
-                <h1 class="golden-text">Scholar's Tower</h1>
-                <p>The orange cat is sleeping by the fire. It's time to work on your RPG lore.</p>
+                <h1 class="golden-text">Scholar's Focus</h1>
+                <textarea id="work-note" class="scholar-input" placeholder="Scribe your research..."></textarea>
+                <button class="portal-btn" style="width: 100%">Log Entry</button>
             </div>
         </div>
+    </div>
+
+    <div id="nook-layer" class="layer-container hidden" style="background-color: #111;"></div>
+    <div id="cellar-layer" class="layer-container hidden" style="background-color: #080604;"></div>
+    <div id="springs-layer" class="layer-container hidden" style="background-color: #051014;"></div>
+
+    <div id="weather-widget" class="status-widget">
+        <div id="weather-icon">✨</div>
+        <div id="weather-temp">--°F</div>
+        <div id="weather-desc">Farmington</div>
+    </div>
+
+    <div id="soul-compass-widget" class="status-widget">
+        <img src="avatar.jpg" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentNode.innerHTML='🛡️'">
     </div>
 
     <script>
@@ -113,32 +102,45 @@
         const sv = document.getElementById('scholar-video-bg');
 
         function igniteRealm() {
-            const overlay = document.getElementById('enter-overlay');
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.style.display = 'none', 1200);
-            // Pre-load video but keep it paused until needed
-            sv.load(); 
+            document.getElementById('enter-overlay').style.opacity = '0';
+            setTimeout(() => document.getElementById('enter-overlay').style.display = 'none', 1200);
+            document.getElementById('weather-widget').classList.add('visible');
+            document.getElementById('soul-compass-widget').classList.add('visible');
+            createEmbers();
+            fetchWeather();
         }
 
         function switchRoom(room) {
             if(room === currentRoom) return;
-            
-            // 1. Update UI Buttons
             document.querySelectorAll('.portal-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + room).classList.add('active');
-
-            // 2. Switch Visibility
+            document.getElementById('btn-'+room).classList.add('active');
             document.querySelectorAll('.layer-container').forEach(l => l.classList.add('hidden'));
-            document.getElementById(room + '-layer').classList.remove('hidden');
+            document.getElementById(room+'-layer').classList.remove('hidden');
 
-            // 3. Handle Video Playback logic
-            if(room === 'scholar') {
-                sv.play().catch(e => console.log("Video play failed:", e));
+            if(room === 'scholar') { 
+                sv.play().catch(e => console.log("Autoplay blocked", e));
             } else {
                 sv.pause();
             }
-
             currentRoom = room;
+        }
+
+        async function fetchWeather() {
+            try {
+                const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.94&longitude=-88.52&current=temperature_2m,weather_code&temperature_unit=fahrenheit');
+                const d = await r.json();
+                document.getElementById('weather-temp').innerText = Math.round(d.current.temperature_2m) + "°F";
+            } catch(e) {}
+        }
+
+        function createEmbers() {
+            const c = document.getElementById('embers-container');
+            if(!c) return;
+            for(let i=0; i<20; i++){
+                let e = document.createElement('div'); e.className='ember';
+                e.style.left = Math.random()*100+'%'; e.style.animationDuration = (Math.random()*5+4)+'s';
+                e.style.setProperty('--drift', (Math.random()*100-50)+'px'); c.appendChild(e);
+            }
         }
     </script>
 </body>
