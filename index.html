@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moon's Hearth - Triple Realm Hub</title>
+<title>Moon's Hearth - Five Realm Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
     :root { --gold: #d4af37; --gold-glow: rgba(212, 175, 55, 0.6); --fire: #ff6a00; --glass: rgba(10, 8, 6, 0.85); --text: #fdf5e6; --parchment: #e3d5b8; --ink: #2c1810; --spend: #c84b31; }
@@ -34,7 +34,9 @@
     .room-portal { position: absolute; left: 30px; top: 30px; z-index: 2000; display: flex; gap: 10px; }
     .portal-btn { padding: 10px 20px; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; }
     .portal-btn.active, .portal-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
-    .ui-toggle-btn { position: absolute; right: 30px; top: 30px; z-index: 2000; padding: 10px 20px; font-size: 0.9rem; letter-spacing: 2px; }
+    
+    /* SURGICAL FIX: Keep buttons in the top right */
+    .ui-toggle-btn { position: fixed !important; right: 30px !important; top: 30px !important; z-index: 2000; padding: 10px 20px; font-size: 0.9rem; letter-spacing: 2px; }
 
     .weather-widget { 
         position: absolute; top: 20px; right: 500px; z-index: 2500; 
@@ -49,7 +51,6 @@
     #weather-temp { font-family: 'Cinzel'; color: var(--gold); font-size: 1.2rem; font-weight: 900; z-index: 2; text-shadow: 0 2px 4px #000; }
     #weather-desc { font-family: 'Cormorant Garamond'; color: var(--parchment); font-size: 0.6rem; font-style: italic; z-index: 2; letter-spacing: 1px; text-transform: uppercase; }
 
-    /* Soul Compass Hover */
     #soul-compass-widget:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--gold-glow); }
 
     /* --- ROOM LAYERS --- */
@@ -122,11 +123,17 @@
     #zone-workbench { top: 40%; left: 50%; width: 20%; height: 20%; }
     #zone-crate { top: 65%; left: 75%; width: 15%; height: 20%; }
 
+    /* --- ROOM 5: THE HEALING SPRINGS --- */
+    #springs-layer { background-image: url('springs_bg.jpg'); background-color: #051014; }
+    #springs-particles { position: absolute; width: 100%; height: 100%; z-index: 11; pointer-events: none; overflow: hidden; }
+    
+    .springs-click-layer { z-index: 25; position: absolute; width: 100%; height: 100%; }
+    #zone-apothecary { top: 20%; right: 10%; width: 20%; height: 40%; }
+
     /* --- MODALS --- */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.5s; }
     .scroll-parchment { background: var(--parchment); color: var(--ink); width: 90%; max-width: 700px; padding: 40px; border-radius: 5px 40px; position: relative; box-shadow: 0 0 50px #000; border: 2px solid #8b5a2b; height: 85vh; display: flex; flex-direction: column; }
     
-    /* Responsive adjustment for the character sheet modal */
     @media (max-width: 768px) {
         .scroll-parchment[style*="flex-direction: row"] {
             flex-direction: column !important;
@@ -135,12 +142,9 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-        .scroll-parchment[style*="flex-direction: row"] > div:first-child {
-             width: 60% !important; /* Smaller avatar on mobile */
-        }
+        .scroll-parchment[style*="flex-direction: row"] > div:first-child { width: 60% !important; }
     }
 
-    /* Reused elements for Grimoire */
     .grimoire-tabs { display: flex; gap: 20px; margin-bottom: 15px; border-bottom: 1px solid #8b5a2b; }
     .tab-btn { background: none; border: none; font-family: 'Cinzel'; cursor: pointer; padding: 5px 10px; color: #8b5a2b; opacity: 0.5; transition: 0.3s; }
     .tab-btn.active { opacity: 1; border-bottom: 2px solid #8b5a2b; }
@@ -168,12 +172,13 @@
         <button class="enter-btn" onclick="igniteRealm()">Enter the Realm</button>
     </div>
 
-    <div class="room-portal">
-        <button id="btn-hearth" class="portal-btn active" onclick="switchRoom('hearth')">The Hearth</button>
-        <button id="btn-scholar" class="portal-btn" onclick="switchRoom('scholar')">Scholar's Tower</button>
-        <button id="btn-nook" class="portal-btn" onclick="switchRoom('nook')">Reading Nook</button>
-        <button id="btn-cellar" class="portal-btn" onclick="switchRoom('cellar')">The Cellar</button>
-    </div>
+ <div class="room-portal">
+    <button id="btn-hearth" class="portal-btn active" onclick="switchRoom('hearth')">Hearth</button>
+    <button id="btn-scholar" class="portal-btn" onclick="switchRoom('scholar')">Tower</button>
+    <button id="btn-nook" class="portal-btn" onclick="switchRoom('nook')">Nook</button>
+    <button id="btn-cellar" class="portal-btn" onclick="switchRoom('cellar')">Cellar</button>
+    <button id="btn-springs" class="portal-btn" onclick="switchRoom('springs')">Springs</button>
+</div>
 
     <div id="soul-compass-widget" class="weather-widget" style="right: 30px; bottom: 30px; top: auto; cursor: pointer; z-index: 2500; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center;" onclick="openCompass()">
         <img src="avatar.jpg" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\'font-size: 2rem;\'>🛡️</div><div class=\'golden-text\' style=\'font-size: 0.6rem;\'>The Soul</div>'">
@@ -188,6 +193,7 @@
     <audio id="audio-hearth" loop src="fire.mp3"></audio>
     <audio id="audio-nook" loop src="nature.mp3"></audio>
     <audio id="audio-cellar" loop src="cellar.mp3"></audio>
+    <audio id="audio-springs" loop src="springs.mp3"></audio>
 
     <div id="hearth-layer" class="layer-container">
         <div id="embers-container"></div>
@@ -277,6 +283,13 @@
             <div id="zone-safe" class="click-zone" onclick="openModal('safe-modal')" title="The Iron Safe"></div>
             <div id="zone-workbench" class="click-zone" onclick="openModal('workbench-modal')" title="The Workbench"></div>
             <div id="zone-crate" class="click-zone" onclick="openModal('crate-modal')" title="Supply Crate"></div>
+        </div>
+    </div>
+
+    <div id="springs-layer" class="layer-container hidden" style="background-image: url('springs_bg.jpg'); background-color: #051014;">
+        <div id="springs-particles" style="position: absolute; width: 100%; height: 100%; z-index: 11; pointer-events: none; overflow: hidden;"></div>
+        <div class="springs-click-layer" style="z-index: 25; position: absolute; width: 100%; height: 100%;">
+            <div id="zone-apothecary" class="click-zone" onclick="openModal('apothecary-modal')" title="Apothecary's Cabinet"></div>
         </div>
     </div>
 
@@ -401,6 +414,20 @@
         </div>
     </div>
 
+    <div id="apothecary-modal" class="modal-overlay" onclick="closeModal('apothecary-modal')">
+        <div class="scroll-parchment" onclick="event.stopPropagation()" style="height:auto;">
+            <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem;" onclick="closeModal('apothecary-modal')">×</span>
+            <h2 class="golden-text" style="font-family:'Cinzel'; text-align:center; margin-bottom:10px;">Apothecary's Cabinet</h2>
+            <p style="text-align:center; font-style:italic; font-size: 0.9rem; margin-bottom: 15px; color:#8b5a2b;">Daily Elixirs & Supplements</p>
+            
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <input type="text" id="med-input" class="scholar-input" style="flex-grow:1" placeholder="Add medication/supplement...">
+                <button class="data-btn" onclick="addMedItem()">Add</button>
+            </div>
+            <div class="legend-list" id="apothecary-list" style="max-height: 300px;"></div>
+        </div>
+    </div>
+
     <div id="compass-modal" class="modal-overlay" onclick="closeModal('compass-modal')">
         <div class="scroll-parchment" onclick="event.stopPropagation()" style="width: 95%; max-width: 800px; flex-direction: row; gap: 30px; align-items: flex-start;">
             <span style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem;" onclick="closeModal('compass-modal')">×</span>
@@ -452,6 +479,7 @@
         const ah = document.getElementById('audio-hearth');
         const an = document.getElementById('audio-nook');
         const ac = document.getElementById('audio-cellar');
+        const as = document.getElementById('audio-springs'); // Added Springs Audio
         const sv = document.getElementById('scholar-video-bg');
 
         // General Modal Helper
@@ -462,6 +490,7 @@
             // Render specific modal data if needed
             if(modalId === 'safe-modal') updateVaultUI();
             if(modalId === 'crate-modal') renderCrate();
+            if(modalId === 'apothecary-modal') renderApothecary(); // Render Apothecary
             if(modalId === 'workbench-modal') {
                 document.getElementById('workbench-text').value = localStorage.getItem('workbench-notes') || '';
             }
@@ -478,17 +507,16 @@
                 document.getElementById('enter-overlay').style.opacity = '0';
                 setTimeout(() => { document.getElementById('enter-overlay').style.display = 'none'; }, 1200);
 
-                ah.volume = 0.5; an.volume = 0.5; ac.volume = 0.5;
+                ah.volume = 0.5; an.volume = 0.5; ac.volume = 0.5; as.volume = 0.5;
                 let playPromise = ah.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => console.log("Audio files not found or autoplay blocked."));
                 }
 
-                createEmbers(); createDust(); createNookDust(); createCellarDust();
+                createEmbers(); createDust(); createNookDust(); createCellarDust(); createSpringsDust();
                 renderCalendar(); renderReagents(); renderBlog(); loadVitals(); fetchWeather();
 
                 document.getElementById('weather-widget').classList.add('visible');
-                // Make Soul Compass visible on load
                 document.getElementById('soul-compass-widget').classList.add('visible');
             } catch (error) {
                 console.error("Ignition failed:", error);
@@ -506,12 +534,13 @@
             document.querySelectorAll('.layer-container').forEach(l => l.classList.add('hidden'));
             document.getElementById(room+'-layer').classList.remove('hidden');
 
-            ah.pause(); an.pause(); ac.pause(); sv.pause();
+            ah.pause(); an.pause(); ac.pause(); sv.pause(); as.pause();
 
             if(room === 'hearth') { ah.play(); }
             if(room === 'nook') { an.play(); }
             if(room === 'cellar') { ac.play(); }
             if(room === 'scholar') { sv.muted = false; sv.play(); }
+            if(room === 'springs') { as.play(); }
         }
 
         function toggleDeskUI() { document.getElementById('desk-ui').classList.toggle('open'); }
@@ -559,6 +588,19 @@
                 dust.style.left = Math.random() * 100 + '%'; dust.style.top = Math.random() * 100 + '%';
                 dust.style.animationDuration = (Math.random() * 15 + 10) + 's'; 
                 dust.style.opacity = '0.2';
+                container.appendChild(dust);
+            }
+        }
+
+        function createSpringsDust() {
+            const container = document.getElementById('springs-particles'); container.innerHTML = '';
+            for(let i=0; i<20; i++) {
+                let dust = document.createElement('div'); dust.className = 'dust-mote';
+                let size = Math.random() * 4 + 1 + 'px'; dust.style.width = size; dust.style.height = size;
+                dust.style.left = Math.random() * 100 + '%'; dust.style.top = Math.random() * 100 + '%';
+                dust.style.animationDuration = (Math.random() * 15 + 10) + 's'; 
+                dust.style.opacity = '0.3';
+                dust.style.background = 'rgba(64, 224, 208, 0.4)'; // Watery glow
                 container.appendChild(dust);
             }
         }
@@ -738,7 +780,7 @@
             const legend = JSON.parse(localStorage.getItem('legend') || JSON.stringify(defaultMilestones)); 
             document.getElementById('legend-list').innerHTML = legend.map((item, idx) => `
                 <div class="legend-item">
-                    <label style="cursor:pointer; font-size:1.1rem;">
+                    <label style="cursor:pointer; font-size:1.1rem; color: ${item.c ? '#8b5a2b' : 'var(--parchment)'}; text-decoration: ${item.c ? 'line-through' : 'none'};">
                         <input type="checkbox" ${item.c ? 'checked' : ''} onchange="toggleLeg(${idx})"> ${item.t}
                     </label>
                     <span style="cursor:pointer;color:#8a3324;" onclick="removeLeg(${idx})">×</span>
@@ -935,7 +977,52 @@
             renderCrate();
         }
 
-        // 11. The Soul Compass (Character Sheet Logic)
+        // 11. Apothecary System
+        function addMedItem() {
+            const input = document.getElementById('med-input');
+            if(!input.value) return;
+            const meds = JSON.parse(localStorage.getItem('apothecary') || getDefaultMeds());
+            meds.push({t: input.value, c: false});
+            localStorage.setItem('apothecary', JSON.stringify(meds));
+            input.value = '';
+            renderApothecary();
+        }
+
+        function getDefaultMeds() {
+            return JSON.stringify([
+                {t:"Morning Supplements", c:false},
+                {t:"Evening Restoratives", c:false},
+                {t:"Hydration Flask (32oz)", c:false}
+            ]);
+        }
+
+        function renderApothecary() {
+            const meds = JSON.parse(localStorage.getItem('apothecary') || getDefaultMeds());
+            document.getElementById('apothecary-list').innerHTML = meds.map((item, idx) => `
+                <div class="legend-item">
+                    <label style="cursor:pointer; font-size:1.1rem; color: ${item.c ? '#8b5a2b' : 'var(--parchment)'}; text-decoration: ${item.c ? 'line-through' : 'none'};">
+                        <input type="checkbox" ${item.c ? 'checked' : ''} onchange="toggleMed(${idx})"> ${item.t}
+                    </label>
+                    <span style="cursor:pointer;color:#8a3324;" onclick="removeMedItem(${idx})">×</span>
+                </div>
+            `).join('');
+        }
+
+        function toggleMed(idx) {
+            const meds = JSON.parse(localStorage.getItem('apothecary') || getDefaultMeds());
+            meds[idx].c = !meds[idx].c;
+            localStorage.setItem('apothecary', JSON.stringify(meds));
+            renderApothecary();
+        }
+
+        function removeMedItem(idx) {
+            const meds = JSON.parse(localStorage.getItem('apothecary') || '[]');
+            meds.splice(idx, 1);
+            localStorage.setItem('apothecary', JSON.stringify(meds));
+            renderApothecary();
+        }
+
+        // 12. The Soul Compass (Character Sheet Logic)
         function openCompass() {
             // Calculate Spirit Alignment (Mood from Nook)
             const savedMood = localStorage.getItem('vital-mood');
@@ -977,7 +1064,6 @@
 
             openModal('compass-modal');
         }
-
     </script>
 </body>
 </html>
