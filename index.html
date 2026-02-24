@@ -214,7 +214,32 @@
                     <button class="data-btn" onclick="addReagent()">Add</button>
                 </div>
                <div style="border-top: 1px solid var(--gold-glow); padding-top:15px; display:flex; justify-content:space-around; gap:10px;">
-    <input type="file" id="import-file" style="display:none;" onchange="importData(this)">
+    <input type="file" id="import-file" style="display:none;" onchange="importData(this)">// --- Import Logic ---
+function importData(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            // 1. Clear current data to avoid conflicts
+            localStorage.clear();
+            
+            // 2. Load new data
+            Object.keys(data).forEach(key => {
+                localStorage.setItem(key, data[key]);
+            });
+
+            // 3. Success & Refresh
+            alert("Scroll deciphered successfully! The realm will now reload.");
+            location.reload(); 
+        } catch (err) {
+            alert("Error reading scroll: " + err);
+        }
+    };
+    reader.readAsText(file);
+}
     
     <button class="data-btn" onclick="exportData()">Export Scroll</button>
     <button class="data-btn" onclick="document.getElementById('import-file').click()" style="background:var(--gold); color:#000;">Import Scroll</button>
