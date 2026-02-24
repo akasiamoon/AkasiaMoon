@@ -213,9 +213,12 @@
                     <input type="text" id="reagent-input" class="scholar-input" placeholder="Add ingredient...">
                     <button class="data-btn" onclick="addReagent()">Add</button>
                 </div>
-                <div id="reagent-display" style="margin-top:10px; max-height:100px; overflow-y:auto; margin-bottom:15px; font-size:0.9rem;"></div>
-                <div style="border-top: 1px solid var(--gold-glow); padding-top:15px; display:flex; justify-content:space-around;">
-                    <button class="data-btn" onclick="exportData()">Export Scroll</button>
+               <div style="border-top: 1px solid var(--gold-glow); padding-top:15px; display:flex; justify-content:space-around; gap:10px;">
+    <input type="file" id="import-file" style="display:none;" onchange="importData(this)">
+    
+    <button class="data-btn" onclick="exportData()">Export Scroll</button>
+    <button class="data-btn" onclick="document.getElementById('import-file').click()" style="background:var(--gold); color:#000;">Import Scroll</button>
+</div>
                 </div>
             </div>
         </div>
